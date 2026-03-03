@@ -21,6 +21,31 @@
   --purple:#5b3d8a; --purple-light:#f0ecf8;
   --radius:12px; --shadow:0 2px 12px rgba(0,0,0,0.08);
 }
+body.dark {
+  --bg:#0f1117; --white:#1c1f26; --surface:#252830; --border:#2e3340;
+  --text:#e8e8e8; --muted:#6b7280;
+  --accent:#3b6fd4; --accent-light:#1a2340;
+  --green:#2d6a4f; --green-light:#0d2a1f;
+  --orange:#c45e00; --orange-light:#2a1800;
+  --red:#b52b2b; --red-light:#2a0d0d;
+  --purple:#7c5cbf; --purple-light:#1e1430;
+  --shadow:0 2px 12px rgba(0,0,0,0.4);
+}
+body.dark .home-banner,body.dark .app-header{background:#1a2a4a;}
+body.dark .checklist-section-hdr{background:#1a2a4a;}
+body.dark .audit-section-hdr{background:#2d1f50;}
+body.dark .report-top.da3-top{background:#1a2a4a;}
+body.dark .report-top.audit-top{background:#2d1f50;}
+body.dark .bottom-nav{background:#1c1f26;border-top-color:#2e3340;}
+body.dark .modal-sheet{background:#1c1f26;}
+body.dark .modal-overlay{background:rgba(0,0,0,0.7);}
+body.dark input,body.dark select,body.dark textarea{background:#252830;color:#e8e8e8;border-color:#2e3340;}
+body.dark .yn-btn{background:#252830;color:#9ca3af;}
+body.dark .sub-item-row{background:#181b22;}
+body.dark .task-row{background:#1c1f26;}
+body.dark .yn-row{background:#1c1f26;}
+body.dark .notes-ta{background:#252830;color:#e8e8e8;}
+body.dark .home-progress-bar{background:rgba(255,255,255,0.15);}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px;}
 
@@ -302,12 +327,82 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
 .biweekly-start-row{display:none;}
 .biweekly-start-row.show{display:block;}
 
+/* ── PIN LOCK ── */
+.pin-overlay{position:fixed;inset:0;background:var(--accent);z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;padding:40px 30px;}
+.pin-overlay.hidden{display:none;}
+.pin-logo{font-size:2.8rem;margin-bottom:8px;}
+.pin-app-name{color:white;font-size:1.2rem;font-weight:700;letter-spacing:-0.01em;margin-bottom:4px;}
+.pin-subtitle{color:rgba(255,255,255,0.6);font-size:0.75rem;font-family:'IBM Plex Mono',monospace;margin-bottom:36px;}
+.pin-dots{display:flex;gap:14px;margin-bottom:32px;}
+.pin-dot{width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,0.5);background:transparent;transition:all 0.15s;}
+.pin-dot.filled{background:white;border-color:white;}
+.pin-dot.error{background:var(--red);border-color:var(--red);animation:shake 0.4s ease;}
+@keyframes shake{0%,100%{transform:translateX(0);}20%,60%{transform:translateX(-6px);}40%,80%{transform:translateX(6px);}}
+.pin-hint{color:rgba(255,255,255,0.5);font-size:0.75rem;margin-bottom:28px;min-height:18px;font-family:'IBM Plex Mono',monospace;}
+.pin-grid{display:grid;grid-template-columns:repeat(3,72px);grid-template-rows:repeat(4,72px);gap:12px;}
+.pin-key{width:72px;height:72px;border-radius:50%;border:none;background:rgba(255,255,255,0.12);color:white;font-size:1.3rem;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:background 0.12s;font-family:'IBM Plex Sans',sans-serif;-webkit-tap-highlight-color:transparent;}
+.pin-key:active{background:rgba(255,255,255,0.28);}
+.pin-key.empty{background:transparent;cursor:default;}
+.pin-key.del{font-size:1rem;}
+.pin-error-msg{color:#ff8080;font-size:0.8rem;margin-top:16px;min-height:20px;font-family:'IBM Plex Mono',monospace;}
+/* ── QUICK NOTES ── */
+.notes-screen-wrap{padding:0 14px 100px;}
+.note-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:10px;box-shadow:var(--shadow);overflow:hidden;}
+.note-card-header{padding:13px 14px 8px;display:flex;align-items:flex-start;gap:10px;}
+.note-card-body-text{font-size:0.88rem;line-height:1.55;color:var(--text);flex:1;white-space:pre-wrap;word-break:break-word;}
+.note-card-meta{font-size:0.68rem;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:6px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.note-house-tag{background:var(--accent-light);color:var(--accent);font-size:0.63rem;font-weight:700;font-family:'IBM Plex Mono',monospace;padding:2px 7px;border-radius:4px;}
+.note-photo{width:100%;max-height:220px;object-fit:cover;display:block;cursor:pointer;}
+.note-actions{display:flex;gap:8px;padding:8px 14px 12px;border-top:1px solid var(--border);}
+.note-action-btn{flex:1;padding:7px;border:1px solid var(--border);border-radius:8px;background:transparent;font-family:'IBM Plex Sans',sans-serif;font-size:0.75rem;font-weight:600;color:var(--muted);cursor:pointer;}
+.note-action-btn.del{color:var(--red);border-color:var(--red-light);}
+.note-action-btn.pin{color:var(--accent);}
+.note-pinned-badge{font-size:0.62rem;background:var(--orange-light);color:var(--orange);padding:2px 6px;border-radius:4px;font-weight:700;font-family:'IBM Plex Mono',monospace;}
+/* New note sheet */
+.new-note-bar{position:sticky;bottom:68px;left:0;right:0;padding:10px 14px;background:var(--bg);border-top:1px solid var(--border);z-index:50;}
+.new-note-btn{width:100%;padding:13px;background:var(--accent);border:none;border-radius:var(--radius);color:white;font-family:'IBM Plex Sans',sans-serif;font-weight:700;font-size:0.93rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;}
+.note-compose-sheet{background:var(--white);border-radius:20px 20px 0 0;padding:18px 16px 32px;width:100%;max-height:88vh;overflow-y:auto;animation:slideUp 0.25s ease;}
+.note-compose-ta{width:100%;min-height:120px;border:1.5px solid var(--border);border-radius:10px;padding:12px;font-family:'IBM Plex Sans',sans-serif;font-size:0.95rem;background:var(--bg);color:var(--text);resize:none;outline:none;margin-bottom:12px;line-height:1.55;}
+.note-compose-ta:focus{border-color:var(--accent);}
+.note-tool-row{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;}
+.note-tool-btn{padding:8px 13px;border:1.5px solid var(--border);border-radius:8px;background:var(--surface);font-family:'IBM Plex Sans',sans-serif;font-size:0.78rem;font-weight:600;color:var(--text);cursor:pointer;display:flex;align-items:center;gap:5px;}
+.note-tool-btn.active{border-color:var(--accent);background:var(--accent-light);color:var(--accent);}
+.note-photo-preview{width:100%;border-radius:10px;margin-bottom:10px;max-height:200px;object-fit:cover;display:none;}
+.note-photo-preview.show{display:block;}
+.voice-recording{animation:pulse 0.8s infinite;border-color:var(--red)!important;color:var(--red)!important;}
+/* Photo lightbox */
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:800;display:none;align-items:center;justify-content:center;}
+.lightbox.open{display:flex;}
+.lightbox img{max-width:95vw;max-height:90vh;border-radius:8px;object-fit:contain;}
+.lightbox-close{position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.15);border:none;color:white;width:38px;height:38px;border-radius:50%;font-size:1.2rem;cursor:pointer;}
+/* Dark mode toggle in settings */
+.dark-toggle-row{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;}
+.toggle-switch{position:relative;width:48px;height:26px;flex-shrink:0;}
+.toggle-switch input{opacity:0;width:0;height:0;}
+.toggle-slider{position:absolute;inset:0;background:var(--border);border-radius:26px;cursor:pointer;transition:0.3s;}
+.toggle-slider:before{content:"";position:absolute;width:20px;height:20px;left:3px;bottom:3px;background:white;border-radius:50%;transition:0.3s;}
+input:checked + .toggle-slider{background:var(--accent);}
+input:checked + .toggle-slider:before{transform:translateX(22px);}
+
 /* ── BOTTOM NAV ── */
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--white);border-top:1px solid var(--border);display:flex;z-index:200;padding-bottom:env(safe-area-inset-bottom);}
 .nav-btn{flex:1;padding:9px 8px 7px;border:none;background:transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;font-family:'IBM Plex Sans',sans-serif;color:var(--muted);font-size:0.63rem;font-weight:500;transition:color 0.15s;}
 .nav-btn.active{color:var(--accent);}
 .nav-icon{font-size:1.25rem;line-height:1;}
 
+/* ── SYNC STATUS ── */
+.sync-dot{position:fixed;top:12px;right:14px;z-index:300;width:8px;height:8px;border-radius:50%;background:var(--muted);transition:background 0.3s;}
+.sync-dot.synced{background:#7dd3b0;}
+.sync-dot.saving{background:var(--orange);animation:pulse 0.8s infinite;}
+.sync-dot.error{background:var(--red);}
+.sync-dot.loading{background:var(--orange);animation:pulse 0.6s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
+/* Loading overlay */
+.load-overlay{position:fixed;inset:0;background:var(--accent);z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;color:white;gap:14px;}
+.load-overlay.hidden{display:none;}
+.load-spinner{width:36px;height:36px;border:3px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.load-text{font-size:0.85rem;opacity:0.8;font-family:'IBM Plex Mono',monospace;}
 /* ── TOAST ── */
 .toast{position:fixed;bottom:76px;left:50%;transform:translateX(-50%) translateY(16px);background:#1a1a1a;color:white;padding:9px 18px;border-radius:18px;font-size:0.8rem;font-weight:500;opacity:0;transition:all 0.28s;z-index:999;white-space:nowrap;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
@@ -322,6 +417,107 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
 </style>
 </head>
 <body>
+
+<!-- Firebase SDK -->
+<script type="module">
+// ═══════════════════════════════════════
+// FIREBASE SETUP
+// ═══════════════════════════════════════
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDDZXZsI-Z_o_bDX5nSMbnXKGm3MFpBfVc",
+  authDomain: "bl-search-b3b6a.firebaseapp.com",
+  projectId: "bl-search-b3b6a",
+  storageBucket: "bl-search-b3b6a.firebasestorage.app",
+  messagingSenderId: "941571479533",
+  appId: "1:941571479533:web:116d4f044f1677ead2f9e4"
+};
+
+const fbApp = initializeApp(firebaseConfig);
+const db = getFirestore(fbApp);
+const DOC_ID = 'region4_main'; // single doc storing all app state
+const DOC_REF = doc(db, 'workflow', DOC_ID);
+
+// Expose to window so the main script can call these
+window._fbSave = async function(data){
+  try {
+    await setDoc(DOC_REF, { payload: JSON.stringify(data), updatedAt: Date.now() });
+    window._fbStatus('synced');
+  } catch(e){
+    console.error('Firebase save error:', e);
+    window._fbStatus('error');
+    // Fall back to localStorage
+    try{ localStorage.setItem('r4hub_v3', JSON.stringify(data)); }catch(_){}
+  }
+};
+
+window._fbLoad = async function(){
+  try {
+    window._fbStatus('loading');
+    const snap = await getDoc(DOC_REF);
+    if(snap.exists()){
+      const data = JSON.parse(snap.data().payload);
+      window._fbStatus('synced');
+      return data;
+    }
+    window._fbStatus('synced');
+    return null;
+  } catch(e){
+    console.error('Firebase load error:', e);
+    window._fbStatus('error');
+    // Fall back to localStorage
+    try{
+      const d = localStorage.getItem('r4hub_v3');
+      return d ? JSON.parse(d) : null;
+    }catch(_){ return null; }
+  }
+};
+
+window._fbReady = true;
+// Signal main script that Firebase is ready
+document.dispatchEvent(new Event('fbReady'));
+</script>
+
+<!-- PIN Lock Screen -->
+<div class="pin-overlay hidden" id="pinOverlay">
+  <div class="pin-logo">🏠</div>
+  <div class="pin-app-name">Region 4 Work Hub</div>
+  <div class="pin-subtitle">OPWDD · Residential Operations</div>
+  <div class="pin-dots">
+    <div class="pin-dot" id="pd0"></div>
+    <div class="pin-dot" id="pd1"></div>
+    <div class="pin-dot" id="pd2"></div>
+    <div class="pin-dot" id="pd3"></div>
+  </div>
+  <div class="pin-hint" id="pinHint">Enter your PIN</div>
+  <div class="pin-grid">
+    <button class="pin-key" onclick="pinKey('1')">1</button>
+    <button class="pin-key" onclick="pinKey('2')">2<span style="font-size:0.45rem;opacity:0.6;display:block;letter-spacing:0.1em">ABC</span></button>
+    <button class="pin-key" onclick="pinKey('3')">3<span style="font-size:0.45rem;opacity:0.6;display:block;letter-spacing:0.1em">DEF</span></button>
+    <button class="pin-key" onclick="pinKey('4')">4<span style="font-size:0.45rem;opacity:0.6;display:block;letter-spacing:0.1em">GHI</span></button>
+    <button class="pin-key" onclick="pinKey('5')">5<span style="font-size:0.45rem;opacity:0.6;display:block;letter-spacing:0.1em">JKL</span></button>
+    <button class="pin-key" onclick="pinKey('6')">6<span style="font-size:0.45rem;opacity:0.6;display:block;letter-spacing:0.1em">MNO</span></button>
+    <button class="pin-key" onclick="pinKey('7')">7<span style="font-size:0.45rem;opacity:0.6;display:block;letter-spacing:0.1em">PQRS</span></button>
+    <button class="pin-key" onclick="pinKey('8')">8<span style="font-size:0.45rem;opacity:0.6;display:block;letter-spacing:0.1em">TUV</span></button>
+    <button class="pin-key" onclick="pinKey('9')">9<span style="font-size:0.45rem;opacity:0.6;display:block;letter-spacing:0.1em">WXYZ</span></button>
+    <button class="pin-key empty"></button>
+    <button class="pin-key" onclick="pinKey('0')">0</button>
+    <button class="pin-key del" onclick="pinDel()">⌫</button>
+  </div>
+  <div class="pin-error-msg" id="pinError"></div>
+</div>
+
+<!-- Loading overlay -->
+<div class="load-overlay" id="loadOverlay">
+  <div style="font-size:2rem">🏠</div>
+  <div class="load-spinner"></div>
+  <div class="load-text">Loading your data…</div>
+</div>
+
+<!-- Sync status dot (top right corner, always visible) -->
+<div class="sync-dot loading" id="syncDot" title="Sync status"></div>
 
 <!-- ══ HOME ══ -->
 <div class="screen active" id="homeScreen">
@@ -541,6 +737,36 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
     <div><div class="header-title">Settings</div><div class="header-sub">Staff, Houses & Individuals</div></div>
   </div>
   <div class="settings-wrap">
+    <div class="section-label">Appearance & Security</div>
+    <div class="settings-card">
+      <div class="dark-toggle-row">
+        <div>
+          <div style="font-weight:600;font-size:0.9rem;">🌙 Dark Mode</div>
+          <div style="font-size:0.75rem;color:var(--muted);margin-top:2px;">Easy on the eyes at night</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode(this.checked)">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      <div class="dark-toggle-row" style="border-top:1px solid var(--border);">
+        <div>
+          <div style="font-weight:600;font-size:0.9rem;">🔒 PIN Lock</div>
+          <div style="font-size:0.75rem;color:var(--muted);margin-top:2px;" id="pinStatusLabel">Not set</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="pinToggle" onchange="togglePINEnabled(this.checked)">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      <div id="pinSetupArea" style="display:none;padding:0 16px 14px;">
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input class="s-input" id="pinInput" type="password" inputmode="numeric" maxlength="4" placeholder="Enter 4-digit PIN" style="flex:1;letter-spacing:0.3em;font-size:1.1rem;">
+          <button class="save-btn" style="width:auto;padding:10px 16px;font-size:0.85rem;" onclick="savePIN()">Set PIN</button>
+        </div>
+        <div style="font-size:0.72rem;color:var(--muted);margin-top:6px;">4 digits. Auto-locks after 30 minutes.</div>
+      </div>
+    </div>
     <div class="section-label">Your Info</div>
     <div class="settings-card">
       <div class="settings-row"><div class="s-field"><div class="s-lbl">Staff Name</div><input class="s-input" id="sStaffName" placeholder="Your full name"></div></div>
@@ -552,6 +778,20 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
     <div class="section-label">Individuals (per house)</div>
     <div id="sIndivList"></div>
     <button class="add-row-btn" onclick="addIndivRow()">+ Add Individual</button>
+    <div class="section-label">AI Integration</div>
+    <div class="settings-card">
+      <div class="settings-row">
+        <div class="s-field">
+          <div class="s-lbl">Anthropic API Key</div>
+          <div style="display:flex;gap:8px;">
+            <input class="s-input" id="sApiKey" type="password" placeholder="sk-ant-..." autocapitalize="none" autocorrect="off" autocomplete="off" style="flex:1;font-family:'IBM Plex Mono',monospace;font-size:0.82rem;">
+            <button class="save-btn" style="width:auto;padding:10px 14px;font-size:0.82rem;flex-shrink:0;" onclick="saveApiKey()">Save</button>
+          </div>
+          <div style="font-size:0.72rem;color:var(--muted);margin-top:6px;line-height:1.5;">Your key is stored in Firebase — never in the app code or GitHub. Get one at console.anthropic.com</div>
+          <div id="apiKeyStatus" style="font-size:0.75rem;margin-top:5px;font-family:'IBM Plex Mono',monospace;"></div>
+        </div>
+      </div>
+    </div>
     <div class="section-label">Outlook Calendar (ICS)</div>
     <div class="settings-card">
       <div class="settings-row">
@@ -592,9 +832,52 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
 </div>
 
 <!-- ══ BOTTOM NAV ══ -->
+<!-- ══ NOTES ══ -->
+<div class="screen" id="notesScreen">
+  <div class="app-header">
+    <div style="flex:1"><div class="header-title">Quick Notes</div><div class="header-sub" id="notesCount"></div></div>
+  </div>
+  <div class="notes-screen-wrap" id="notesList" style="padding-bottom:140px;"></div>
+  <div class="new-note-bar">
+    <button class="new-note-btn" onclick="openNoteCompose()">✏️ New Note</button>
+  </div>
+</div>
+
+<!-- Note compose modal -->
+<div class="modal-overlay" id="noteModal" onclick="closeNoteModalOutside(event)">
+  <div class="note-compose-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="noteModalTitle">New Note</div>
+    <textarea class="note-compose-ta" id="noteText" placeholder="What's on your mind…"></textarea>
+    <img class="note-photo-preview" id="notePhotoPreview" src="" alt="photo">
+    <div class="note-tool-row">
+      <button class="note-tool-btn" id="voiceBtn" onclick="toggleVoice()">🎙 Dictate</button>
+      <button class="note-tool-btn" onclick="document.getElementById('notePhotoInput').click()">📷 Photo</button>
+      <select class="note-tool-btn" id="noteHouseTag" style="cursor:pointer;padding-right:10px;">
+        <option value="">🏠 No house tag</option>
+      </select>
+    </div>
+    <div id="aiAnalyzeRow" style="display:none;margin-bottom:12px;">
+      <button class="note-tool-btn" id="aiAnalyzeBtn" onclick="analyzeNoteWithAI()" style="width:100%;justify-content:center;background:var(--purple-light);border-color:var(--purple);color:var(--purple);">✨ Analyze with AI — summarize &amp; create tasks</button>
+    </div>
+    <div id="aiResultArea" style="display:none;background:var(--accent-light);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:12px;font-size:0.85rem;line-height:1.55;"></div>
+    <input type="file" id="notePhotoInput" accept="image/*" capture="environment" style="display:none" onchange="handleNotePhoto(event)">
+    <button class="modal-save-btn" onclick="saveNote()">Save Note</button>
+    <button class="modal-del-btn" id="noteDeleteBtn" style="display:none" onclick="deleteNote()">Delete Note</button>
+    <button class="modal-cancel-btn" onclick="closeNoteModal()">Cancel</button>
+  </div>
+</div>
+
+<!-- Photo lightbox -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <img id="lightboxImg" src="" alt="photo">
+</div>
+
 <div class="bottom-nav" id="bottomNav">
   <button class="nav-btn active" id="navHome" onclick="showScreen('homeScreen')"><span class="nav-icon">🏠</span>Home</button>
   <button class="nav-btn" id="navHistory" onclick="showScreen('historyScreen')"><span class="nav-icon">📋</span>History</button>
+  <button class="nav-btn" id="navNotes" onclick="showScreen('notesScreen')"><span class="nav-icon">📝</span>Notes</button>
   <button class="nav-btn" id="navSettings" onclick="showScreen('settingsScreen')"><span class="nav-icon">⚙️</span>Settings</button>
 </div>
 <div class="toast" id="toast"></div>
@@ -677,8 +960,43 @@ let currentAuditVisit = null;
 let histTab = 'da3';
 let reportBack = 'historyScreen';
 
-function loadS(){ try{ const d=localStorage.getItem('r4hub_v3'); if(d) S={...S,...JSON.parse(d)}; }catch(e){} }
-function saveS(){ localStorage.setItem('r4hub_v3',JSON.stringify(S)); }
+// Debounced save — batches rapid changes into one Firebase write
+let _saveTimer = null;
+function saveS(){
+  // Immediate local backup always
+  try{ localStorage.setItem('r4hub_v3', JSON.stringify(S)); }catch(_){}
+  // Debounce Firebase write by 800ms
+  if(window._fbSave){
+    window._fbStatus('saving');
+    clearTimeout(_saveTimer);
+    _saveTimer = setTimeout(()=>{ window._fbSave(S); }, 800);
+  }
+}
+
+// loadS is now async — called at init
+async function loadS(){
+  // Try Firebase first
+  if(window._fbLoad){
+    const data = await window._fbLoad();
+    if(data){ S = {...S, ...data}; return; }
+  }
+  // Fall back to localStorage
+  try{
+    const d = localStorage.getItem('r4hub_v3');
+    if(d){ S = {...S, ...JSON.parse(d)}; }
+  }catch(e){}
+}
+
+// Sync status indicator
+window._fbStatus = function(state){
+  const dot = document.getElementById('syncDot');
+  if(!dot) return;
+  dot.className = 'sync-dot ' + state;
+  dot.title = state==='synced'?'Synced':state==='saving'?'Saving…':state==='loading'?'Loading…':'Sync error — using local data';
+  if(state==='synced'){
+    setTimeout(()=>{ dot.className='sync-dot synced'; }, 2000);
+  }
+};
 
 // ═══════════════════════════════════════
 // HELPERS
@@ -702,12 +1020,18 @@ function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   document.getElementById('bottomNav').style.display = HIDE_NAV_SCREENS.includes(id)?'none':'flex';
-  ['navHome','navHistory','navSettings'].forEach(n=>document.getElementById(n).classList.remove('active'));
-  const map={homeScreen:'navHome',historyScreen:'navHistory',settingsScreen:'navSettings',houseScreen:'navHome'};
-  if(map[id]) document.getElementById(map[id]).classList.add('active');
+  ['navHome','navHistory','navNotes','navSettings'].forEach(n=>{
+    const el=document.getElementById(n); if(el) el.classList.remove('active');
+  });
+  const map={homeScreen:'navHome',historyScreen:'navHistory',notesScreen:'navNotes',settingsScreen:'navSettings',houseScreen:'navHome'};
+  if(map[id]){ const el=document.getElementById(map[id]); if(el) el.classList.add('active'); }
+  // Scroll to top
+  const el=document.getElementById(id);
+  if(el) el.scrollTop=0;
   if(id==='homeScreen') renderHome();
   if(id==='historyScreen') renderHistory();
   if(id==='settingsScreen') renderSettings();
+  if(id==='notesScreen') renderNotes();
 }
 
 function goBackToHouse(){ openHouse(currentHouseId); }
@@ -1276,6 +1600,22 @@ function renderSettings(){
   document.getElementById('sStaffTitle').value=S.staffTitle||'';
   document.getElementById('sICSUrl').value=S.icsUrl||'';
   document.getElementById('sICSAutoSync').checked=!!S.icsAutoSync;
+  const dmTog=document.getElementById('darkModeToggle'); if(dmTog) dmTog.checked=!!S.darkMode;
+  updatePinStatusLabel();
+  // Show API key status
+  const akEl=document.getElementById('sApiKey');
+  const akStatus=document.getElementById('apiKeyStatus');
+  if(akEl) akEl.value='';
+  if(akStatus){
+    if(S.anthropicKey){
+      const masked='sk-ant-...'+S.anthropicKey.slice(-6);
+      akStatus.textContent='✓ Key saved: '+masked;
+      akStatus.style.color='var(--green)';
+    } else {
+      akStatus.textContent='No key set';
+      akStatus.style.color='var(--muted)';
+    }
+  }
   // Houses
   const hl=document.getElementById('sHouseList');
   hl.innerHTML = S.houses.length===0
@@ -2040,14 +2380,605 @@ async function autoSyncICS(){
   await syncICSNow();
 }
 
+
+
+
+// ═══════════════════════════════════════
+// AI NOTE ANALYSIS
+// ═══════════════════════════════════════
+async function analyzeNoteWithAI(){
+  if(!S.anthropicKey){ toast('Add your API key in Settings first'); return; }
+  if(!notePhotoData){ toast('Attach a photo first'); return; }
+
+  const btn = document.getElementById('aiAnalyzeBtn');
+  const resultArea = document.getElementById('aiResultArea');
+  btn.textContent = '⏳ Analyzing…';
+  btn.disabled = true;
+  resultArea.style.display='block';
+  resultArea.textContent='Reading your notes…';
+
+  try {
+    const base64 = notePhotoData.split(',')[1];
+    const mediaType = notePhotoData.split(';')[0].split(':')[1] || 'image/jpeg';
+
+    const houseList = (S.houses||[]).map(h=>h.name).join(', ') || 'none';
+
+    const prompt = `You are a helpful assistant for a residential operations manager who oversees group homes.
+
+Analyze this image of meeting notes or handwritten notes and respond with a JSON object only — no markdown, no explanation, just raw JSON.
+
+The manager oversees these houses: ${houseList}
+
+Return this exact structure:
+{
+  "summary": "2-4 sentence plain English summary of the key points",
+  "tasks": [
+    {
+      "name": "task name (short, action-oriented)",
+      "notes": "any context or details",
+      "priority": "high|medium|low",
+      "dueDate": "YYYY-MM-DD or null if not mentioned",
+      "houseName": "exact house name from the list above, or null if general"
+    }
+  ]
+}
+
+Extract every action item, follow-up, deadline, or thing that needs to be done. If a house is mentioned, match it to the list. If a date or day is mentioned, calculate the actual date (today is ${new Date().toISOString().slice(0,10)}). If nothing actionable, return empty tasks array.`;
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': S.anthropicKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-opus-4-5',
+        max_tokens: 1024,
+        messages: [{
+          role: 'user',
+          content: [
+            { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64 } },
+            { type: 'text', text: prompt }
+          ]
+        }]
+      })
+    });
+
+    if(!response.ok){
+      const err = await response.json().catch(()=>({}));
+      throw new Error(err.error?.message || `HTTP ${response.status}`);
+    }
+
+    const data = await response.json();
+    const raw = data.content.map(b=>b.text||'').join('').trim();
+    const cleaned = raw.replace(/^```json\s*/,'').replace(/\s*```$/,'').trim();
+    const result = JSON.parse(cleaned);
+
+    // Show summary
+    resultArea.innerHTML = `<div style="font-weight:700;margin-bottom:6px;color:var(--accent);">✨ AI Summary</div>
+      <div>${esc(result.summary||'')}</div>
+      ${result.tasks&&result.tasks.length ? `<div style="margin-top:8px;font-weight:600;font-size:0.8rem;color:var(--muted);">${result.tasks.length} task${result.tasks.length!==1?'s':''} found — will be added automatically</div>` : '<div style="margin-top:6px;font-size:0.8rem;color:var(--muted);">No action items found</div>'}`;
+
+    // Auto-fill note text with summary
+    const ta = document.getElementById('noteText');
+    if(ta && !ta.value.trim()) ta.value = result.summary||'';
+
+    // Create tasks
+    if(result.tasks && result.tasks.length){
+      if(!S.rTasks) S.rTasks=[];
+      let added=0;
+      result.tasks.forEach(t=>{
+        // Match house name to id
+        let houseId=null;
+        if(t.houseName){
+          const match=(S.houses||[]).find(h=>h.name.toLowerCase().includes(t.houseName.toLowerCase())||t.houseName.toLowerCase().includes(h.name.toLowerCase()));
+          if(match) houseId=match.id;
+        }
+        S.rTasks.push({
+          id:uid(), name:t.name, taskType:'once',
+          onceDate:t.dueDate||null,
+          notes:t.notes||'📋 From meeting notes',
+          priority:t.priority||'medium',
+          dayType:'dow', freq:'weekly', day:1, time:'morning',
+          houseId, completions:{}, completedAt:null,
+          createdAt:new Date().toISOString(), fromAI:true
+        });
+        added++;
+      });
+      saveS();
+      haptic('medium');
+      toast(`✓ Added ${added} task${added!==1?'s':''} from notes`);
+    }
+
+    btn.textContent='✨ Analyzed!';
+    btn.style.background='var(--green-light)';
+    btn.style.color='var(--green)';
+    btn.style.borderColor='var(--green)';
+
+  } catch(err){
+    console.error('AI error:', err);
+    resultArea.textContent='Error: '+err.message+'. Check your API key in Settings.';
+    resultArea.style.color='var(--red)';
+    btn.textContent='✨ Analyze with AI';
+    btn.disabled=false;
+  }
+}
+
+// ═══════════════════════════════════════
+// PIN LOCK
+// ═══════════════════════════════════════
+let pinBuffer = '';
+let pinUnlocked = false;
+let pinInactivityTimer = null;
+const PIN_TIMEOUT = 30 * 60 * 1000; // 30 minutes
+
+function hashPIN(pin){
+  // Simple hash — good enough for a 4-digit PIN UI lock
+  let h = 0;
+  for(let i=0;i<pin.length;i++){ h = (Math.imul(31,h) + pin.charCodeAt(i)) | 0; }
+  return h.toString(36);
+}
+
+function showPinScreen(hint='Enter your PIN'){
+  pinBuffer='';
+  updatePinDots();
+  document.getElementById('pinHint').textContent = hint;
+  document.getElementById('pinError').textContent = '';
+  document.getElementById('pinOverlay').classList.remove('hidden');
+  // Hide loading overlay if showing
+  const lo=document.getElementById('loadOverlay'); if(lo) lo.classList.add('hidden');
+}
+
+function hidePinScreen(){
+  document.getElementById('pinOverlay').classList.add('hidden');
+  pinUnlocked=true;
+  resetInactivityTimer();
+}
+
+function updatePinDots(){
+  for(let i=0;i<4;i++){
+    const d=document.getElementById('pd'+i);
+    d.classList.toggle('filled', i<pinBuffer.length);
+    d.classList.remove('error');
+  }
+}
+
+function pinKey(k){
+  if(pinBuffer.length>=4) return;
+  haptic();
+  pinBuffer+=k;
+  updatePinDots();
+  if(pinBuffer.length===4){
+    setTimeout(()=>checkPIN(), 100);
+  }
+}
+
+function pinDel(){
+  if(!pinBuffer.length) return;
+  haptic();
+  pinBuffer=pinBuffer.slice(0,-1);
+  updatePinDots();
+  document.getElementById('pinError').textContent='';
+}
+
+function checkPIN(){
+  const stored = S.pinHash;
+  if(!stored){
+    // No PIN set — just unlock
+    hidePinScreen(); return;
+  }
+  if(hashPIN(pinBuffer)===stored){
+    haptic('medium');
+    hidePinScreen();
+  } else {
+    haptic('heavy');
+    // Flash dots red
+    for(let i=0;i<4;i++) document.getElementById('pd'+i).classList.add('error');
+    document.getElementById('pinError').textContent='Incorrect PIN — try again';
+    setTimeout(()=>{ pinBuffer=''; updatePinDots(); }, 800);
+  }
+}
+
+function resetInactivityTimer(){
+  clearTimeout(pinInactivityTimer);
+  if(S.pinEnabled && S.pinHash){
+    pinInactivityTimer = setTimeout(()=>{
+      pinUnlocked=false;
+      showPinScreen();
+    }, PIN_TIMEOUT);
+  }
+}
+
+// Reset timer on any interaction
+['touchstart','mousedown','keydown'].forEach(ev=>{
+  document.addEventListener(ev, ()=>{ if(pinUnlocked) resetInactivityTimer(); }, {passive:true});
+});
+
+function togglePINEnabled(on){
+  const area = document.getElementById('pinSetupArea');
+  if(area) area.style.display = on ? 'block' : 'none';
+  if(!on){
+    S.pinEnabled=false; S.pinHash=null;
+    saveS();
+    updatePinStatusLabel();
+    toast('PIN lock removed');
+  }
+}
+
+function savePIN(){
+  const pin = document.getElementById('pinInput').value.trim();
+  if(!/^\d{4}$/.test(pin)){ toast('PIN must be exactly 4 digits'); return; }
+  S.pinHash = hashPIN(pin);
+  S.pinEnabled = true;
+  document.getElementById('pinInput').value='';
+  saveS();
+  updatePinStatusLabel();
+  toast('✓ PIN set!');
+}
+
+function updatePinStatusLabel(){
+  const el=document.getElementById('pinStatusLabel');
+  const tog=document.getElementById('pinToggle');
+  const area=document.getElementById('pinSetupArea');
+  if(!el) return;
+  if(S.pinEnabled && S.pinHash){
+    el.textContent='Enabled — app locks after 30 min';
+    if(tog) tog.checked=true;
+    if(area) area.style.display='block';
+  } else {
+    el.textContent='Not set';
+    if(tog) tog.checked=false;
+    if(area) area.style.display='none';
+  }
+}
+
+function checkPinOnLoad(){
+  if(S.pinEnabled && S.pinHash){
+    showPinScreen();
+  }
+}
+
+// ═══════════════════════════════════════
+// DARK MODE
+// ═══════════════════════════════════════
+function toggleDarkMode(on){
+  document.body.classList.toggle('dark', on);
+  S.darkMode = on;
+  saveS();
+  const tog = document.getElementById('darkModeToggle');
+  if(tog) tog.checked = on;
+}
+function applyDarkMode(){
+  const on = !!S.darkMode;
+  document.body.classList.toggle('dark', on);
+  const tog = document.getElementById('darkModeToggle');
+  if(tog) tog.checked = on;
+}
+
+// ═══════════════════════════════════════
+// HAPTIC FEEDBACK
+// ═══════════════════════════════════════
+function haptic(style='light'){
+  if(window.navigator && window.navigator.vibrate){
+    window.navigator.vibrate(style==='heavy'?40:style==='medium'?20:10);
+  }
+}
+
+// ═══════════════════════════════════════
+// PULL TO REFRESH
+// ═══════════════════════════════════════
+(function initPullToRefresh(){
+  let startY=0, pulling=false;
+  document.addEventListener('touchstart', e=>{
+    if(document.getElementById('homeScreen').classList.contains('active'))
+      startY = e.touches[0].clientY;
+  }, {passive:true});
+  document.addEventListener('touchend', async e=>{
+    if(!document.getElementById('homeScreen').classList.contains('active')) return;
+    const dist = e.changedTouches[0].clientY - startY;
+    if(dist > 70 && window.scrollY <= 0){
+      haptic('medium');
+      toast('↻ Refreshing…');
+      if(window._fbLoad){
+        const data = await window._fbLoad();
+        if(data){ S={...S,...data}; renderHome(); toast('✓ Up to date'); }
+      }
+    }
+  }, {passive:true});
+})();
+
+// ═══════════════════════════════════════
+// SWIPE TO COMPLETE TASKS
+// ═══════════════════════════════════════
+function addSwipeToComplete(el, taskId, fromHouse=false){
+  let startX=0, dx=0;
+  el.addEventListener('touchstart', e=>{ startX=e.touches[0].clientX; dx=0; },{passive:true});
+  el.addEventListener('touchmove', e=>{
+    dx = e.touches[0].clientX - startX;
+    if(dx < -40){ el.style.transform=`translateX(${Math.max(dx,-70)}px)`; el.style.opacity=Math.max(0.4,1+dx/120)+''; }
+  },{passive:true});
+  el.addEventListener('touchend', ()=>{
+    if(dx < -60){
+      haptic('medium');
+      toggleRTask(taskId, fromHouse);
+    }
+    el.style.transform=''; el.style.opacity='';
+  });
+}
+
+// ═══════════════════════════════════════
+// QUICK NOTES
+// ═══════════════════════════════════════
+// Note shape: {id, text, photoData, houseId, pinned, createdAt}
+
+let editingNoteId = null;
+let notePhotoData = null;
+let voiceRecognition = null;
+let isRecording = false;
+
+function openNoteCompose(editId=null){
+  editingNoteId = editId;
+  notePhotoData = null;
+  const modal = document.getElementById('noteModal');
+
+  // Populate house options
+  const sel = document.getElementById('noteHouseTag');
+  sel.innerHTML = '<option value="">🏠 No house tag</option>'
+    + (S.houses||[]).map(h=>`<option value="${h.id}">${esc(h.name)}</option>`).join('');
+
+  if(editId){
+    const n = (S.notes||[]).find(x=>x.id===editId);
+    if(!n) return;
+    document.getElementById('noteModalTitle').textContent = 'Edit Note';
+    document.getElementById('noteText').value = n.text||'';
+    sel.value = n.houseId||'';
+    notePhotoData = n.photoData||null;
+    const prev = document.getElementById('notePhotoPreview');
+    if(notePhotoData){ prev.src=notePhotoData; prev.classList.add('show'); }
+    else { prev.classList.remove('show'); prev.src=''; }
+    document.getElementById('noteDeleteBtn').style.display='block';
+  } else {
+    document.getElementById('noteModalTitle').textContent = 'New Note';
+    document.getElementById('noteText').value = '';
+    sel.value = '';
+    const prev = document.getElementById('notePhotoPreview');
+    prev.classList.remove('show'); prev.src='';
+    document.getElementById('noteDeleteBtn').style.display='none';
+  }
+  stopVoice();
+  modal.classList.add('open');
+  setTimeout(()=>document.getElementById('noteText').focus(), 300);
+}
+
+function closeNoteModal(){
+  stopVoice();
+  document.getElementById('noteModal').classList.remove('open');
+}
+function closeNoteModalOutside(e){
+  if(e.target===document.getElementById('noteModal')) closeNoteModal();
+}
+
+function handleNotePhoto(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  // Compress to max 800px wide
+  const reader = new FileReader();
+  reader.onload = ev=>{
+    const img = new Image();
+    img.onload = ()=>{
+      const canvas = document.createElement('canvas');
+      const MAX = 800;
+      let w=img.width, h=img.height;
+      if(w>MAX){ h=Math.round(h*MAX/w); w=MAX; }
+      canvas.width=w; canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      notePhotoData = canvas.toDataURL('image/jpeg', 0.75);
+      const prev = document.getElementById('notePhotoPreview');
+      prev.src=notePhotoData; prev.classList.add('show');
+      // Show AI analyze button if API key is set
+      const aiRow=document.getElementById('aiAnalyzeRow');
+      if(aiRow) aiRow.style.display = S.anthropicKey ? 'block' : 'none';
+    };
+    img.src=ev.target.result;
+  };
+  reader.readAsDataURL(file);
+  e.target.value='';
+}
+
+function toggleVoice(){
+  if(isRecording){ stopVoice(); return; }
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SpeechRecognition){ toast('Voice not supported on this browser'); return; }
+  voiceRecognition = new SpeechRecognition();
+  voiceRecognition.continuous = true;
+  voiceRecognition.interimResults = false;
+  voiceRecognition.lang = 'en-US';
+  voiceRecognition.onresult = e=>{
+    const transcript = Array.from(e.results).map(r=>r[0].transcript).join(' ');
+    const ta = document.getElementById('noteText');
+    ta.value = (ta.value+' '+transcript).trim();
+  };
+  voiceRecognition.onerror = ()=>stopVoice();
+  voiceRecognition.onend = ()=>{ if(isRecording) stopVoice(); };
+  voiceRecognition.start();
+  isRecording = true;
+  haptic('medium');
+  const btn = document.getElementById('voiceBtn');
+  if(btn){ btn.textContent='⏹ Stop'; btn.classList.add('voice-recording'); }
+}
+
+function stopVoice(){
+  if(voiceRecognition){ try{ voiceRecognition.stop(); }catch(_){} voiceRecognition=null; }
+  isRecording=false;
+  const btn = document.getElementById('voiceBtn');
+  if(btn){ btn.textContent='🎙 Dictate'; btn.classList.remove('voice-recording'); }
+}
+
+function saveNote(){
+  const text = document.getElementById('noteText').value.trim();
+  const houseId = document.getElementById('noteHouseTag').value||null;
+  if(!text && !notePhotoData){ toast('Add some text or a photo first'); return; }
+  if(!S.notes) S.notes=[];
+  if(editingNoteId){
+    const n=S.notes.find(x=>x.id===editingNoteId);
+    if(n){ n.text=text; n.houseId=houseId; n.photoData=notePhotoData||n.photoData; n.updatedAt=new Date().toISOString(); }
+  } else {
+    S.notes.push({id:uid(), text, photoData:notePhotoData||null, houseId, pinned:false, createdAt:new Date().toISOString()});
+  }
+  haptic('medium');
+  saveS();
+  closeNoteModal();
+  renderNotes();
+  toast(editingNoteId?'Note updated!':'Note saved!');
+}
+
+function deleteNote(){
+  if(!editingNoteId) return;
+  if(!confirm('Delete this note?')) return;
+  S.notes=(S.notes||[]).filter(n=>n.id!==editingNoteId);
+  saveS();
+  closeNoteModal();
+  renderNotes();
+  toast('Note deleted');
+}
+
+function togglePin(id){
+  const n=(S.notes||[]).find(x=>x.id===id);
+  if(!n) return;
+  n.pinned=!n.pinned;
+  haptic();
+  saveS();
+  renderNotes();
+}
+
+function openLightbox(src){
+  document.getElementById('lightboxImg').src=src;
+  document.getElementById('lightbox').classList.add('open');
+}
+function closeLightbox(){
+  document.getElementById('lightbox').classList.remove('open');
+}
+
+function renderNotes(){
+  const notes = S.notes||[];
+  const countEl = document.getElementById('notesCount');
+  if(countEl) countEl.textContent = notes.length+' note'+(notes.length!==1?'s':'');
+
+  const list = document.getElementById('notesList');
+  if(!list) return;
+
+  if(!notes.length){
+    list.innerHTML=`<div style="text-align:center;padding:60px 20px;color:var(--muted);">
+      <div style="font-size:2.5rem;margin-bottom:12px;">📝</div>
+      <div style="font-size:0.9rem;">No notes yet — tap New Note to start</div>
+    </div>`;
+    return;
+  }
+
+  // Pinned first, then by date desc
+  const sorted = [...notes].sort((a,b)=>{
+    if(a.pinned&&!b.pinned) return -1;
+    if(!a.pinned&&b.pinned) return 1;
+    return new Date(b.createdAt)-new Date(a.createdAt);
+  });
+
+  list.innerHTML = sorted.map(n=>{
+    const house = n.houseId ? (S.houses||[]).find(h=>h.id===n.houseId) : null;
+    const dateStr = formatNoteDate(n.createdAt);
+    return `<div class="note-card">
+      ${n.photoData?`<img class="note-photo" src="${n.photoData}" alt="photo" onclick="openLightbox('${n.photoData}')">` : ''}
+      <div class="note-card-header">
+        <div class="note-card-body-text">${esc(n.text||'')}</div>
+      </div>
+      <div style="padding:0 14px 10px;display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+        ${n.pinned?'<span class="note-pinned-badge">📌 Pinned</span>':''}
+        ${house?`<span class="note-house-tag">🏠 ${esc(house.name)}</span>`:''}
+        <span class="note-card-meta">${dateStr}</span>
+      </div>
+      <div class="note-actions">
+        <button class="note-action-btn pin" onclick="togglePin('${n.id}')">${n.pinned?'Unpin':'📌 Pin'}</button>
+        <button class="note-action-btn" onclick="openNoteCompose('${n.id}')">✏️ Edit</button>
+        <button class="note-action-btn del" onclick="quickDeleteNote('${n.id}')">🗑 Delete</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function quickDeleteNote(id){
+  if(!confirm('Delete this note?')) return;
+  S.notes=(S.notes||[]).filter(n=>n.id!==id);
+  haptic('heavy');
+  saveS();
+  renderNotes();
+}
+
+function formatNoteDate(iso){
+  if(!iso) return '';
+  const d=new Date(iso);
+  const now=new Date();
+  const diff=Math.floor((now-d)/864e5);
+  if(diff===0) return 'Today '+d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  if(diff===1) return 'Yesterday';
+  if(diff<7) return DAYS[d.getDay()];
+  return `${MO[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+}
+
+// ═══════════════════════════════════════
+// CONFIRM BEFORE DELETING HOUSES/INDIVIDUALS
+// ═══════════════════════════════════════
+function removeHouseRow(id){
+  if(!confirm('Remove this house?')) return;
+  document.getElementById(`hc_${id}`)?.remove();
+}
+function removeIndiv(id){
+  if(!confirm('Remove this individual?')) return;
+  document.getElementById(`ic_${id}`)?.remove();
+}
+
+function saveApiKey(){
+  const key = document.getElementById('sApiKey').value.trim();
+  if(!key){ toast('Please enter your API key'); return; }
+  if(!key.startsWith('sk-ant-')){ toast('That doesn't look like an Anthropic key'); return; }
+  S.anthropicKey = key;
+  saveS();
+  const akStatus=document.getElementById('apiKeyStatus');
+  if(akStatus){
+    akStatus.textContent='✓ Key saved: sk-ant-...'+key.slice(-6);
+    akStatus.style.color='var(--green)';
+  }
+  document.getElementById('sApiKey').value='';
+  toast('✓ API key saved!');
+}
+
 // ═══════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════
-loadS();
-if(!S.rTasks) S.rTasks=[];
-(S.rTasks||[]).forEach(t=>{ if(!t.taskType) t.taskType='recurring'; if(!t.dayType) t.dayType='dow'; });
-autoSyncICS();
-renderHome();
+async function initApp(){
+  await loadS();
+  if(!S.rTasks) S.rTasks=[];
+  (S.rTasks||[]).forEach(t=>{ if(!t.taskType) t.taskType='recurring'; if(!t.dayType) t.dayType='dow'; });
+  // Hide loading overlay
+  const overlay = document.getElementById('loadOverlay');
+  if(overlay) overlay.classList.add('hidden');
+  applyDarkMode();
+  if(!S.notes) S.notes=[];
+  checkPinOnLoad();
+  renderHome();
+  autoSyncICS();
+}
+
+// Wait for Firebase module to signal ready, then init
+// If Firebase takes >4s, init anyway with local data
+let fbInitDone = false;
+function startInit(){
+  if(fbInitDone) return;
+  fbInitDone = true;
+  initApp();
+}
+document.addEventListener('fbReady', startInit);
+setTimeout(startInit, 4000); // fallback timeout
 </script>
 </body>
 </html>
