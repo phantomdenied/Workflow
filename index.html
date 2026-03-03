@@ -2234,12 +2234,8 @@ function showICSStatus(msg, type){
 function parseICS(text){
   const events = [];
   // Unfold lines (RFC 5545: lines can be wrapped with CRLF + space/tab)
-  const unfolded = text.replace(/
-?
-[ 	]/g, '');
-  const lines = unfolded.split(/
-?
-/);
+  const unfolded = text.replace(/\r?\n[ \t]/g, '');
+  const lines = unfolded.split(/\r?\n/);
 
   let inEvent = false;
   let current = {};
