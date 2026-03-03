@@ -456,7 +456,8 @@ window._fbSave = async function(data){
 window._fbLoad = async function(){
   try {
     window._fbStatus('loading');
-    const snap = await getDoc(DOC_REF);
+    const _tout = new Promise((_,r)=>setTimeout(()=>r(new Error('timeout')),5000));
+    const snap = await Promise.race([getDoc(DOC_REF), _tout]);
     if(snap.exists()){
       const data = JSON.parse(snap.data().payload);
       window._fbStatus('synced');
@@ -513,7 +514,7 @@ document.dispatchEvent(new Event('fbReady'));
 <div class="load-overlay" id="loadOverlay">
   <div style="font-size:2rem">🏠</div>
   <div class="load-spinner"></div>
-  <div class="load-text">Loading your data…</div>
+  <div class="load-text" id="loadText">Connecting…</div>
 </div>
 
 <!-- Sync status dot (top right corner, always visible) -->
@@ -2977,8 +2978,11 @@ function startInit(){
   fbInitDone = true;
   initApp();
 }
-document.addEventListener('fbReady', startInit);
-setTimeout(startInit, 4000); // fallback timeout
+if(window._fbReady){ startInit(); }
+else {
+  document.addEventListener('fbReady', startInit);
+  setTimeout(startInit, 1500);
+}
 </script>
 </body>
 </html>
