@@ -1,0 +1,313 @@
+{
+  "staffName": "Alan Randolph",
+  "staffTitle": "Developmental Assistant 3",
+  "houses": [
+    {
+      "id": "177255800666899149f",
+      "name": "Valatie South IRA",
+      "closed": false
+    },
+    {
+      "id": "1772558006668id639c",
+      "name": "Route 23B IRA",
+      "closed": false
+    },
+    {
+      "id": "1772558006668w17mcq",
+      "name": "Malmstrom IRA",
+      "closed": false
+    },
+    {
+      "id": "17725580066688t6mph",
+      "name": "Olivett IRA",
+      "closed": false
+    },
+    {
+      "id": "17725580066688b1u5k",
+      "name": "Woodland IRA",
+      "closed": false
+    },
+    {
+      "id": "1772575411896cugkr2",
+      "name": "Valatie North IRA",
+      "closed": true
+    },
+    {
+      "id": "1772575411896dto5lu",
+      "name": "Malden IRA",
+      "closed": true
+    },
+    {
+      "id": "1772575411896hiu17v",
+      "name": "Route 32A IRA",
+      "closed": true
+    }
+  ],
+  "individuals": [
+    {
+      "id": "1772575237765kz1stl",
+      "name": "Nancy Albert",
+      "houseId": "177255800666899149f",
+      "pepDate": "2025-03-20",
+      "mmaDate": "2025-03-20",
+      "weeklyAllowance": 0.0
+    },
+    {
+      "id": "1772575237765ogsz8h",
+      "name": "Scott Witko",
+      "houseId": "177255800666899149f",
+      "pepDate": "2025-03-20",
+      "mmaDate": "2025-03-20",
+      "weeklyAllowance": 0.0
+    },
+    {
+      "id": "17725752377659t5htp",
+      "name": "Donna Moore",
+      "houseId": "177255800666899149f",
+      "pepDate": "2025-07-29",
+      "mmaDate": "2025-04-03",
+      "weeklyAllowance": 5.0
+    },
+    {
+      "id": "1772575237765fvke7i",
+      "name": "Michael Furer",
+      "houseId": "177255800666899149f",
+      "pepDate": "2025-03-11",
+      "mmaDate": "2025-03-11",
+      "weeklyAllowance": 0.0
+    },
+    {
+      "id": "1772575237765p5f6z3",
+      "name": "Elaine Turnier",
+      "houseId": "177255800666899149f",
+      "pepDate": "2025-07-29",
+      "mmaDate": "2025-08-12",
+      "weeklyAllowance": 20.0
+    },
+    {
+      "id": "1772575237765ap7ma1",
+      "name": "Francis Hill",
+      "houseId": "177255800666899149f",
+      "pepDate": "2025-04-03",
+      "mmaDate": "2025-04-03",
+      "weeklyAllowance": 0.0
+    },
+    {
+      "id": "177257523776526ms0h",
+      "name": "Timothy Coutsonikas",
+      "houseId": "1772558006668id639c",
+      "pepDate": "2025-04-15",
+      "mmaDate": "2025-03-25",
+      "weeklyAllowance": 20.0
+    },
+    {
+      "id": "1772575237765ffmkgz",
+      "name": "John Damms",
+      "houseId": "1772558006668id639c",
+      "pepDate": "2025-04-30",
+      "mmaDate": "2025-11-14",
+      "weeklyAllowance": 5.0
+    },
+    {
+      "id": "17725752377655ibpa2",
+      "name": "Dean DeAngelo",
+      "houseId": "1772558006668id639c",
+      "pepDate": "2025-04-15",
+      "mmaDate": "2025-04-15",
+      "weeklyAllowance": 20.0
+    },
+    {
+      "id": "17725752377659az8cq",
+      "name": "William Sinistore",
+      "houseId": "1772558006668id639c",
+      "pepDate": "2024-06-27",
+      "mmaDate": "2024-06-27",
+      "weeklyAllowance": 10.0
+    },
+    {
+      "id": "1772575237765uodc1g",
+      "name": "Kyle Wenham",
+      "houseId": "1772558006668id639c",
+      "pepDate": "2025-04-01",
+      "mmaDate": "2025-04-01",
+      "weeklyAllowance": 10.0
+    },
+    {
+      "id": "177257523776536euxw",
+      "name": "Joshua Whittaker",
+      "houseId": "1772558006668id639c",
+      "pepDate": "2025-04-01",
+      "mmaDate": "2025-03-21",
+      "weeklyAllowance": 20.0
+    },
+    {
+      "id": "177257457028539j69e",
+      "name": "Lucy Bellina",
+      "houseId": "1772558006668w17mcq",
+      "pepDate": "2025-10-29",
+      "mmaDate": "2025-06-12",
+      "weeklyAllowance": 0.0
+    },
+    {
+      "id": "1772574570285wui9xz",
+      "name": "Lucille Danniel",
+      "houseId": "1772558006668w17mcq",
+      "pepDate": "2025-08-25",
+      "mmaDate": "2025-08-25",
+      "weeklyAllowance": 0.0
+    },
+    {
+      "id": "1772574570285xufuut",
+      "name": "Estella Jones",
+      "houseId": "1772558006668w17mcq",
+      "pepDate": "2025-02-10",
+      "mmaDate": "2025-01-29",
+      "weeklyAllowance": 0.0
+    },
+    {
+      "id": "1772574570285gevkuc",
+      "name": "Richard Kirwen",
+      "houseId": "1772558006668w17mcq",
+      "pepDate": "2025-06-12",
+      "mmaDate": "2025-06-12",
+      "weeklyAllowance": 0.0
+    },
+    {
+      "id": "17725745702855ojngu",
+      "name": "David Kozar",
+      "houseId": "1772558006668w17mcq",
+      "pepDate": "2025-01-30",
+      "mmaDate": "2025-06-12",
+      "weeklyAllowance": 0.0
+    },
+    {
+      "id": "17725745702858jbh4e",
+      "name": "Sherri Ormsbee",
+      "houseId": "1772558006668w17mcq",
+      "pepDate": "2025-02-22",
+      "mmaDate": "2025-07-01",
+      "weeklyAllowance": 0.0
+    },
+    {
+      "id": "1772574570285ni1qz8",
+      "name": "David Rumble",
+      "houseId": "1772558006668w17mcq",
+      "pepDate": "2025-06-04",
+      "mmaDate": "2025-06-04",
+      "weeklyAllowance": 0.0
+    },
+    {
+      "id": "1772574570285mzhcm3",
+      "name": "Patricia Schmidt",
+      "houseId": "1772558006668w17mcq",
+      "pepDate": "2025-06-12",
+      "mmaDate": "2025-01-29",
+      "weeklyAllowance": 0.0
+    },
+    {
+      "id": "17725746957881vrekx",
+      "name": "Jeremiah Buckley",
+      "houseId": "17725580066688t6mph",
+      "pepDate": "2025-03-25",
+      "mmaDate": "2025-05-14",
+      "weeklyAllowance": 0.0
+    },
+    {
+      "id": "1772574695788v0qhc2",
+      "name": "Timothy Connerton",
+      "houseId": "17725580066688t6mph",
+      "pepDate": "2025-03-25",
+      "mmaDate": "2025-06-07",
+      "weeklyAllowance": 0.0
+    },
+    {
+      "id": "1772574695788nljxol",
+      "name": "Vincent Evans",
+      "houseId": "17725580066688t6mph",
+      "pepDate": "2025-03-25",
+      "mmaDate": "2025-03-26",
+      "weeklyAllowance": 3.0
+    },
+    {
+      "id": "1772574695788dbu5i1",
+      "name": "Lance Larsen",
+      "houseId": "17725580066688t6mph",
+      "pepDate": "2025-03-25",
+      "mmaDate": "2025-03-26",
+      "weeklyAllowance": 0.0
+    },
+    {
+      "id": "17725746957883u35x3",
+      "name": "Roger Mandell",
+      "houseId": "17725580066688t6mph",
+      "pepDate": "2025-03-25",
+      "mmaDate": "2025-05-14",
+      "weeklyAllowance": 0.0
+    },
+    {
+      "id": "1772574695788ectcvg",
+      "name": "William Vagts",
+      "houseId": "17725580066688t6mph",
+      "pepDate": "2025-03-25",
+      "mmaDate": "2025-05-14",
+      "weeklyAllowance": 0.0
+    },
+    {
+      "id": "1772574300804fsfe8y",
+      "name": "Millie Lemon",
+      "houseId": "17725580066688b1u5k",
+      "pepDate": "2025-02-12",
+      "mmaDate": "2026-02-12",
+      "weeklyAllowance": 0.0
+    },
+    {
+      "id": "1772574433823aohgit",
+      "name": "Barbara Brown",
+      "houseId": "17725580066688b1u5k",
+      "pepDate": "2025-11-14",
+      "mmaDate": "2025-11-14",
+      "weeklyAllowance": 0.0
+    },
+    {
+      "id": "1772574433823ataywn",
+      "name": "Ashley Farrow",
+      "houseId": "17725580066688b1u5k",
+      "pepDate": "2025-12-12",
+      "mmaDate": "2025-06-11",
+      "weeklyAllowance": 20.0
+    },
+    {
+      "id": "1772574433823u1q3db",
+      "name": "Bernice Kalman",
+      "houseId": "17725580066688b1u5k",
+      "pepDate": "2025-02-26",
+      "mmaDate": "2025-02-12",
+      "weeklyAllowance": 5.0
+    },
+    {
+      "id": "1772574433823l8yf3l",
+      "name": "Carley Orzechowski",
+      "houseId": "17725580066688b1u5k",
+      "pepDate": "2025-02-12",
+      "mmaDate": "2025-02-12",
+      "weeklyAllowance": 0.0
+    }
+  ],
+  "da3Visits": [],
+  "auditVisits": [
+    {
+      "id": "1772577547989vilwh5",
+      "indivId": "1772575237765kz1stl",
+      "indivName": "Nancy Albert",
+      "houseId": "177255800666899149f",
+      "monthKey": "2026-03",
+      "completedAt": "March 3, 2026"
+    }
+  ],
+  "rTasks": [],
+  "notes": [],
+  "icsUrl": "https://outlook.office365.com/owa/calendar/06e9f88c6c4441ae9660595f785e0262@opwdd.ny.gov/b524c1029fa744a0b82ddab43a1a669611180026945895516665/calendar.ics",
+  "icsAutoSync": true,
+  "icsLastSync": "2026-03-03T23:20:45.863Z",
+  "darkMode": true
+}
