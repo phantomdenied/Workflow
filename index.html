@@ -694,7 +694,7 @@ onAuthStateChanged(auth, function(user){
       <div class="login-lbl">Password</div>
       <input class="login-input" id="loginPassword" type="password" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" id="loginPasswordInput">
     </div>
-    <button class="login-btn" id="loginBtn">Sign In &rarr;</button>
+    <button class="login-btn" id="loginBtn" onclick="doLogin()">Sign In &rarr;</button>
     <div class="login-error" id="loginError"></div>
   </div>
 </div>
@@ -4240,11 +4240,6 @@ toast(‘✓ API key saved!’);
 function showLoginScreen(){
 var s=document.getElementById(‘loginScreen’);
 if(s) s.classList.remove(‘hidden’);
-try {
-var snd = new Audio(‘https://movie-sounds.org/quotes/198/i-hate-this-job-i-hate-this-goddamn-job-and-i-don%27t-need-it!.mp3’);
-snd.volume = 1.0;
-snd.play().catch(()=>{});
-} catch(e){}
 }
 function hideLoginScreen(){var s=document.getElementById(‘loginScreen’);if(s)s.classList.add(‘hidden’);}
 async function doLogin(){
