@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nothing Here (Oops)</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne+Mono&family=Righteous&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0d;
+    --yellow: #f5e642;
+    --orange: #ff6b35;
+    --pink: #ff2d78;
+    --teal: #00f5d4;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--yellow);
+    font-family: 'Syne Mono', monospace;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    cursor: none;
+  }
+
+  /* Custom cursor */
+  .cursor {
+    width: 18px; height: 18px;
+    background: var(--yellow);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    mix-blend-mode: difference;
+    transition: transform 0.1s;
+  }
+
+  /* Scanlines overlay */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.18) 2px,
+      rgba(0,0,0,0.18) 4px
+    );
+    pointer-events: none;
+    z-index: 100;
+  }
+
+  /* Grid background */
+  body::after {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(245,230,66,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(245,230,66,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+  }
+
+  .container {
+    text-align: center;
+    position: relative;
+    z-index: 10;
+    padding: 2rem;
+  }
+
+  /* Big bouncing emoji */
+  .hero-emoji {
+    font-size: clamp(5rem, 15vw, 9rem);
+    display: block;
+    animation: floatBounce 2.4s ease-in-out infinite;
+    filter: drop-shadow(0 0 30px var(--orange));
+    margin-bottom: 1.5rem;
+    position: relative;
+  }
+  .hero-emoji::after {
+    content: attr(data-shadow);
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%) scaleY(-0.4) translateY(10px);
+    opacity: 0.2;
+    filter: blur(3px);
+  }
+
+  @keyframes floatBounce {
+    0%, 100% { transform: translateY(0) rotate(-4deg); }
+    50%       { transform: translateY(-28px) rotate(6deg); }
+  }
+
+  /* Main headline */
+  h1 {
+    font-family: 'Righteous', cursive;
+    font-size: clamp(3rem, 10vw, 7rem);
+    line-height: 1;
+    letter-spacing: -2px;
+    background: linear-gradient(135deg, var(--yellow), var(--orange), var(--pink));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: glitchShift 6s infinite;
+    margin-bottom: 0.5rem;
+  }
+
+  @keyframes glitchShift {
+    0%, 94%, 100% { transform: none; filter: none; }
+    95% { transform: translate(-3px, 1px) skewX(-2deg); filter: hue-rotate(40deg); }
+    96% { transform: translate(3px, -1px) skewX(1deg); filter: hue-rotate(-20deg); }
+    97% { transform: translate(-2px, 2px); filter: none; }
+  }
+
+  /* Subtitle cycling messages */
+  .subtitle {
+    font-size: clamp(0.85rem, 2.5vw, 1.1rem);
+    color: var(--teal);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 3rem;
+    min-height: 1.5em;
+  }
+
+  .subtitle span {
+    display: inline-block;
+    animation: fadeMsg 0.4s ease both;
+  }
+
+  @keyframes fadeMsg {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Progress / fake loading bar */
+  .loading-wrap {
+    margin: 0 auto 2.5rem;
+    width: min(420px, 90vw);
+  }
+
+  .loading-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.72rem;
+    color: rgba(245,230,66,0.45);
+    margin-bottom: 6px;
+    letter-spacing: 0.1em;
+  }
+
+  .bar-track {
+    height: 6px;
+    background: rgba(255,255,255,0.07);
+    border-radius: 99px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 99px;
+    background: linear-gradient(90deg, var(--teal), var(--yellow), var(--orange));
+    animation: neverLoad 3.8s ease-in-out infinite;
+    box-shadow: 0 0 10px var(--teal);
+  }
+
+  @keyframes neverLoad {
+    0%   { width: 0%; margin-left: 0; }
+    40%  { width: 75%; margin-left: 0; }
+    60%  { width: 82%; margin-left: 0; }
+    80%  { width: 88%; margin-left: 0; }
+    99%  { width: 4%;  margin-left: 96%; }
+    100% { width: 0%;  margin-left: 0; }
+  }
+
+  /* Floating debris particles */
+  .particles {
+    position: fixed; inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 1;
+  }
+
+  .p {
+    position: absolute;
+    font-size: 1.4rem;
+    opacity: 0;
+    animation: drift linear infinite;
+  }
+
+  @keyframes drift {
+    0%   { opacity: 0;   transform: translateY(100vh) rotate(0deg); }
+    10%  { opacity: 0.7; }
+    90%  { opacity: 0.5; }
+    100% { opacity: 0;   transform: translateY(-10vh) rotate(540deg); }
+  }
+
+  /* CTA button */
+  .btn {
+    display: inline-block;
+    padding: 0.75rem 2.2rem;
+    border: 2px solid var(--yellow);
+    color: var(--yellow);
+    font-family: 'Syne Mono', monospace;
+    font-size: 0.9rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: none;
+    position: relative;
+    overflow: hidden;
+    transition: color 0.25s;
+    margin-top: 0.5rem;
+  }
+  .btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--yellow);
+    transform: translateX(-101%);
+    transition: transform 0.25s cubic-bezier(.7,0,.3,1);
+    z-index: -1;
+  }
+  .btn:hover { color: var(--bg); }
+  .btn:hover::before { transform: translateX(0); }
+
+  /* Tiny footer note */
+  .note {
+    position: fixed;
+    bottom: 1.2rem;
+    font-size: 0.65rem;
+    color: rgba(245,230,66,0.2);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    animation: blink 3.5s step-end infinite;
+  }
+  @keyframes blink {
+    0%,100% { opacity: 0.3; }
+    50%      { opacity: 0.05; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+
+<div class="particles" id="particles"></div>
+
+<div class="container">
+  <span class="hero-emoji" data-shadow="🚧">🚧</span>
+
+  <h1>PAGE NOT&nbsp;FOUND</h1>
+
+  <p class="subtitle"><span id="msg">Searching down the back of the sofa…</span></p>
+
+  <div class="loading-wrap">
+    <div class="loading-label">
+      <span>LOCATING PAGE</span>
+      <span id="pct">0%</span>
+    </div>
+    <div class="bar-track"><div class="bar-fill" id="barFill"></div></div>
+  </div>
+
+  <a class="btn" href="/">← Go Somewhere Real</a>
+</div>
+
+<p class="note">[ test page is vibing elsewhere right now ]</p>
+
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  document.addEventListener('mousemove', e => {
+    cursor.style.left = e.clientX + 'px';
+    cursor.style.top  = e.clientY + 'px';
+  });
+
+  // Cycling funny messages
+  const msgs = [
+    "Searching down the back of the sofa…",
+    "Have you tried turning the internet off and on?",
+    "The page called in sick. Classic.",
+    "Loading… jk it's not here.",
+    "This page is on a vision quest.",
+    "404: page went to get milk. Never came back.",
+    "Your test page is in another castle.",
+    "Consulting the oracle. Oracle shrugged.",
+    "The hamsters running the server escaped.",
+    "Error: vibes misconfigured.",
+    "Page is technically on sabbatical.",
+    "Did you check behind the couch?",
+  ];
+  let mi = 0;
+  const msgEl = document.getElementById('msg');
+  setInterval(() => {
+    mi = (mi + 1) % msgs.length;
+    msgEl.style.animation = 'none';
+    msgEl.offsetHeight; // reflow
+    msgEl.style.animation = '';
+    msgEl.textContent = msgs[mi];
+  }, 2800);
+
+  // Fake % counter synced loosely to bar animation
+  const pct = document.getElementById('pct');
+  const barFill = document.getElementById('barFill');
+  setInterval(() => {
+    const w = parseFloat(getComputedStyle(barFill).width);
+    const trackW = barFill.parentElement.offsetWidth;
+    const p = Math.round((w / trackW) * 100);
+    pct.textContent = p + '%';
+  }, 80);
+
+  // Floating emoji debris
+  const emojis = ['✨','🐛','💾','🎲','🔧','🥴','🤖','⚡','🧩','🪲','📡','🌀','🎯'];
+  const pContainer = document.getElementById('particles');
+  for (let i = 0; i < 18; i++) {
+    const p = document.createElement('div');
+    p.className = 'p';
+    p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    p.style.left = Math.random() * 100 + 'vw';
+    p.style.animationDuration = (6 + Math.random() * 10) + 's';
+    p.style.animationDelay = (Math.random() * 8) + 's';
+    p.style.fontSize = (0.9 + Math.random() * 1.4) + 'rem';
+    pContainer.appendChild(p);
+  }
+
+  // Emoji roulette on click anywhere
+  const heroEmoji = document.querySelector('.hero-emoji');
+  const emojiPool = ['🚧','😵','🫠','🤡','👻','💀','🧟','🤷','🫣','🪄','🥹','🫡'];
+  document.addEventListener('click', () => {
+    heroEmoji.textContent = emojiPool[Math.floor(Math.random() * emojiPool.length)];
+  });
+</script>
+</body>
+</html>
