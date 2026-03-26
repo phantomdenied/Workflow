@@ -1,0 +1,58 @@
+<!-- Updated index2.html with requested fixes -->
+<!-- Only the specified sections were modified -->
+
+<script>
+// ... other existing code remains unchanged
+
+function invMakeRowEl(i){
+  return `
+    <div class="inv-row">
+      <div class="ainfo-lbl" style="margin-bottom:4px;">Quantity Received</div>
+      <input class="inv-row-input" id="invAmount_${i}" type="text" placeholder="e.g. 600 gallons" enterkeyhint="done">
+    </div>
+  `;
+}
+
+// Replace entire function
+async function invBuildReceivingLogPDF(house, weekEnding, rows){
+  const dateStr = document.getElementById('invDate')?.value||'';
+  const receivedBy = S.staffName||'';
+  const weDisp = weekEnding ? new Date(weekEnding+'T12:00:00').toLocaleDateString('en-US',{month:'2-digit',day:'2-digit',year:'numeric'}) : '';
+
+  const pdfBytes = await fetch('BlankReceiving.pdf').then(r=>{ if(!r.ok) throw new Error('BlankReceiving.pdf not found'); return r.arrayBuffer(); });
+  const pdfDoc  = await PDFLib.PDFDocument.load(pdfBytes);
+  const page    = pdfDoc.getPages()[0];
+  const font    = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
+  const sz      = 9;
+
+  function draw(text, x, y){ page.drawText(String(text||''), {x, y, size:sz, font, color:PDFLib.rgb(0,0,0)}); }
+
+  // Header
+  draw(house?.name||'',  143, 726);
+  draw(weDisp,           402, 726);
+  draw(dateStr,          143, 704);
+  draw(receivedBy,       402, 704);
+
+  const rowStartY = 638.6;
+  const rowH = 25.2;
+  for(let i=0; i<11; i++){
+    const r = rows[i]||{vendor:'',desc:'',amount:'',date2:''};
+    const y = rowStartY - (i * rowH);
+    draw(r.vendor,  93,  y);
+    draw(r.desc,   201,  y);
+    draw(r.amount, 367,  y);
+    if(r.vendor){
+      const rowDate = r.date2
+        ? new Date(r.date2+'T12:00:00').toLocaleDateString('en-US',{month:'2-digit',day:'2-digit',year:'numeric'})
+        : dateStr;
+      draw(rowDate,    421, y);
+      draw(receivedBy, 500, y);
+    }
+  }
+
+  const filled = await pdfDoc.save();
+  return filled;
+}
+
+// ... rest of file unchanged
+</script>
