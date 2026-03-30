@@ -1,5 +1,5 @@
 (function(){
-  const GEMINI_MODEL = 'gemini-2.0-flash';
+  const GEMINI_MODEL = 'gemini-1.5-flash';
 
   function escHtml(s){
     return String(s ?? '')
