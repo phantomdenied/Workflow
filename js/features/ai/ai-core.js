@@ -50,5 +50,50 @@
     const result = await runAI('Extract tasks:\n' + txt);
     document.getElementById('aiResultArea').innerText = result;
   };
+document.addEventListener('DOMContentLoaded', () => {
+  const noteModal = document.querySelector('#noteModal, .note-modal, .bottom-sheet');
 
-})();
+  if (!noteModal) return;
+
+  // Prevent duplicate injection
+  if (document.getElementById('aiSection')) return;
+
+  const aiHTML = `
+    <div id="aiSection" style="margin-top:16px;">
+      <div style="
+        border:1px solid #7c3aed;
+        border-radius:12px;
+        padding:12px;
+        color:#c084fc;
+        font-weight:600;
+        text-align:center;
+        margin-bottom:10px;
+      ">
+        ✨ Analyze with AI — summarize & create tasks
+      </div>
+
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button onclick="aiSummarizeNote()">✨ Summarize</button>
+        <button onclick="aiRewriteNote()">✍️ Rewrite</button>
+        <button onclick="aiTasksFromNote()">✅ Make Tasks</button>
+      </div>
+
+      <div id="aiResultArea" style="
+        margin-top:10px;
+        padding:10px;
+        background:#1e293b;
+        border-radius:10px;
+        font-size:14px;
+      "></div>
+    </div>
+  `;
+
+  // Inject above Save button
+  const saveBtn = noteModal.querySelector('button');
+  if (saveBtn) {
+    saveBtn.parentElement.insertBefore(
+      document.createRange().createContextualFragment(aiHTML),
+      saveBtn
+    );
+  }
+});
