@@ -1760,17 +1760,6 @@ const _photoDB = (()=>{
   };
 })();
 
-function isStorageAvailable(){
-  try {
-    const testKey = '__wf_storage_test__';
-    localStorage.setItem(testKey, '1');
-    localStorage.removeItem(testKey);
-    return true;
-  } catch(e) {
-    return false;
-  }
-}
-
 function saveS(){
   const sToSave = {...S, notes:(S.notes||[]).map(n=>{ const {photoData,...rest}=n; return rest; })};
   try{
@@ -4843,10 +4832,6 @@ async function initApp(){
   if(overlay) overlay.classList.add('hidden');
   applyDarkMode();
   if(!S.notes) S.notes=[];
-  if(!isStorageAvailable()){
-    const banner = document.getElementById('storageWarnBanner');
-    if(banner) banner.style.display = 'block';
-  }
   renderHome();
   autoSyncICS();
 }
