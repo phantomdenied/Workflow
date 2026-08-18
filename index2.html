@@ -4754,8 +4754,9 @@ async function importMergeChoice(mode){
     S = {...S, ...data};
     saveS();
     renderHome();
-    if(statusEl) statusEl.textContent = '✓ Full overwrite done. All data replaced.';
-    toast('✓ Data imported — full overwrite');
+    const hCount = (S.houses||[]).length, iCount = (S.individuals||[]).length;
+    if(statusEl) statusEl.textContent = `✓ Full overwrite done. Imported ${hCount} house${hCount!==1?'s':''}, ${iCount} individual${iCount!==1?'s':''}.`;
+    toast(`✓ Imported ${hCount} house${hCount!==1?'s':''}, ${iCount} individual${iCount!==1?'s':''}`);
   } else {
     // Smart merge — newer record wins per id
     const {_exportedAt, _version, ...importedData} = imported;
@@ -4782,8 +4783,10 @@ async function importMergeChoice(mode){
     scalarKeys.forEach(k => { S[k] = importedData[k]; });
     saveS();
     renderHome();
-    if(statusEl) statusEl.textContent = '✓ Smart merge done. Newer records kept.';
-    toast('✓ Data imported — smart merge');
+    const hFromFile = (importedData.houses||[]).length, iFromFile = (importedData.individuals||[]).length;
+    const hCount = (S.houses||[]).length, iCount = (S.individuals||[]).length;
+    if(statusEl) statusEl.textContent = `✓ Smart merge done. File had ${hFromFile} house${hFromFile!==1?'s':''}/${iFromFile} individual${iFromFile!==1?'s':''} — now have ${hCount}/${iCount} total.`;
+    toast(`✓ Merged — now have ${hCount} house${hCount!==1?'s':''}, ${iCount} individual${iCount!==1?'s':''}`);
   }
 }
 
