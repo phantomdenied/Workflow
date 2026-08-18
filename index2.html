@@ -174,11 +174,11 @@ body.dark .home-banner::after{background:var(--bg);}
 .house-stat-dot{width:7px;height:7px;border-radius:50%;background:var(--muted2);flex-shrink:0;}
 .house-stat.green{color:var(--green);}.house-stat.green .house-stat-dot{background:var(--green);}
 .house-stat.amber{color:var(--amber);}.house-stat.amber .house-stat-dot{background:var(--amber);}
-.house-stat.red{color:var(--red);}.house-stat.red .house-stat-dot{background:var(--red);}
+.house-stat.red{color:#ff4d5f;font-weight:800;text-shadow:0 0 10px rgba(255,77,95,0.18);}.house-stat.red .house-stat-dot{background:#ff4d5f;box-shadow:0 0 8px rgba(255,77,95,0.35);}
 .house-stat.grey{color:var(--muted2);}.house-stat.grey .house-stat-dot{background:var(--muted2);}
 .chip-green{background:var(--green-light);color:var(--green);}
 .chip-amber{background:var(--orange-light);color:var(--orange);}
-.chip-red{background:var(--red-light);color:var(--red);}
+.chip-red{background:#3a0b10;color:#ff4d5f;border:1px solid rgba(255,77,95,0.22);font-weight:800;}
 .chip-grey{background:var(--bg);color:var(--muted2);}
 
 /* ── HOUSE DETAIL SCREEN ── */
@@ -707,11 +707,14 @@ input:checked + .toggle-slider:before{transform:translateX(22px);}
 .nav-icon{font-size:1.2rem;line-height:1;}
 
 /* ── SYNC STATUS ── */
-.sync-dot{position:fixed;top:18px;right:14px;z-index:300;width:7px;height:7px;border-radius:50%;background:var(--muted);transition:background 0.3s;}
-.sync-dot.synced{background:var(--green);}
-.sync-dot.saving{background:var(--orange);animation:pulse 0.8s infinite;}
-.sync-dot.error{background:var(--red);}
-.sync-dot.loading{background:var(--orange);animation:pulse 0.6s infinite;}
+.sync-badge{position:fixed;top:14px;right:14px;z-index:320;display:none;align-items:center;gap:7px;padding:6px 10px;border-radius:999px;background:rgba(8,16,28,0.86);border:1px solid rgba(255,255,255,0.08);backdrop-filter:blur(8px);box-shadow:0 6px 18px rgba(0,0,0,0.22);font-size:0.68rem;font-weight:700;color:var(--muted2);font-family:'DM Sans',sans-serif;letter-spacing:0.01em;pointer-events:none;}
+.sync-badge.synced{color:var(--green);}
+.sync-badge.saving{color:var(--orange);}
+.sync-badge.error{color:var(--red);}
+.sync-badge.loading{color:var(--orange);}
+.sync-badge.show{display:flex;}
+.sync-dot{width:8px;height:8px;border-radius:50%;background:currentColor;flex-shrink:0;}
+.sync-badge.saving .sync-dot,.sync-badge.loading .sync-dot{animation:pulse 0.8s infinite;}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
 /* Loading overlay */
 .load-overlay{position:fixed;inset:0;background:var(--navy);z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;color:white;gap:14px;}
@@ -759,165 +762,10 @@ async function downloadFile(data, filename, mimeType){
 }
 </script>
 <script>
-const APP_VERSION = 'TEST v0.9.7';
+const APP_VERSION = 'TEST v1.0.1';
 </script>
 </head>
 <body>
-
-<!-- Firebase SDK -->
-<script type="module">
-// ═══════════════════════════════════════
-// FIREBASE SETUP
-// ═══════════════════════════════════════
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyDDZXZsI-Z_o_bDX5nSMbnXKGm3MFpBfVc",
-  authDomain: "bl-search-b3b6a.firebaseapp.com",
-  projectId: "bl-search-b3b6a",
-  storageBucket: "bl-search-b3b6a.firebasestorage.app",
-  messagingSenderId: "941571479533",
-  appId: "1:941571479533:web:116d4f044f1677ead2f9e4"
-};
-
-const fbApp = initializeApp(firebaseConfig);
-const db = getFirestore(fbApp);
-const auth = getAuth(fbApp);
-const DOC_ID = 'region4_main';
-function getDocRef(){ return auth.currentUser ? doc(db,'workflow',DOC_ID) : null; }
-
-// Expose to window so the main script can call these
-window._fbConsecFails = 0;
-window._fbSave = async function(data){
-  const ref = getDocRef();
-  if(!ref){ try{localStorage.setItem('r4hub_v3',JSON.stringify(data));}catch(_){} return; }
-  try {
-    await setDoc(ref, { payload: JSON.stringify(data), updatedAt: Date.now() });
-    window._fbConsecFails = 0;
-    window._fbStatus('synced');
-  } catch(e){
-    console.error('Firebase save error:', e);
-    window._fbConsecFails = (window._fbConsecFails || 0) + 1;
-    window._fbStatus('error');
-    try{ localStorage.setItem('r4hub_v3', JSON.stringify(data)); }catch(_){}
-    // Show sync failure banner after 3 consecutive failures
-    if(window._fbConsecFails >= 3 && !window._syncBannerDismissed){
-      const banner = document.getElementById('syncFailBanner');
-      if(banner) banner.style.display = 'block';
-    }
-  }
-};
-
-window._fbLoad = async function(){
-  const ref = getDocRef();
-  if(!ref){ try{ const d=localStorage.getItem('r4hub_v3'); return d?JSON.parse(d):null; }catch(_){ return null; } }
-  try {
-    window._fbStatus('loading');
-    const _tout = new Promise((_,r)=>setTimeout(()=>r(new Error('timeout')),5000));
-    const snap = await Promise.race([getDoc(ref), _tout]);
-    if(snap.exists()){
-      const data = JSON.parse(snap.data().payload);
-      window._fbStatus('synced');
-      return data;
-    }
-    window._fbStatus('synced');
-    return null;
-  } catch(e){
-    console.error('Firebase load error:', e);
-    window._fbStatus('error');
-    // Fall back to localStorage
-    try{
-      const d = localStorage.getItem('r4hub_v3');
-      return d ? JSON.parse(d) : null;
-    }catch(_){ return null; }
-  }
-};
-
-window._fbSignIn = async function(email, password){
-  try {
-    await signInWithEmailAndPassword(auth, email, password);
-    localStorage.setItem('wf_signin_ts', Date.now().toString());
-    return { ok: true };
-  } catch(e){
-    return { ok: false, message: e.code==='auth/invalid-credential'?'Incorrect email or password':e.message };
-  }
-};
-
-// 1-hour session timeout check
-window._fbCheckSession = function(){
-  const ts = parseInt(localStorage.getItem('wf_signin_ts')||'0');
-  if(!ts) return false;
-  return (Date.now() - ts) < 60 * 60 * 1000; // 1 hour
-};
-window._fbSignOut = async function(){ await signOut(auth); };
-
-onAuthStateChanged(auth, function(user){
-  window._fbCurrentUser = user || null;
-  if(!window._fbAuthInitialized){
-    window._fbAuthInitialized = true;
-    window._fbReady = true;
-    document.dispatchEvent(new Event('fbReady'));
-  } else {
-    document.dispatchEvent(new CustomEvent('fbAuthChanged', { detail: { user: user } }));
-  }
-});
-</script>
-
-<div class="login-screen" id="loginScreen">
-  <div id="appVersionLogin" style="
-    position:absolute;
-    top:10px;
-    right:12px;
-    font-size:11px;
-    color:rgba(255,255,255,0.78);
-    z-index:2;
-    pointer-events:none;
-    font-family:'DM Sans',sans-serif;
-    font-weight:600;
-    letter-spacing:0.02em;
-  "></div>
-  <div class="login-brand">
-    <svg class="login-icon" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="72" height="72" rx="18" fill="rgba(255,255,255,0.12)"/>
-      <path d="M18 44 L36 20 L54 44" stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-      <rect x="26" y="44" width="20" height="14" rx="3" fill="white" fill-opacity="0.95"/>
-      <rect x="30" y="48" width="5" height="5" rx="1.5" fill="#1a3a5c"/>
-      <rect x="37" y="48" width="5" height="5" rx="1.5" fill="#1a3a5c"/>
-      <circle cx="54" cy="24" r="9" fill="#2d8a6a"/>
-      <path d="M50 24 L53 27 L58 21" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-    <div class="login-app-name">Work<span>Flow</span></div>
-    <div class="login-subtitle">Your operations, organized.</div>
-  </div>
-  <div class="login-card">
-    <div class="login-field">
-      <div class="login-lbl">Email</div>
-      <input class="login-input" id="loginEmail" type="email" placeholder="your@email.com" autocapitalize="none" autocorrect="off">
-    </div>
-    <div class="login-field">
-      <div class="login-lbl">Password</div>
-      <input class="login-input" id="loginPassword" type="password" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" id="loginPasswordInput">
-    </div>
-    <button class="login-btn" id="loginBtn" onclick="doLogin()">Sign In &rarr;</button>
-    <div class="login-error" id="loginError"></div>
-  </div>
-  <a href="index2.html" style="position:relative;z-index:1;margin-top:20px;font-size:0.65rem;color:rgba(255,255,255,0.25);font-family:'DM Mono',monospace;text-decoration:none;letter-spacing:0.05em;">🧪 test</a>
-</div>
-
-<!-- ══ DECRYPTION PROMPT ══ -->
-<div class="modal-overlay" id="decryptPromptModal" style="display:none;z-index:995;">
-  <div class="modal-sheet" style="max-width:360px;margin:auto;padding:28px 24px;">
-    <div style="font-size:1.1rem;font-weight:700;margin-bottom:6px;">🔒 Data is Encrypted</div>
-    <div style="font-size:0.82rem;color:var(--muted);margin-bottom:18px;line-height:1.5;">This device doesn't have your decryption password yet. Enter it below to access your data.</div>
-    <div class="modal-lbl">Decryption Password</div>
-    <input class="s-input" id="decryptPromptInput" type="password" placeholder="Enter your password…" autocapitalize="none" autocorrect="off" style="margin-bottom:14px;">
-    <div id="decryptPromptError" style="display:none;color:var(--red);font-size:0.78rem;margin-bottom:10px;"></div>
-    <button class="modal-save-btn" onclick="decryptPromptSubmit()">Unlock →</button>
-  </div>
-</div>
-
 <!-- ══ HOME ══ -->
 <div class="screen active" id="homeScreen">
   <div class="home-banner">
@@ -949,20 +797,6 @@ onAuthStateChanged(auth, function(user){
       </div>
     </div>
   </div>
-  <!-- Sync failure banner -->
-  <div id="syncFailBanner" style="display:none;margin:0 14px 8px;background:#fff1f1;border:1.5px solid var(--red);border-radius:var(--radius-sm);padding:11px 13px;">
-    <div style="display:flex;align-items:flex-start;gap:10px;">
-      <span style="font-size:1.1rem;flex-shrink:0;">⚠️</span>
-      <div style="flex:1;font-size:0.8rem;color:var(--red);line-height:1.5;">
-        <strong>Sync failed</strong> — data is saved locally only.<br>
-        Consider exporting a backup in case you switch devices.
-      </div>
-      <div style="display:flex;flex-direction:column;gap:5px;flex-shrink:0;">
-        <button onclick="exportDataBackup()" style="background:var(--red);color:white;border:none;border-radius:7px;padding:5px 9px;font-size:0.72rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;">Export</button>
-        <button onclick="document.getElementById('syncFailBanner').style.display='none';window._syncBannerDismissed=true;" style="background:none;border:1px solid var(--red);border-radius:7px;padding:4px 9px;font-size:0.72rem;font-weight:600;color:var(--red);cursor:pointer;font-family:'DM Sans',sans-serif;">Dismiss</button>
-      </div>
-    </div>
-  </div>
   <!-- ICS sync status banner -->
   <div id="homeICSBanner" style="display:none;margin:0 14px 8px;border:1.5px solid;border-radius:var(--radius-sm);padding:8px 13px;font-size:0.78rem;font-weight:600;transition:all 0.2s;"></div>
   <!-- Recurring Tasks Section -->
@@ -988,9 +822,7 @@ onAuthStateChanged(auth, function(user){
   <div style="padding:0 14px 8px;margin-top:8px;">
     <button class="email-compose-btn" style="background:var(--accent-light);color:var(--accent);" onclick="showScreen('invoiceScreen')">📄 Receiving Log &amp; Invoices</button>
   </div>
-  <div style="padding:0 14px 120px;margin-top:8px;">
-    <button class="email-compose-btn" style="background:var(--navy);color:white;font-weight:700;" id="saveAllBtn" onclick="saveAllToFirebase()">💾 Save All</button>
-  </div>
+  <div style="padding:0 14px 40px;"></div>
 </div>
 
 <!-- ══ EMAIL SCREEN ══ -->
@@ -1438,7 +1270,7 @@ onAuthStateChanged(auth, function(user){
           <div style="font-size:0.7rem;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:0.1em;color:var(--accent);font-weight:700;margin-bottom:8px;">📝 Notes</div>
           <div style="font-size:0.83rem;color:var(--text);line-height:1.65;">
             The <strong>Notes</strong> tab lets you keep quick notes for anything — follow-ups, observations, reminders. You can attach a photo to any note.<br><br>
-            Notes can be linked to a specific house or kept general. They are saved with your data and sync to Firebase along with everything else.
+            Notes can be linked to a specific house or kept general. They are saved with your data on this device, along with everything else.
           </div>
         </div>
 
@@ -1457,7 +1289,7 @@ onAuthStateChanged(auth, function(user){
           <div style="font-size:0.7rem;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:0.1em;color:var(--accent);font-weight:700;margin-bottom:8px;">📄 Receiving Log &amp; Invoices</div>
           <div style="font-size:0.83rem;color:var(--text);line-height:1.65;">
             The <strong>Receiving Log</strong> is accessible from the bottom of the home screen. Use it to log incoming invoices and track deliveries for each house.<br><br>
-            Photos can be attached to each entry for documentation. Entries are stored with your data and sync to Firebase.
+            Photos can be attached to each entry for documentation. Entries are stored with your data on this device.
           </div>
         </div>
 
@@ -1467,29 +1299,7 @@ onAuthStateChanged(auth, function(user){
           <div style="font-size:0.83rem;color:var(--text);line-height:1.65;">
             Go to <strong>Settings → Data Sync / Backup → Export Data Backup</strong> to download a copy of all your data as a JSON file. Save this somewhere safe — email it to yourself or put it in Google Drive.<br><br>
             To restore or move to a new device, use <strong>Import Data Backup</strong>. Choose <strong>Full Overwrite</strong> to replace everything, or <strong>Smart Merge</strong> to combine data keeping the most recent version of each record.<br><br>
-            The <strong>💾 Save All</strong> button on the home screen manually forces an immediate sync to Firebase. Normal saves happen automatically in the background.
-          </div>
-        </div>
-
-        <!-- Encryption -->
-        <div style="border-bottom:1px solid var(--border);padding:14px 16px;">
-          <div style="font-size:0.7rem;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:0.1em;color:var(--accent);font-weight:700;margin-bottom:8px;">🔒 Encryption</div>
-          <div style="font-size:0.83rem;color:var(--text);line-height:1.65;">
-            Encryption scrambles your data in Firebase so only someone with your password can read it. Your password is stored on your device only — it is never sent anywhere.<br><br>
-            <strong>First-time setup:</strong><br>
-            1. Export an unencrypted backup first as a safety net<br>
-            2. Go to <strong>Settings → Data Encryption</strong><br>
-            3. Enter a password and tap <strong>🔑 Set Password</strong><br>
-            4. Tap <strong>🔍 Verify Password</strong> — it will confirm everything is good<br>
-            5. Tap <strong>🔒 Encrypt Data</strong> to secure your Firebase data<br><br>
-            <strong>On a new or additional device:</strong><br>
-            1. Open the app and sign in<br>
-            2. Go to <strong>Settings → Data Encryption</strong><br>
-            3. Enter the <strong>same password</strong> you used on your other device<br>
-            4. Tap <strong>🔑 Set Password</strong>, then <strong>🔍 Verify Password</strong><br>
-            5. Green checkmark means the password is correct and your data is accessible<br><br>
-            Once set up, all saves are encrypted automatically — you don't need to do anything else.<br><br>
-            ⚠️ <strong>Do not forget your password.</strong> There is no recovery option. If you lose it, you will need to import an unencrypted backup to reset.
+            All data lives only on this device's local storage — there is no cloud sync, so export a backup regularly and before switching devices.
           </div>
         </div>
 
@@ -1611,7 +1421,7 @@ onAuthStateChanged(auth, function(user){
               <input class="s-input" id="sApiKey" type="password" placeholder="AIza..." autocapitalize="none" autocorrect="off" autocomplete="off" style="flex:1;font-family:'DM Mono',monospace;font-size:0.82rem;">
               <button class="save-btn" style="width:auto;padding:10px 14px;font-size:0.82rem;flex-shrink:0;" onclick="saveApiKey()">Save</button>
             </div>
-            <div style="font-size:0.72rem;color:var(--muted);margin-top:6px;line-height:1.5;">Your key is stored in Firebase — never in the app code or GitHub. Get a free key at aistudio.google.com</div>
+            <div style="font-size:0.72rem;color:var(--muted);margin-top:6px;line-height:1.5;">Your key is stored on this device only — never in the app code or GitHub. Get a free key at aistudio.google.com</div>
             <div id="apiKeyStatus" style="font-size:0.75rem;margin-top:5px;font-family:'DM Mono',monospace;"></div>
           </div>
         </div>
@@ -1668,29 +1478,9 @@ onAuthStateChanged(auth, function(user){
       </div>
     </div>
 
-    <div class="settings-section-hdr" onclick="toggleSettingsSection('encBody',this)">
-      <span class="settings-section-icon">🔒</span>
-      <span class="settings-section-title">Data Encryption</span>
-      <span class="settings-section-arrow">›</span>
-    </div>
-    <div class="settings-section-body" id="encBody">
-      <div class="settings-card" style="padding:14px;">
-        <div id="encStatus" style="font-size:0.82rem;font-weight:700;margin-bottom:10px;">🔓 Not encrypted</div>
-        <div style="font-size:0.75rem;color:var(--muted);margin-bottom:12px;line-height:1.5;">Set a password to encrypt all data stored in Firebase. Your password is saved on this device only. Do not forget it — there is no recovery option.</div>
-        <div class="s-lbl">Encryption Password</div>
-        <input class="s-input" id="encPasswordInput" type="password" placeholder="Enter password…" autocapitalize="none" autocorrect="off" style="margin-bottom:10px;">
-        <div style="display:flex;flex-direction:column;gap:8px;">
-          <button class="save-btn" style="background:var(--navy);" onclick="encDoSetPassword()">🔑 Set Password</button>
-          <button class="save-btn" style="background:var(--muted2);color:white;" id="encVerifyBtn" onclick="encDoVerify()">🔍 Verify Password</button>
-          <button class="save-btn" style="background:var(--accent);opacity:0.4;cursor:not-allowed;" id="encEncryptBtn" onclick="encDoEncrypt()" disabled>🔒 Encrypt Data</button>
-          <button class="save-btn" style="background:var(--bg);color:var(--muted);border:1.5px solid var(--border);" onclick="encDoRemove()">🔓 Remove Encryption</button>
-        </div>
-      </div>
-    </div>
     <div style="height:8px"></div>
     <button class="save-btn" onclick="saveSettings()" style="margin-bottom:12px;">Save Settings</button>
-    <button class="save-btn" style="background:var(--red);" onclick="doSignOut()">Sign Out</button>
-    <div style="text-align:center;font-size:0.65rem;color:var(--muted2);font-family:'DM Mono',monospace;padding:10px 0 4px;letter-spacing:0.08em;">WorkFlow v1.27</div>
+    <div style="text-align:center;font-size:0.65rem;color:var(--muted2);font-family:'DM Mono',monospace;padding:10px 0 4px;letter-spacing:0.08em;">WorkFlow v1.28 (local-first)</div>
     <div style="height:20px"></div>
   </div>
 </div>
@@ -1926,7 +1716,7 @@ let reportBack = 'historyScreen';
 
 // ═══════════════════════════════════════
 // PHOTO STORAGE — IndexedDB
-// Photos are kept out of Firebase/localStorage to avoid size limits.
+// Photos are kept out of the main localStorage record to avoid size limits.
 // Each photo is stored by note ID in a local IndexedDB.
 // ═══════════════════════════════════════
 const _photoDB = (()=>{
@@ -1961,105 +1751,19 @@ const _photoDB = (()=>{
   };
 })();
 
-// Debounced save — batches rapid changes into one Firebase write
-let _saveTimer = null;
 function saveS(){
   const sToSave = {...S, notes:(S.notes||[]).map(n=>{ const {photoData,...rest}=n; return rest; })};
-  // Always save plaintext to localStorage (local device only)
   try{ localStorage.setItem('r4hub_v3', JSON.stringify(sToSave)); }catch(_){}
-  // Firebase write — encrypt if key is set
-  if(window._fbSave){
-    window._fbStatus('saving');
-    clearTimeout(_saveTimer);
-    _saveTimer = setTimeout(async ()=>{
-      try {
-        if(window._encKey){
-          const blob = await encEncrypt(sToSave);
-          if(blob){ window._fbSave(blob); }
-          else { console.error('encEncrypt returned null — saving unencrypted'); window._fbSave(sToSave); }
-        } else {
-          window._fbSave(sToSave);
-        }
-      } catch(e){
-        console.error('saveS encrypt error:', e);
-        window._fbSave(sToSave); // fallback to unencrypted
-      }
-    }, 800);
-  }
 }
 
-// Flush pending save immediately — called on page unload
-async function flushSave(){
-  if(!_saveTimer) return;
-  clearTimeout(_saveTimer);
-  _saveTimer = null;
-  const sToSave = {...S, notes:(S.notes||[]).map(n=>{ const {photoData,...rest}=n; return rest; })};
-  if(window._fbSave){
-    try {
-      if(window._encKey){
-        const blob = await encEncrypt(sToSave);
-        if(blob){ window._fbSave(blob); }
-        else { window._fbSave(sToSave); }
-      } else {
-        window._fbSave(sToSave);
-      }
-    } catch(e){
-      console.error('flushSave error:', e);
-      window._fbSave(sToSave);
-    }
-  }
-}
+// Kept as a no-op alias — some call sites await a flush before navigating away
+async function flushSave(){ saveS(); }
 
-// loadS is now async — called at init
 async function loadS(){
-  if(window._fbLoad){
-    const data = await window._fbLoad();
-    if(data){
-      let parsed = data;
-      if(data._enc){
-        // Always extract salt from payload — this is the authoritative source
-        if(data.salt){
-          localStorage.setItem('wf_enc_salt', data.salt);
-          // Re-derive key with the correct salt from Firebase payload
-          const pw = localStorage.getItem('wf_enc_password');
-          if(pw){
-            try {
-              window._encKey = await encDeriveKey(pw, data.salt);
-              window._encVerified = true;
-            } catch(e){ window._encKey = null; }
-          }
-        }
-        if(!window._encKey){
-          // No password on this device yet — show prompt to enter it
-          console.warn('Encrypted data found but no key — showing decryption prompt');
-          window._pendingEncBlob = data; // store for after password entry
-          showDecryptPrompt();
-          return; // halt loadS — will resume after password entered
-        } else {
-          parsed = await encDecrypt(data);
-          if(!parsed){
-            console.warn('Decryption failed — wrong password or corrupt data');
-            window._encKey = null;
-            window._encVerified = false;
-            window._pendingEncBlob = data;
-            showDecryptPrompt('Wrong password — please try again.');
-            return;
-          }
-        }
-      }
-      S = {...S, ...parsed};
-    } else {
-      try{
-        const d = localStorage.getItem('r4hub_v3');
-        if(d){ S = {...S, ...JSON.parse(d)}; }
-      }catch(e){}
-    }
-  } else {
-    try{
-      const d = localStorage.getItem('r4hub_v3');
-      if(d){ S = {...S, ...JSON.parse(d)}; }
-    }catch(e){}
-  }
+  try{
+    const d = localStorage.getItem('r4hub_v3');
+    if(d){ S = {...S, ...JSON.parse(d)}; }
+  }catch(e){}
   // Rehydrate photos from IndexedDB
   if(S.notes && S.notes.length){
     const ids = S.notes.map(n=>n.id);
@@ -2067,17 +1771,6 @@ async function loadS(){
     S.notes.forEach(n=>{ if(photos[n.id]) n.photoData = photos[n.id]; });
   }
 }
-
-// Sync status indicator
-window._fbStatus = function(state){
-  const dot = document.getElementById('syncDot');
-  if(!dot) return;
-  dot.className = 'sync-dot ' + state;
-  dot.title = state==='synced'?'Synced':state==='saving'?'Saving…':state==='loading'?'Loading…':'Sync error — using local data';
-  if(state==='synced'){
-    setTimeout(()=>{ dot.className='sync-dot synced'; }, 2000);
-  }
-};
 
 // ═══════════════════════════════════════
 // HELPERS
@@ -2134,7 +1827,7 @@ function showScreen(id){
   if(el) el.scrollTop=0;
   if(id==='homeScreen') renderHome();
   if(id==='historyScreen'){ histInitMonth(); renderHistory(); }
-  if(id==='settingsScreen'){ renderSettings(); renderSigThumbs(); updateEncUI(); }
+  if(id==='settingsScreen'){ renderSettings(); renderSigThumbs(); }
   if(id==='notesScreen') renderNotes();
   if(id==='invoiceScreen') invInit();
 }
@@ -4028,55 +3721,6 @@ async function syncICSNow(){
   }
 }
 
-async function saveAllToFirebase(){
-  const btn = document.getElementById('saveAllBtn');
-  if(btn){ btn.disabled = true; btn.textContent = '⏳ Saving…'; }
-  try {
-    if(window._encKey){
-      toast('🔒 Saving encrypted data to Firebase…');
-    } else {
-      toast('⚠️ Saving unencrypted data to Firebase…');
-    }
-    const sToSave = {...S, notes:(S.notes||[]).map(n=>{ const {photoData,...rest}=n; return rest; })};
-    if(window._fbSave){
-      let payload;
-      try {
-        if(window._encKey){
-          payload = await encEncrypt(sToSave);
-          if(!payload) throw new Error('Encryption returned null');
-        } else {
-          payload = sToSave;
-        }
-      } catch(e){
-        throw new Error('Encryption failed: ' + e.message);
-      }
-      // _fbSave is fire-and-forget internally; wait a moment then check sync dot
-      window._fbSave(payload);
-      try{ localStorage.setItem('r4hub_v3', JSON.stringify(sToSave)); }catch(_){}
-      // Give Firebase 3s to confirm
-      await new Promise(r => setTimeout(r, 3000));
-      const dot = document.getElementById('syncDot');
-      const synced = dot && dot.className.includes('synced');
-      if(!synced && dot && dot.className.includes('error')){
-        throw new Error('Firebase write failed — check connection');
-      }
-      if(window._encKey){
-        toast('✓ Data saved to Firebase — encrypted 🔒');
-      } else {
-        toast('✓ Data saved to Firebase — unencrypted 🔓');
-      }
-    } else {
-      toast('⚠️ Firebase not available — saved locally only');
-    }
-  } catch(e) {
-    console.error('Save All error:', e);
-    toast('✗ Save failed: ' + e.message);
-    window._fbStatus('error');
-  } finally {
-    if(btn){ btn.disabled = false; btn.textContent = '💾 Save All'; }
-  }
-}
-
 async function autoSyncICS(){
   if(!S.icsUrl||!S.icsAutoSync) return;
   if(S.icsLastSync){
@@ -4279,10 +3923,9 @@ function haptic(style='light'){
     if(dist > 70 && window.scrollY <= 0){
       haptic('medium');
       toast('↻ Refreshing…');
-      if(window._fbLoad){
-        const data = await window._fbLoad();
-        if(data){ S={...S,...data}; renderHome(); toast('✓ Up to date'); }
-      }
+      await loadS();
+      renderHome();
+      toast('✓ Up to date');
     }
   }, {passive:true});
 })();
@@ -4608,10 +4251,6 @@ function saveApiKey(){
   if(!key){ toast('Please enter your API key'); return; }
   if(!key.startsWith('AIza')){ toast("That doesn't look like a Gemini API key (should start with AIza)"); return; }
   S.anthropicKey = key;
-  try{
-    localStorage.setItem('geminiKey', key);
-    localStorage.setItem('anthropicKey', key);
-  }catch(_){}
   saveS();
   const akStatus=document.getElementById('apiKeyStatus');
   if(akStatus){
@@ -4620,35 +4259,6 @@ function saveApiKey(){
   }
   document.getElementById('sApiKey').value='';
   toast('✓ API key saved!');
-}
-
-// ═══════════════════════════════════════
-// INIT
-// ═══════════════════════════════════════
-// AUTH
-function showLoginScreen(){
-  var s=document.getElementById('loginScreen');
-  if(s) s.classList.remove('hidden');
-}
-function hideLoginScreen(){var s=document.getElementById('loginScreen');if(s)s.classList.add('hidden');}
-async function doLogin(){
-  var e=document.getElementById('loginEmail');
-  var p=document.getElementById('loginPassword');
-  var btn=document.getElementById('loginBtn');
-  var err=document.getElementById('loginError');
-  var email=(e?e.value:'').trim(), password=p?p.value:'';
-  if(!email||!password){if(err)err.textContent='Please enter email and password';return;}
-  if(!window._fbSignIn){if(err)err.textContent='App still loading — please wait a moment';return;}
-  if(btn){btn.disabled=true;btn.textContent='Signing in...';}
-  if(err)err.textContent='';
-  try{
-    var r=await window._fbSignIn(email,password);
-    if(r.ok){hideLoginScreen();haptic('medium');await initApp();}
-    else{if(err)err.textContent=r.message||'Sign in failed';if(btn){btn.disabled=false;btn.textContent='Sign In →';}}
-  }catch(ex){
-    if(err)err.textContent='Error: '+ex.message;
-    if(btn){btn.disabled=false;btn.textContent='Sign In →';}
-  }
 }
 
 // ═══════════════════════════════════════
@@ -5139,13 +4749,8 @@ async function importMergeChoice(mode){
   if(statusEl){ statusEl.style.display='block'; statusEl.textContent='Importing…'; }
 
   if(mode === 'overwrite'){
-    // If the backup is encrypted, decrypt it first
-    let rawData = imported;
-    if(imported._enc){
-      rawData = await encDecrypt(imported) || {};
-      if(!rawData || Object.keys(rawData).length === 0){ toast('✗ Could not decrypt backup — wrong password?'); return; }
-    }
-    const {_exportedAt, _version, _enc, iv, d, ...data} = rawData;
+    if(imported._enc){ toast('✗ This backup is encrypted — import is not supported for encrypted backups'); return; }
+    const {_exportedAt, _version, _enc, iv, d, ...data} = imported;
     S = {...S, ...data};
     saveS();
     renderHome();
@@ -5182,351 +4787,12 @@ async function importMergeChoice(mode){
   }
 }
 
-async function doSignOut(){
-  if(!confirm('Sign out of WorkFlow?'))return;
-  await window._fbSignOut();
-  showLoginScreen();
-  showScreen('homeScreen');
-}
-document.addEventListener('fbAuthChanged',function(ev){if(!ev.detail.user)showLoginScreen();});
 // Flush pending saves when app is closed or backgrounded
 window.addEventListener('beforeunload', ()=>{ flushSave(); });
 document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='hidden') flushSave(); });
 
-document.addEventListener('DOMContentLoaded',function(){
-  var b=document.getElementById('loginBtn');
-  if(b)b.addEventListener('click',doLogin);
-  var pw=document.getElementById('loginPassword');
-  if(pw)pw.addEventListener('keydown',function(ev){if(ev.key==='Enter')doLogin();});
-});
-
-
-// ═══════════════════════════════════════
-// ENCRYPTION
-// ═══════════════════════════════════════
-window._encKey = null; // CryptoKey held in memory
-
-async function encDeriveKey(password, saltHex){
-  const enc = new TextEncoder();
-  const keyMaterial = await crypto.subtle.importKey(
-    'raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']
-  );
-  const salt = hexToBytes(saltHex);
-  return crypto.subtle.deriveKey(
-    {name:'PBKDF2', salt, iterations:200000, hash:'SHA-256'},
-    keyMaterial,
-    {name:'AES-GCM', length:256},
-    false,
-    ['encrypt','decrypt']
-  );
-}
-
-function hexToBytes(hex){
-  const arr = new Uint8Array(hex.length/2);
-  for(let i=0;i<hex.length;i+=2) arr[i/2]=parseInt(hex.substr(i,2),16);
-  return arr;
-}
-
-function bytesToHex(buf){
-  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
-}
-
-function bytesToBase64(buf){
-  const bytes = new Uint8Array(buf);
-  let binary = '';
-  for(let i=0;i<bytes.length;i++) binary += String.fromCharCode(bytes[i]);
-  return btoa(binary);
-}
-
-function base64ToBytes(b64){
-  const binary = atob(b64);
-  const bytes = new Uint8Array(binary.length);
-  for(let i=0;i<binary.length;i++) bytes[i] = binary.charCodeAt(i);
-  return bytes;
-}
-
-async function compress(str){
-  const enc = new TextEncoder();
-  const stream = new CompressionStream('gzip');
-  const writer = stream.writable.getWriter();
-  writer.write(enc.encode(str));
-  writer.close();
-  const chunks = [];
-  const reader = stream.readable.getReader();
-  while(true){
-    const {done, value} = await reader.read();
-    if(done) break;
-    chunks.push(value);
-  }
-  const total = chunks.reduce((a,b)=>a+b.length,0);
-  const result = new Uint8Array(total);
-  let offset = 0;
-  for(const chunk of chunks){ result.set(chunk, offset); offset += chunk.length; }
-  return result;
-}
-
-async function decompress(bytes){
-  const stream = new DecompressionStream('gzip');
-  const writer = stream.writable.getWriter();
-  writer.write(bytes);
-  writer.close();
-  const chunks = [];
-  const reader = stream.readable.getReader();
-  while(true){
-    const {done, value} = await reader.read();
-    if(done) break;
-    chunks.push(value);
-  }
-  const total = chunks.reduce((a,b)=>a+b.length,0);
-  const result = new Uint8Array(total);
-  let offset = 0;
-  for(const chunk of chunks){ result.set(chunk, offset); offset += chunk.length; }
-  return new TextDecoder().decode(result);
-}
-
-async function encEncrypt(obj){
-  if(!window._encKey) return null;
-  const iv = crypto.getRandomValues(new Uint8Array(12));
-  // Compress then encrypt — keeps payload well under Firestore 1MB limit
-  const compressed = await compress(JSON.stringify(obj));
-  const data = await crypto.subtle.encrypt(
-    {name:'AES-GCM', iv},
-    window._encKey,
-    compressed
-  );
-  const salt = localStorage.getItem('wf_enc_salt') || '';
-  return {_enc:true, salt, iv:bytesToHex(iv), d:bytesToBase64(data), c:true};
-}
-
-async function encDecrypt(blob){
-  if(!window._encKey || !blob._enc) return null;
-  try {
-    const iv = hexToBytes(blob.iv);
-    // Support base64 (new) and hex (legacy)
-    const data = blob.d.indexOf('+') !== -1 || blob.d.indexOf('/') !== -1 || blob.d.indexOf('=') !== -1
-      ? base64ToBytes(blob.d)
-      : hexToBytes(blob.d);
-    const decrypted = await crypto.subtle.decrypt({name:'AES-GCM', iv}, window._encKey, data);
-    // Decompress if compressed flag set, else decode directly (legacy)
-    if(blob.c){
-      const plainStr = await decompress(new Uint8Array(decrypted));
-      return JSON.parse(plainStr);
-    } else {
-      return JSON.parse(new TextDecoder().decode(decrypted));
-    }
-  } catch(e) {
-    console.error('Decryption failed:', e);
-    return null;
-  }
-}
-
-function showDecryptPrompt(errMsg){
-  const modal = document.getElementById('decryptPromptModal');
-  const errEl = document.getElementById('decryptPromptError');
-  if(errMsg){ errEl.textContent = errMsg; errEl.style.display = 'block'; }
-  else { errEl.style.display = 'none'; }
-  if(modal) modal.style.display = 'flex';
-  // Keep load overlay visible behind the prompt
-  setTimeout(()=>{ document.getElementById('decryptPromptInput')?.focus(); }, 100);
-}
-
-async function decryptPromptSubmit(){
-  const inp = document.getElementById('decryptPromptInput');
-  const pw = inp ? inp.value.trim() : '';
-  if(!pw){ showDecryptPrompt('Please enter your password.'); return; }
-
-  const blob = window._pendingEncBlob;
-  if(!blob){ return; }
-
-  try {
-    // Derive key using password + salt from the payload
-    const salt = blob.salt;
-    if(!salt){ showDecryptPrompt('No salt found in data — cannot decrypt.'); return; }
-    const key = await encDeriveKey(pw, salt);
-    window._encKey = key;
-
-    // Try to decrypt
-    const decrypted = await encDecrypt(blob);
-    if(!decrypted){
-      window._encKey = null;
-      showDecryptPrompt('Wrong password — please try again.');
-      return;
-    }
-
-    // Success — save password and salt to localStorage for future sessions
-    localStorage.setItem('wf_enc_password', pw);
-    localStorage.setItem('wf_enc_salt', salt);
-    window._encVerified = true;
-    window._pendingEncBlob = null;
-
-    // Hide prompt and load overlay
-    const modal = document.getElementById('decryptPromptModal');
-    if(modal) modal.style.display = 'none';
-    const overlay = document.getElementById('loadOverlay');
-    if(overlay) overlay.classList.add('hidden');
-
-    // Apply decrypted data
-    S = {...S, ...decrypted};
-    if(!S.rTasks) S.rTasks = [];
-    (S.rTasks||[]).forEach(t=>{ if(!t.taskType) t.taskType='recurring'; if(!t.dayType) t.dayType='dow'; });
-    if(!S.notes) S.notes = [];
-    applyDarkMode();
-    renderHome();
-    autoSyncICS();
-    toast('✓ Data unlocked successfully');
-  } catch(e) {
-    window._encKey = null;
-    showDecryptPrompt('Error: ' + e.message);
-  }
-}
-
-// Allow Enter key in prompt
-document.addEventListener('DOMContentLoaded', function(){
-  const inp = document.getElementById('decryptPromptInput');
-  if(inp) inp.addEventListener('keydown', e=>{ if(e.key==='Enter') decryptPromptSubmit(); });
-});
-
-// Salt stored inside the encrypted payload — no separate Firebase doc needed
-async function encInit(){
-  const pw = localStorage.getItem('wf_enc_password');
-  if(!pw){ window._encKey = null; window._encVerified = false; return; }
-  let salt = localStorage.getItem('wf_enc_salt');
-  if(!salt){ window._encKey = null; window._encVerified = false; return; }
-  try {
-    // Just derive the key — do NOT load Firebase here (loadS will do that)
-    window._encKey = await encDeriveKey(pw, salt);
-    // Mark verified optimistically — saveS will work immediately
-    // encDoVerify() can be used to explicitly confirm at any time
-    window._encVerified = true;
-  } catch(e) {
-    console.error('Key derivation failed:', e);
-    window._encKey = null;
-    window._encVerified = false;
-  }
-}
-
-// Set password only — generates new salt, derives key, saves to localStorage. No Firebase write.
-async function encDoSetPassword(){
-  const inp = document.getElementById('encPasswordInput');
-  const pw = inp ? inp.value.trim() : '';
-  if(!pw){ toast('Enter a password first'); return; }
-  if(pw === '••••••••'){ toast('Enter your new password to change it'); return; }
-  const existing = localStorage.getItem('wf_enc_password');
-  if(existing && pw !== existing){
-    if(!confirm('⚠️ Warning: changing your password generates a new key. You must verify and re-encrypt after this. Export a backup first.\n\nContinue?')) return;
-    if(!confirm('Are you absolutely sure? Data encrypted with the old password cannot be read until you re-encrypt with the new one.')) return;
-  }
-  const salt = bytesToHex(crypto.getRandomValues(new Uint8Array(16)));
-  localStorage.setItem('wf_enc_salt', salt);
-  window._encKey = await encDeriveKey(pw, salt);
-  localStorage.setItem('wf_enc_password', pw);
-  window._encVerified = false;
-  toast('🔑 Password set — tap Verify Password to confirm');
-  updateEncUI();
-}
-
-// Verify — pull Firebase data and try to decrypt it
-async function encDoVerify(){
-  const btn = document.getElementById('encVerifyBtn');
-  if(btn){ btn.disabled=true; btn.textContent='🔍 Verifying…'; }
-  try {
-    if(!window._encKey){
-      toast('⚠️ Set a password first');
-      return;
-    }
-    // Pull raw Firebase data
-    let fbData = null;
-    if(window._fbLoad) fbData = await window._fbLoad();
-
-    if(!fbData || !fbData._enc){
-      // No encrypted data in Firebase — first-time setup, auto-pass
-      window._encVerified = true;
-      toast('✓ No existing encrypted data — password accepted for first-time setup');
-      updateEncUI();
-      return;
-    }
-
-    // Try to decrypt
-    const decrypted = await encDecrypt(fbData);
-    if(decrypted && decrypted.houses !== undefined){
-      window._encVerified = true;
-      toast('✓ Password verified — key matches Firebase data');
-    } else {
-      window._encVerified = false;
-      toast('✗ Wrong password — could not decrypt Firebase data');
-    }
-    updateEncUI();
-  } catch(e){
-    window._encVerified = false;
-    toast('✗ Verification failed: ' + e.message);
-    updateEncUI();
-  } finally {
-    if(btn){ btn.disabled=false; btn.textContent='🔍 Verify Password'; }
-  }
-}
-
-// Encrypt data — only allowed after verify passes
-async function encDoEncrypt(){
-  if(!window._encKey){ toast('Set a password first'); return; }
-  if(!window._encVerified){ toast('⚠️ Verify your password first'); return; }
-  await saveS();
-  toast('🔒 Data encrypted and saved to Firebase');
-  updateEncUI();
-}
-
-// Remove encryption — decrypts Firebase data back to plaintext, clears password
-async function encDoRemove(){
-  if(!confirm('Remove encryption? Data will be stored as plain text in Firebase until you set a new password and encrypt again.')) return;
-  window._encKey = null;
-  window._encVerified = false;
-  localStorage.removeItem('wf_enc_password');
-  localStorage.removeItem('wf_enc_salt');
-  await saveS();
-  toast('🔓 Encryption removed — data is now unencrypted');
-  updateEncUI();
-}
-
-function updateEncUI(){
-  const pw = localStorage.getItem('wf_enc_password');
-  const hasKey = !!window._encKey;
-  const verified = !!window._encVerified;
-  const status = document.getElementById('encStatus');
-  const inp = document.getElementById('encPasswordInput');
-  const encBtn = document.getElementById('encEncryptBtn');
-
-  let statusText = '🔓 Not encrypted';
-  let statusColor = 'var(--muted)';
-  if(pw && hasKey && verified){
-    statusText = '✅ Password verified — ready to encrypt';
-    statusColor = 'var(--green)';
-  } else if(pw && hasKey && !verified){
-    statusText = '🔑 Password set — verify before encrypting';
-    statusColor = 'var(--amber)';
-  }
-  if(status){ status.textContent = statusText; status.style.color = statusColor; }
-  if(inp) inp.value = pw ? '••••••••' : '';
-
-  // Lock/unlock Encrypt Data button
-  if(encBtn){
-    if(hasKey && verified){
-      encBtn.disabled = false;
-      encBtn.style.opacity = '1';
-      encBtn.style.cursor = 'pointer';
-    } else {
-      encBtn.disabled = true;
-      encBtn.style.opacity = '0.4';
-      encBtn.style.cursor = 'not-allowed';
-    }
-  }
-}
 
 async function initApp(){
-  if(!window._fbCurrentUser){
-    const ov=document.getElementById('loadOverlay'); if(ov)ov.classList.add('hidden');
-    showLoginScreen();
-    return;
-  }
-  await encInit();
   await loadS();
   if(!S.rTasks) S.rTasks=[];
   (S.rTasks||[]).forEach(t=>{ if(!t.taskType) t.taskType='recurring'; if(!t.dayType) t.dayType='dow'; });
@@ -5539,20 +4805,7 @@ async function initApp(){
   autoSyncICS();
 }
 
-// Wait for Firebase module to signal ready, then init
-// If Firebase takes >4s, init anyway with local data
-let fbInitDone = false;
-function startInit(){
-  if(fbInitDone) return;
-  fbInitDone = true;
-  initApp();
-}
-document.dispatchEvent(new Event('mainReady'));
-if(window._fbReady){ startInit(); }
-else {
-  document.addEventListener('fbReady', startInit);
-  setTimeout(startInit, 1500);
-}
+document.addEventListener('DOMContentLoaded', initApp);
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
 
@@ -5569,12 +4822,5 @@ else {
 <script src="js/features/audit/audit-core.js"></script>
 <script src="js/features/da3/da3-core.js"></script>
 <script src="js/features/tasks/tasks-home.js"></script>
-<script>
-try{
-  var __v = document.getElementById('appVersionLogin');
-  if(__v) __v.textContent = APP_VERSION;
-}catch(e){}
-</script>
-<script src="js/features/ai/ai-core.js"></script>
 </body>
 </html>
