@@ -226,12 +226,22 @@ function auditLoadExisting(){
   const rec = S.auditVisits.find(v=>v.indivId===currentAuditIndivId && v.monthKey===mk);
   if(!rec) return;
 
-  // Cash fields
-  const ohEl = document.getElementById('aOnHand');
-  const iaEl = document.getElementById('aInAcu');
-  if(ohEl && rec.onHand) ohEl.value = rec.onHand;
-  if(iaEl && rec.inAcu)  iaEl.value = rec.inAcu;
-  if(ohEl && iaEl) auditCashInput();
+  const ans = rec.answers || {};
+
+  // Item 1 answer first — determines single vs dual cash field layout
+  const ans1 = ans['1']||ans[1];
+  if(ans1) auditSetAns(1, ans1);
+
+  // Cash fields — fill after layout is set
+  const singleEl = document.getElementById('aCashSingle');
+  if(singleEl){
+    if(rec.onHand||rec.inAcu) singleEl.value = rec.onHand||rec.inAcu;
+  } else {
+    const ohEl = document.getElementById('aOnHand');
+    const iaEl = document.getElementById('aInAcu');
+    if(ohEl && rec.onHand) ohEl.value = rec.onHand;
+    if(iaEl && rec.inAcu)  iaEl.value = rec.inAcu;
+  }
 
   // Receipt
   const rnEl = document.getElementById('aReceiptNum');
@@ -244,10 +254,9 @@ function auditLoadExisting(){
   const dtEl = document.getElementById('aFieldDate');
   if(dtEl && rec.visitDate) dtEl.value = rec.visitDate;
 
-  // Answers — set each one (this also populates corrective visibility)
-  const ans = rec.answers || {};
+  // Remaining answers — set each one (this also populates corrective visibility)
   Object.entries(ans).forEach(([k,v])=>{
-    if(v) auditSetAns(isNaN(k) ? k : Number(k), v);
+    if(v && k!=='1') auditSetAns(isNaN(k) ? k : Number(k), v);
   });
 
   // Corrective text — overwrite after auditSetAns (which may have set defaults)
@@ -318,11 +327,11 @@ function auditBuildItems(ind, house, pepDate, mmaDate, weekly){
     </div>`;
 
     if(item.special==='cash'){
-      html += `<div class="acurrency-row">
+      html += `<div class="acurrency-row" id="aCashWrap">
         <div class="acurrency-field"><span class="acurrency-lbl">On Hand</span>
-          <input class="acurrency-input" id="aOnHand" inputmode="decimal" type="number" step="0.01" min="0" placeholder="0.00" oninput="auditCashInput()" onblur="auditFmtCurrency(this)"></div>
+          <input class="acurrency-input" id="aOnHand" inputmode="decimal" type="text" placeholder="0.00" onblur="auditFmtCurrency(this)"></div>
         <div class="acurrency-field"><span class="acurrency-lbl">In Acumatica</span>
-          <input class="acurrency-input" id="aInAcu" inputmode="decimal" type="number" step="0.01" min="0" placeholder="0.00" oninput="auditCashInput()" onblur="auditFmtCurrency(this)"></div>
+          <input class="acurrency-input" id="aInAcu" inputmode="decimal" type="text" placeholder="0.00" onblur="auditFmtCurrency(this)"></div>
       </div>
       <div class="amismatch" id="aMismatch">
         <div class="acorr-lbl orange" style="margin-top:10px;">&#9888; AMOUNTS DO NOT MATCH — NOTE REASON</div>
@@ -417,19 +426,52 @@ function auditPrefillAuto(name, pepDate, mmaDate, weekly){
   auditPepMmaChange();
   const t3 = document.getElementById('aCorrText3');
   if(t3) t3.value = name+' can handle up to $'+Number(weekly).toFixed(2)+' weekly.';
+  if(Number(weekly)===0 && !window._auditAnswers?.[3]){
+    auditSetAns(3,'YES');
+  }
 }
 
-function auditFmtCurrency(el){ const v=parseFloat(el.value); if(!isNaN(v)) el.value=v.toFixed(2); }
+function auditFmtCurrency(el){
+  let raw = (el.value||'').trim().replace(/[^0-9.]/g,'');
+  if(!raw){ return; }
+  let val;
+  if(raw.includes('.')){
+    val = parseFloat(raw);
+  } else if(raw.length >= 3){
+    val = parseInt(raw,10)/100;
+  } else {
+    val = parseInt(raw,10);
+  }
+  if(val==null || isNaN(val)) return;
+  el.value = val.toFixed(2);
+}
 
-function auditCashInput(){
-  const oh=document.getElementById('aOnHand')?.value.trim();
-  const ia=document.getElementById('aInAcu')?.value.trim();
-  if(!oh||!ia) return;
-  const ohV=parseFloat(oh), iaV=parseFloat(ia);
-  if(isNaN(ohV)||isNaN(iaV)) return;
-  const match = Math.abs(ohV-iaV)<0.001;
-  document.getElementById('aMismatch')?.classList.toggle('show',!match);
-  auditSetAns(1, match?'YES':'NO');
+function auditRenderCashFields(val){
+  const wrap = document.getElementById('aCashWrap');
+  if(!wrap) return;
+  if(val==='YES'){
+    wrap.innerHTML = `<div class="acurrency-field"><span class="acurrency-lbl">Cash Amount</span>
+      <input class="acurrency-input" id="aCashSingle" inputmode="decimal" type="text" placeholder="0.00" onblur="auditFmtCurrency(this)"></div>`;
+    document.getElementById('aMismatch')?.classList.remove('show');
+  } else {
+    wrap.innerHTML = `<div class="acurrency-field"><span class="acurrency-lbl">On Hand</span>
+      <input class="acurrency-input" id="aOnHand" inputmode="decimal" type="text" placeholder="0.00" onblur="auditFmtCurrency(this)"></div>
+      <div class="acurrency-field"><span class="acurrency-lbl">In Acumatica</span>
+      <input class="acurrency-input" id="aInAcu" inputmode="decimal" type="text" placeholder="0.00" onblur="auditFmtCurrency(this)"></div>`;
+    if(val==='NO') document.getElementById('aMismatch')?.classList.add('show');
+  }
+}
+
+function auditGetCashVals(){
+  const single = document.getElementById('aCashSingle');
+  if(single){
+    const v = single.value||'';
+    return {onHand:v, inAcu:v};
+  }
+  return {
+    onHand: document.getElementById('aOnHand')?.value||'',
+    inAcu:  document.getElementById('aInAcu')?.value||''
+  };
 }
 
 function auditPepMmaChange(){
@@ -457,6 +499,11 @@ function auditSyncReceipt(){
   const ref=(num_||ven_) ? ('# '+num_+' '+ven_).trim() : '';
   const p=document.getElementById('aReceiptPreview');
   if(p) p.textContent = ref||'Enter receipt ref in Item 8';
+  if(num_||ven_){
+    if(!window._auditAnswers) window._auditAnswers={};
+    if(window._auditAnswers[8]!=='YES') auditSetAns(8,'YES');
+    if(window._auditAnswers[9]!=='YES') auditSetAns(9,'YES');
+  }
 }
 
 function auditSetAns(num, val){
@@ -478,6 +525,9 @@ function auditSetAns(num, val){
   }
   if(item?.special==='max283'){
     document.getElementById('acorr6')?.classList.toggle('show',val==='NO');
+  }
+  if(item?.special==='cash'){
+    auditRenderCashFields(val);
   }
   if(val==='NA'){
     const t=document.getElementById('aCorrText'+num); if(t) t.value='Not Applicable';
@@ -533,9 +583,14 @@ function auditValidate(){
     if(!ans[item.num]) errs.push({msg:'Item '+item.num+' not answered',elId:'acard'+item.num});
   });
   if(ans[1]){
-    const oh=document.getElementById('aOnHand')?.value;
-    const ia=document.getElementById('aInAcu')?.value;
-    if(!oh||!ia) errs.push({msg:'Enter both cash amounts for Item 1',elId:'acard1'});
+    const single = document.getElementById('aCashSingle');
+    if(single){
+      if(!single.value) errs.push({msg:'Enter cash amount for Item 1',elId:'acard1'});
+    } else {
+      const oh=document.getElementById('aOnHand')?.value;
+      const ia=document.getElementById('aInAcu')?.value;
+      if(!oh||!ia) errs.push({msg:'Enter both cash amounts for Item 1',elId:'acard1'});
+    }
   }
   const rn=document.getElementById('aReceiptNum')?.value.trim()||'';
   const rv=document.getElementById('aReceiptVen')?.value.trim()||'';
@@ -609,8 +664,11 @@ function auditSaveOnly(){
     auditRecord.corrective[num] = el.value||'';
   });
   // Save special field values for re-export reconstruction
-  auditRecord.onHand = document.getElementById('aOnHand')?.value||'';
-  auditRecord.inAcu  = document.getElementById('aInAcu')?.value||'';
+  {
+    const cv = auditGetCashVals();
+    auditRecord.onHand = cv.onHand;
+    auditRecord.inAcu  = cv.inAcu;
+  }
   auditRecord.mismatch = document.getElementById('aMismatchReason')?.value||'';
   auditRecord.receiptNum = document.getElementById('aReceiptNum')?.value||'';
   auditRecord.receiptVen = document.getElementById('aReceiptVen')?.value||'';
@@ -652,8 +710,9 @@ async function auditExportPDF(){
     let _reviewYear = auditSelectedMonth ? auditSelectedMonth.year : new Date().getFullYear();
     if(_reviewMonth < 0){ _reviewMonth = 11; _reviewYear--; }
     const monthYear=AMP_MONTHS_FULL[_reviewMonth]+' '+_reviewYear;
-    const onHand=parseFloat(document.getElementById('aOnHand')?.value||0).toFixed(2);
-    const inAcu=parseFloat(document.getElementById('aInAcu')?.value||0).toFixed(2);
+    const _cv=auditGetCashVals();
+    const onHand=parseFloat(_cv.onHand||0).toFixed(2);
+    const inAcu=parseFloat(_cv.inAcu||0).toFixed(2);
     const mismatch=document.getElementById('aMismatchReason')?.value||'';
     const _rn=document.getElementById('aReceiptNum')?.value.trim()||'';
     const _rv=document.getElementById('aReceiptVen')?.value.trim()||'';
@@ -755,8 +814,11 @@ async function auditExportPDF(){
       const num = el.id.replace('aCorrText','');
       auditRecord.corrective[num] = el.value||'';
     });
-    auditRecord.onHand = document.getElementById('aOnHand')?.value||'';
-    auditRecord.inAcu  = document.getElementById('aInAcu')?.value||'';
+    {
+      const _cv2 = auditGetCashVals();
+      auditRecord.onHand = _cv2.onHand;
+      auditRecord.inAcu  = _cv2.inAcu;
+    }
     auditRecord.mismatch = document.getElementById('aMismatchReason')?.value||'';
     auditRecord.receiptNum = document.getElementById('aReceiptNum')?.value||'';
     auditRecord.receiptVen = document.getElementById('aReceiptVen')?.value||'';

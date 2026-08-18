@@ -916,10 +916,40 @@ onAuthStateChanged(auth, function(user){
   <div class="modal-sheet" style="max-width:360px;margin:auto;padding:28px 24px;">
     <div style="font-size:1.1rem;font-weight:700;margin-bottom:6px;">🔒 Data is Encrypted</div>
     <div style="font-size:0.82rem;color:var(--muted);margin-bottom:18px;line-height:1.5;">This device doesn't have your decryption password yet. Enter it below to access your data.</div>
-    <div class="modal-lbl">Decryption Password</div>
-    <input class="s-input" id="decryptPromptInput" type="password" placeholder="Enter your password…" autocapitalize="none" autocorrect="off" style="margin-bottom:14px;">
-    <div id="decryptPromptError" style="display:none;color:var(--red);font-size:0.78rem;margin-bottom:10px;"></div>
-    <button class="modal-save-btn" onclick="decryptPromptSubmit()">Unlock →</button>
+    <div id="decryptPromptPwPanel">
+      <div class="modal-lbl">Decryption Password</div>
+      <input class="s-input" id="decryptPromptInput" type="password" placeholder="Enter your password…" autocapitalize="none" autocorrect="off" style="margin-bottom:14px;">
+      <div id="decryptPromptError" style="display:none;color:var(--red);font-size:0.78rem;margin-bottom:10px;"></div>
+      <button class="modal-save-btn" onclick="decryptPromptSubmit()">Unlock →</button>
+      <div style="text-align:center;margin-top:12px;">
+        <a href="#" style="font-size:0.78rem;color:var(--accent);" onclick="event.preventDefault();showRecoveryPanel()">Forgot password?</a>
+      </div>
+    </div>
+    <div id="decryptPromptRecoveryPanel" style="display:none;">
+      <div style="font-size:0.78rem;color:var(--muted);margin-bottom:12px;line-height:1.5;">Enter the recovery key you saved when you first set your password.</div>
+      <div class="modal-lbl">Recovery Key</div>
+      <input class="s-input" id="recoveryKeyInput" type="text" placeholder="XXXX-XXXX-XXXX-XXXX" autocapitalize="characters" autocorrect="off" spellcheck="false" style="margin-bottom:14px;font-family:'DM Mono',monospace;">
+      <div id="recoveryPromptError" style="display:none;color:var(--red);font-size:0.78rem;margin-bottom:10px;"></div>
+      <button class="modal-save-btn" onclick="recoveryPromptSubmit()">Recover →</button>
+      <div style="text-align:center;margin-top:12px;">
+        <a href="#" style="font-size:0.78rem;color:var(--muted);" onclick="event.preventDefault();showPasswordPanel()">Back to password</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ RECOVERY KEY DISPLAY ══ -->
+<div class="modal-overlay" id="recoveryKeyModal" style="display:none;z-index:996;">
+  <div class="modal-sheet" style="max-width:360px;margin:auto;padding:28px 24px;">
+    <div style="font-size:1.1rem;font-weight:700;margin-bottom:6px;">🗝️ Save Your Recovery Key</div>
+    <div style="font-size:0.82rem;color:var(--muted);margin-bottom:18px;line-height:1.5;">If you forget your password, this key is the only way back into your data. Write it down or save it somewhere safe — <strong>it cannot be shown again.</strong></div>
+    <div id="recoveryKeyDisplay" style="font-family:'DM Mono',monospace;font-size:1.15rem;font-weight:700;letter-spacing:0.05em;text-align:center;background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:16px 10px;margin-bottom:14px;word-break:break-all;"></div>
+    <button class="save-btn" style="background:var(--accent-light);color:var(--accent);border:1.5px solid var(--accent);margin-bottom:14px;" onclick="encCopyRecoveryKey()">📋 Copy to Clipboard</button>
+    <label style="display:flex;align-items:flex-start;gap:8px;font-size:0.78rem;color:var(--muted);margin-bottom:16px;line-height:1.4;">
+      <input type="checkbox" id="recoveryKeyConfirmChk" style="margin-top:2px;" onchange="document.getElementById('recoveryKeyDoneBtn').disabled=!this.checked;">
+      I've saved this recovery key somewhere safe.
+    </label>
+    <button class="modal-save-btn" id="recoveryKeyDoneBtn" disabled onclick="encCloseRecoveryKeyModal()">Done</button>
   </div>
 </div>
 
@@ -1681,7 +1711,7 @@ onAuthStateChanged(auth, function(user){
     <div class="settings-section-body" id="encBody">
       <div class="settings-card" style="padding:14px;">
         <div id="encStatus" style="font-size:0.82rem;font-weight:700;margin-bottom:10px;">🔓 Not encrypted</div>
-        <div style="font-size:0.75rem;color:var(--muted);margin-bottom:12px;line-height:1.5;">Set a password to encrypt all data stored in Firebase. Your password is saved on this device only. Do not forget it — there is no recovery option.</div>
+        <div style="font-size:0.75rem;color:var(--muted);margin-bottom:12px;line-height:1.5;">Set a password to encrypt all data stored in Firebase. Your password is saved on this device only. A one-time recovery key is shown when you set your password — save it in case you forget your password.</div>
         <div class="s-lbl">Encryption Password</div>
         <input class="s-input" id="encPasswordInput" type="password" placeholder="Enter password…" autocapitalize="none" autocorrect="off" style="margin-bottom:10px;">
         <div style="display:flex;flex-direction:column;gap:8px;">
@@ -1695,7 +1725,7 @@ onAuthStateChanged(auth, function(user){
     <div style="height:8px"></div>
     <button class="save-btn" onclick="saveSettings()" style="margin-bottom:12px;">Save Settings</button>
     <button class="save-btn" style="background:var(--red);" onclick="doSignOut()">Sign Out</button>
-    <div style="text-align:center;font-size:0.65rem;color:var(--muted2);font-family:'DM Mono',monospace;padding:10px 0 4px;letter-spacing:0.08em;">WorkFlow v1.27</div>
+    <div style="text-align:center;font-size:0.65rem;color:var(--muted2);font-family:'DM Mono',monospace;padding:10px 0 4px;letter-spacing:0.08em;">WorkFlow v1.28</div>
     <div style="height:20px"></div>
   </div>
 </div>
@@ -5300,7 +5330,14 @@ async function encEncrypt(obj){
     compressed
   );
   const salt = localStorage.getItem('wf_enc_salt') || '';
-  return {_enc:true, salt, iv:bytesToHex(iv), d:bytesToBase64(data), c:true};
+  const blob = {_enc:true, salt, iv:bytesToHex(iv), d:bytesToBase64(data), c:true};
+  // Recovery blob rides alongside the encrypted payload (unencrypted metadata,
+  // like salt) so a brand-new device can fetch it before the password is known.
+  // It only contains the password re-encrypted with a key derived from the
+  // recovery code, so it's safe to store here — useless without that code.
+  const recRaw = localStorage.getItem('wf_enc_recovery_blob');
+  if(recRaw){ try{ blob.recovery = JSON.parse(recRaw); }catch(e){} }
+  return blob;
 }
 
 async function encDecrypt(blob){
@@ -5389,6 +5426,8 @@ async function decryptPromptSubmit(){
 document.addEventListener('DOMContentLoaded', function(){
   const inp = document.getElementById('decryptPromptInput');
   if(inp) inp.addEventListener('keydown', e=>{ if(e.key==='Enter') decryptPromptSubmit(); });
+  const rinp = document.getElementById('recoveryKeyInput');
+  if(rinp) rinp.addEventListener('keydown', e=>{ if(e.key==='Enter') recoveryPromptSubmit(); });
 });
 
 // Salt stored inside the encrypted payload — no separate Firebase doc needed
@@ -5426,8 +5465,117 @@ async function encDoSetPassword(){
   window._encKey = await encDeriveKey(pw, salt);
   localStorage.setItem('wf_enc_password', pw);
   window._encVerified = false;
+  await encGenerateRecoveryKey(pw, salt);
   toast('🔑 Password set — tap Verify Password to confirm');
   updateEncUI();
+}
+
+// ── Recovery key ──────────────────────────────────────────────
+// Generates a 16-char recovery code, encrypts the current password with a key
+// derived from (recoveryKey + salt), stores only the ciphertext, and shows the
+// code once so the user can write it down. The raw code is never persisted.
+function encRandomRecoveryKey(){
+  const chars = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'; // no 0/O/1/I/L — avoids transcription errors
+  const bytes = crypto.getRandomValues(new Uint8Array(16));
+  let out = '';
+  for(let i=0;i<16;i++){
+    out += chars[bytes[i] % chars.length];
+    if(i%4===3 && i!==15) out += '-';
+  }
+  return out;
+}
+
+async function encGenerateRecoveryKey(password, saltHex){
+  const recoveryKey = encRandomRecoveryKey();
+  const recKey = await encDeriveKey(recoveryKey, saltHex);
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const data = await crypto.subtle.encrypt({name:'AES-GCM', iv}, recKey, new TextEncoder().encode(password));
+  const blob = {iv: bytesToHex(iv), d: bytesToBase64(data)};
+  localStorage.setItem('wf_enc_recovery_blob', JSON.stringify(blob));
+  showRecoveryKeyModal(recoveryKey);
+}
+
+function showRecoveryKeyModal(recoveryKey){
+  const disp = document.getElementById('recoveryKeyDisplay');
+  if(disp) disp.textContent = recoveryKey;
+  const chk = document.getElementById('recoveryKeyConfirmChk');
+  if(chk) chk.checked = false;
+  const btn = document.getElementById('recoveryKeyDoneBtn');
+  if(btn) btn.disabled = true;
+  window._recoveryKeyShown = recoveryKey;
+  const modal = document.getElementById('recoveryKeyModal');
+  if(modal) modal.style.display = 'flex';
+}
+
+function encCopyRecoveryKey(){
+  const key = window._recoveryKeyShown || document.getElementById('recoveryKeyDisplay')?.textContent || '';
+  if(!key) return;
+  navigator.clipboard?.writeText(key).then(()=>toast('✓ Copied to clipboard')).catch(()=>toast('Could not copy — write it down manually'));
+}
+
+function encCloseRecoveryKeyModal(){
+  const modal = document.getElementById('recoveryKeyModal');
+  if(modal) modal.style.display = 'none';
+  window._recoveryKeyShown = null;
+}
+
+function showRecoveryPanel(){
+  const err = document.getElementById('recoveryPromptError');
+  if(err) err.style.display = 'none';
+  document.getElementById('decryptPromptPwPanel').style.display = 'none';
+  document.getElementById('decryptPromptRecoveryPanel').style.display = 'block';
+  setTimeout(()=>document.getElementById('recoveryKeyInput')?.focus(), 100);
+}
+
+function showPasswordPanel(){
+  document.getElementById('decryptPromptRecoveryPanel').style.display = 'none';
+  document.getElementById('decryptPromptPwPanel').style.display = 'block';
+}
+
+async function recoveryPromptSubmit(){
+  const inp = document.getElementById('recoveryKeyInput');
+  const code = inp ? inp.value.trim().toUpperCase() : '';
+  const errEl = document.getElementById('recoveryPromptError');
+  const showErr = msg=>{ if(errEl){ errEl.textContent=msg; errEl.style.display='block'; } };
+  if(!code){ showErr('Enter your recovery key.'); return; }
+
+  const blob = window._pendingEncBlob;
+  const recovery = blob?.recovery;
+  const salt = blob?.salt;
+  if(!recovery || !salt){ showErr('No recovery key is on file for this data.'); return; }
+
+  try {
+    const recKey = await encDeriveKey(code, salt);
+    const iv = hexToBytes(recovery.iv);
+    const data = base64ToBytes(recovery.d);
+    const decrypted = await crypto.subtle.decrypt({name:'AES-GCM', iv}, recKey, data);
+    const password = new TextDecoder().decode(decrypted);
+
+    // Re-derive the main key from the recovered password and unlock the data
+    window._encKey = await encDeriveKey(password, salt);
+    const decoded = await encDecrypt(blob);
+    if(!decoded){ window._encKey = null; showErr('Recovery key did not match — please check it and try again.'); return; }
+
+    localStorage.setItem('wf_enc_password', password);
+    localStorage.setItem('wf_enc_salt', salt);
+    window._encVerified = true;
+    window._pendingEncBlob = null;
+
+    document.getElementById('decryptPromptModal').style.display = 'none';
+    document.getElementById('loadOverlay')?.classList.add('hidden');
+
+    S = {...S, ...decoded};
+    if(!S.rTasks) S.rTasks = [];
+    (S.rTasks||[]).forEach(t=>{ if(!t.taskType) t.taskType='recurring'; if(!t.dayType) t.dayType='dow'; });
+    if(!S.notes) S.notes = [];
+    applyDarkMode();
+    renderHome();
+    autoSyncICS();
+    toast('✓ Data unlocked with recovery key — set a new password in Settings');
+  } catch(e){
+    window._encKey = null;
+    showErr('Recovery key did not match — please check it and try again.');
+  }
 }
 
 // Verify — pull Firebase data and try to decrypt it
