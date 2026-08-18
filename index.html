@@ -968,6 +968,15 @@ onAuthStateChanged(auth, function(user){
       </div>
     </div>
   </div>
+  <div id="storageWarnBanner" style="display:none;margin:0 14px 8px;background:#fff1f1;border:1.5px solid var(--red);border-radius:var(--radius-sm);padding:11px 13px;">
+    <div style="display:flex;align-items:flex-start;gap:10px;">
+      <span style="font-size:1.1rem;flex-shrink:0;">⚠️</span>
+      <div style="flex:1;font-size:0.8rem;color:var(--red);line-height:1.5;">
+        <strong>This browser is blocking local storage</strong> — the local backup copy of your data won't save on this device, and if Firebase sync fails too, changes can be lost.<br>
+        This usually means <strong>Private Browsing</strong> is on. Open this page in a normal tab instead.
+      </div>
+    </div>
+  </div>
   <!-- ICS sync status banner -->
   <div id="homeICSBanner" style="display:none;margin:0 14px 8px;border:1.5px solid;border-radius:var(--radius-sm);padding:8px 13px;font-size:0.78rem;font-weight:600;transition:all 0.2s;"></div>
   <!-- Recurring Tasks Section -->
@@ -1965,6 +1974,17 @@ const _photoDB = (()=>{
     }
   };
 })();
+
+function isStorageAvailable(){
+  try {
+    const testKey = '__wf_storage_test__';
+    localStorage.setItem(testKey, '1');
+    localStorage.removeItem(testKey);
+    return true;
+  } catch(e) {
+    return false;
+  }
+}
 
 // Debounced save — batches rapid changes into one Firebase write
 let _saveTimer = null;
@@ -5543,6 +5563,10 @@ async function initApp(){
   if(overlay) overlay.classList.add('hidden');
   applyDarkMode();
   if(!S.notes) S.notes=[];
+  if(!isStorageAvailable()){
+    const banner = document.getElementById('storageWarnBanner');
+    if(banner) banner.style.display = 'block';
+  }
   renderHome();
   autoSyncICS();
 }
