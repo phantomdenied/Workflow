@@ -5674,9 +5674,9 @@ function bcFmtDate(d) {
   return m + '/' + day + '/' + y;
 }
 
-// Parses "INITIALS AMOUNT.xlsx" e.g. "DD 247.31.xls" -> { initials: 'DD', amount: 247.31 }
+// Parses "INITIALS AMOUNT.xlsx" e.g. "DD 247.31.xls" or "DD_247.31.xls" -> { initials: 'DD', amount: 247.31 }
 function bcParseFilename(name) {
-  const m = name.match(/^(.+?)\s+(\d+(?:\.\d{1,2})?)\.(xlsx?|xls)$/i);
+  const m = name.match(/^(.+?)[\s_]+(\d+(?:\.\d{1,2})?)\.(xlsx?|xls)$/i);
   if (!m) return null;
   return { initials: m[1].trim(), amount: parseFloat(m[2]) };
 }
