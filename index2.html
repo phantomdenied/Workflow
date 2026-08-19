@@ -831,6 +831,9 @@ const APP_VERSION = 'TEST v1.0.1';
   <div style="padding:0 14px 8px;margin-top:8px;">
     <button class="email-compose-btn" style="background:var(--accent-light);color:var(--accent);" onclick="showScreen('invoiceScreen')">📄 Receiving Log &amp; Invoices</button>
   </div>
+  <div style="padding:0 14px 8px;margin-top:8px;">
+    <button class="email-compose-btn" style="background:var(--accent-light);color:var(--accent);" onclick="showScreen('balanceCalcScreen')">🧮 Balance Calculator</button>
+  </div>
   <div style="padding:0 14px 40px;"></div>
 </div>
 
@@ -1555,6 +1558,186 @@ const APP_VERSION = 'TEST v1.0.1';
   </div>
 </div>
 
+<!-- ══ BALANCE CALCULATOR ══ -->
+<div class="screen" id="balanceCalcScreen">
+  <style>
+  #balanceCalcScreen{background:#0d0d0d;color:#e0e0e0;font-family:'Segoe UI',sans-serif;}
+  #balanceCalcScreen .bc-body{padding:14px 16px 60px;max-width:600px;margin:0 auto;}
+  #balanceCalcScreen h2{font-size:0.85rem;color:#00e676;text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;}
+  #balanceCalcScreen label{display:block;font-size:0.8rem;color:#aaa;margin-bottom:5px;}
+  #balanceCalcScreen input[type="file"]{width:100%;background:#111;border:1px dashed #333;border-radius:6px;padding:12px;color:#ccc;font-size:0.85rem;cursor:pointer;}
+  #balanceCalcScreen input[type="number"],#balanceCalcScreen input[type="date"],#balanceCalcScreen select{width:100%;background:#111;border:1px solid #333;border-radius:6px;padding:10px 12px;color:#fff;font-size:0.95rem;margin-bottom:12px;}
+  #balanceCalcScreen input[type="number"]:focus,#balanceCalcScreen input[type="date"]:focus,#balanceCalcScreen select:focus{outline:none;border-color:#00e676;}
+  #balanceCalcScreen .bc-row2{display:flex;gap:12px;}
+  #balanceCalcScreen .bc-row2>div{flex:1;}
+  #balanceCalcScreen .bc-card{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:10px;padding:20px;margin-bottom:16px;}
+  #balanceCalcScreen .bc-btn{width:100%;font-weight:700;border:none;border-radius:6px;padding:13px;font-size:1rem;cursor:pointer;}
+  #balanceCalcScreen .bc-btn-green{background:#00e676;color:#000;}
+  #balanceCalcScreen .bc-btn-green:hover{background:#00c45e;}
+  #balanceCalcScreen .bc-btn-blue{background:#2255cc;color:#fff;}
+  #balanceCalcScreen .bc-btn-blue:hover{background:#1a44aa;}
+  #balanceCalcScreen .bc-status{margin-top:10px;padding:10px 14px;border-radius:6px;font-size:0.82rem;display:none;}
+  #balanceCalcScreen .bc-status.show{display:block;}
+  #balanceCalcScreen .bc-status.ok{background:#0d1f14;border:1px solid #00e676;color:#00e676;}
+  #balanceCalcScreen .bc-status.err{background:#2a1010;border:1px solid #ff5252;color:#ff7070;}
+  #balanceCalcScreen .bc-status.info{background:#1a1a2a;border:1px solid #5588ff;color:#88aaff;}
+  #balanceCalcScreen .bc-result{display:none;}
+  #balanceCalcScreen .bc-result.show{display:block;}
+  #balanceCalcScreen .bc-balance-box{text-align:center;padding:20px;background:#0d1f14;border:1px solid #00e676;border-radius:10px;margin-bottom:14px;}
+  #balanceCalcScreen .bc-balance-label{font-size:0.8rem;color:#888;margin-bottom:6px;}
+  #balanceCalcScreen .bc-balance-amount{font-size:2.2rem;font-weight:700;color:#00e676;}
+  #balanceCalcScreen .bc-balance-date{font-size:0.8rem;color:#aaa;margin-top:4px;}
+  #balanceCalcScreen .bc-summary-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #222;font-size:0.85rem;}
+  #balanceCalcScreen .bc-summary-row:last-child{border-bottom:none;}
+  #balanceCalcScreen .bc-green{color:#00e676;}
+  #balanceCalcScreen .bc-red{color:#ff5252;}
+  #balanceCalcScreen .bc-gray{color:#888;}
+  #balanceCalcScreen table{width:100%;border-collapse:collapse;font-size:0.75rem;}
+  #balanceCalcScreen th{background:#222;color:#00e676;padding:8px 6px;text-align:left;position:sticky;top:0;}
+  #balanceCalcScreen td{padding:7px 6px;border-bottom:1px solid #1e1e1e;vertical-align:top;}
+  #balanceCalcScreen .bc-code-badge{background:#1a2a1a;color:#00e676;border-radius:4px;padding:1px 6px;font-weight:600;}
+  #balanceCalcScreen .bc-toggle-btn{background:none;border:1px solid #333;color:#888;font-size:0.75rem;padding:5px 12px;border-radius:4px;cursor:pointer;font-weight:400;}
+  #balanceCalcScreen .bc-toggle-btn:hover{border-color:#00e676;color:#00e676;}
+  #balanceCalcScreen .bc-tx-table-wrap{display:none;margin-top:12px;max-height:300px;overflow-y:auto;}
+  #balanceCalcScreen .bc-tx-table-wrap.show{display:block;}
+  #balanceCalcScreen .bc-no-tx{color:#888;font-size:0.82rem;padding:10px 0;}
+  #balanceCalcScreen .bc-code-legend{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+  #balanceCalcScreen .bc-code-pill{font-size:0.72rem;padding:2px 8px;border-radius:12px;}
+  #balanceCalcScreen .bc-pill-green{background:#0d2a1a;color:#00e676;border:1px solid #00e676;}
+  #balanceCalcScreen .bc-pill-red{background:#2a1010;color:#ff7070;border:1px solid #ff5252;}
+  #balanceCalcScreen .bc-file-table{width:100%;border-collapse:collapse;margin-top:10px;}
+  #balanceCalcScreen .bc-file-table th{background:#222;color:#00e676;padding:8px 10px;font-size:0.75rem;text-align:left;font-weight:600;}
+  #balanceCalcScreen .bc-file-table td{padding:8px 10px;border-bottom:1px solid #222;font-size:0.8rem;vertical-align:middle;}
+  #balanceCalcScreen .bc-file-table tr:last-child td{border-bottom:none;}
+  #balanceCalcScreen .bc-file-table input[type="number"]{margin-bottom:0;padding:6px 8px;font-size:0.85rem;}
+  #balanceCalcScreen .bc-file-status-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;}
+  #balanceCalcScreen .bc-dot-ok{background:#00e676;}
+  #balanceCalcScreen .bc-dot-err{background:#ff5252;}
+  #balanceCalcScreen .bc-dot-spin{background:#5588ff;animation:bc-spin-dot 1s linear infinite;}
+  @keyframes bc-spin-dot{0%{opacity:1}50%{opacity:.2}100%{opacity:1}}
+  #balanceCalcScreen .bc-fname{color:#ccc;word-break:break-all;}
+  #balanceCalcScreen .bc-tracked-count{color:#00e676;font-weight:600;}
+  #balanceCalcScreen .bc-hidden{display:none;}
+  </style>
+  <div class="app-header">
+    <button class="back-btn" onclick="showScreen('homeScreen')">←</button>
+    <div><div class="header-title">Balance Calculator</div><div class="header-sub">Acumatica Cash Audit</div></div>
+  </div>
+  <div class="bc-body">
+
+    <!-- TRACKED CODES LEGEND -->
+    <div class="bc-card">
+      <h2>Tracked Transaction Codes</h2>
+      <label style="margin-bottom:6px">Credits — money INTO primary safe</label>
+      <div class="bc-code-legend">
+        <span class="bc-code-pill bc-pill-green">690 · Return of Change / Refund</span>
+        <span class="bc-code-pill bc-pill-green">730 · Personal Account Check</span>
+        <span class="bc-code-pill bc-pill-green">750 · Wages</span>
+        <span class="bc-code-pill bc-pill-green">760 · Gifts / Refunds / Other</span>
+      </div>
+      <br>
+      <label style="margin-bottom:6px">Debits — money OUT of primary safe</label>
+      <div class="bc-code-legend">
+        <span class="bc-code-pill bc-pill-red">670 · Withdrawal from Primary Safe</span>
+        <span class="bc-code-pill bc-pill-red">710 · Return to Business Office</span>
+      </div>
+      <p style="color:#555;font-size:0.75rem;margin-top:10px">All other codes are ignored.</p>
+    </div>
+
+    <!-- STEP 1: UPLOAD (multiple files) -->
+    <div class="bc-card">
+      <h2>1. Upload Account History Files</h2>
+      <label>Select one or more .xlsx exports from Acumatica — each file = one account tab in the report</label>
+      <input type="file" id="bcFileInput" accept=".xlsx,.xls" multiple>
+      <div id="bcFileListWrap" class="bc-hidden" style="margin-top:14px">
+        <table class="bc-file-table">
+          <thead><tr><th>File</th><th>Status</th><th>Tracked Txns</th></tr></thead>
+          <tbody id="bcFileListBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- STEP 2: BALANCE CALCULATOR (single account) -->
+    <div class="bc-card">
+      <h2>2. Estimate Balance on a Past Date (Single Account)</h2>
+      <label>Select account</label>
+      <select id="bcCalcFileSelect">
+        <option value="">— upload files first —</option>
+      </select>
+      <label>Current cash balance for that account (right now)</label>
+      <input type="number" id="bcCurrentBalance" placeholder="e.g. 312.45" step="0.01">
+      <div id="bcBalanceAutoNote" class="bc-status info" style="margin-top:-6px;margin-bottom:12px"></div>
+      <label>Target date — what date do you want to know the balance for?</label>
+      <input type="date" id="bcTargetDate">
+      <button class="bc-btn bc-btn-green" onclick="bcCalculate()">Calculate Balance</button>
+      <div id="bcCalcStatus" class="bc-status"></div>
+    </div>
+
+    <!-- RESULT -->
+    <div class="bc-card bc-result" id="bcResultCard">
+      <h2>Result</h2>
+      <div class="bc-balance-box">
+        <div class="bc-balance-label">ESTIMATED CASH BALANCE ON</div>
+        <div class="bc-balance-amount" id="bcResultAmount">$0.00</div>
+        <div class="bc-balance-date" id="bcResultDate"></div>
+      </div>
+      <div class="bc-summary-row"><span>Current balance (today)</span><span class="bc-green" id="bcSumCurrent"></span></div>
+      <div class="bc-summary-row"><span>Deposits after target date (removed)</span><span class="bc-red" id="bcSumIn"></span></div>
+      <div class="bc-summary-row"><span>Withdrawals after target date (added back)</span><span class="bc-green" id="bcSumOut"></span></div>
+      <div class="bc-summary-row" style="font-weight:700"><span>Estimated balance on target date</span><span class="bc-green" id="bcSumResult"></span></div>
+      <br>
+      <button class="bc-toggle-btn" onclick="document.getElementById('bcTxTable').classList.toggle('show')">Show / Hide Transactions Used</button>
+      <div class="bc-tx-table-wrap" id="bcTxTable"></div>
+    </div>
+
+    <!-- STEP 2B: BATCH TARGET DATE MODE (ALL ACCOUNTS) -->
+    <div class="bc-card">
+      <h2>2B. Batch Mode — All Accounts on One Target Date</h2>
+      <p style="color:#888;font-size:0.8rem;margin-bottom:14px">Uses the current balance parsed from each "INITIALS AMOUNT.xlsx" filename as the starting point, then rolls every account back to the target date at once.</p>
+      <label>Target date — what date do you want balances for?</label>
+      <input type="date" id="bcBatchTargetDate">
+      <button class="bc-btn bc-btn-green" onclick="bcCalculateBatch()">Calculate All Accounts</button>
+      <div id="bcBatchStatus" class="bc-status"></div>
+      <div id="bcBatchResultWrap" class="bc-hidden" style="margin-top:16px">
+        <table class="bc-file-table">
+          <thead><tr><th>Account</th><th>Current Balance</th><th>Balance on Target Date</th></tr></thead>
+          <tbody id="bcBatchResultBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- STEP 3: MULTI-ACCOUNT AUDIT EXPORT -->
+    <div class="bc-card">
+      <h2>3. Export Running Balance Report</h2>
+      <p style="color:#888;font-size:0.8rem;margin-bottom:14px">Each uploaded file gets its own tab in one Excel workbook. Enter the known ending balance for each account below.</p>
+
+      <div class="bc-row2">
+        <div>
+          <label>Report start date</label>
+          <input type="date" id="bcReportStart">
+        </div>
+        <div>
+          <label>Report end date</label>
+          <input type="date" id="bcReportEnd">
+        </div>
+      </div>
+
+      <div id="bcEndingBalancesWrap" class="bc-hidden" style="margin-bottom:14px">
+        <label style="margin-bottom:8px">Ending balance for each account (as of the report end date)</label>
+        <table class="bc-file-table">
+          <thead><tr><th>Account File</th><th>Tracked Txns in Range</th><th>Ending Balance</th></tr></thead>
+          <tbody id="bcEndingBalancesBody"></tbody>
+        </table>
+      </div>
+      <div id="bcEndingBalancesEmpty" style="color:#555;font-size:0.8rem;margin-bottom:14px">Upload files first to enter ending balances.</div>
+
+      <button class="bc-btn bc-btn-blue" onclick="bcExportReport()">Download Excel Report</button>
+      <div id="bcExportStatus" class="bc-status"></div>
+    </div>
+
+  </div>
+</div>
+
 <div class="screen" id="notesScreen">
   <div class="app-header notes-app-header">
     <div style="display:flex;align-items:flex-end;justify-content:space-between;width:100%;padding-bottom:12px;">
@@ -1838,7 +2021,7 @@ function showScreen(id){
   ['navHome','navHistory','navNotes','navSettings'].forEach(n=>{
     const el=document.getElementById(n); if(el) el.classList.remove('active');
   });
-  const map={homeScreen:'navHome',historyScreen:'navHistory',notesScreen:'navNotes',settingsScreen:'navSettings',houseScreen:'navHome',invoiceScreen:'navHome',emailScreen:'navHome'};
+  const map={homeScreen:'navHome',historyScreen:'navHistory',notesScreen:'navNotes',settingsScreen:'navSettings',houseScreen:'navHome',invoiceScreen:'navHome',emailScreen:'navHome',balanceCalcScreen:'navHome'};
   if(map[id]){ const el=document.getElementById(map[id]); if(el) el.classList.add('active'); }
   // Scroll to top
   const el=document.getElementById(id);
@@ -4839,6 +5022,503 @@ async function initApp(){
 document.addEventListener('DOMContentLoaded', initApp);
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+// ═══════════════════════════════════════
+// BALANCE CALCULATOR (from ACal)
+// ═══════════════════════════════════════
+const BC_CREDIT_CODES = new Set([690, 730, 750, 760]);
+const BC_DEBIT_CODES  = new Set([670, 710]);
+
+const BC_CODE_DESC = {
+  690: 'Return of Change to Primary Safe / Refund',
+  730: 'Cash Deposit – Personal Account Check',
+  750: 'Cash Deposit – Wages',
+  760: 'Cash Deposit – Gifts/Refunds/Other',
+  670: 'Cash Withdrawal – From Primary Safe',
+  710: 'Cash Withdrawal – Return to Business Office',
+};
+
+// bcLoadedFiles: [{name, rows, tracked}]
+let bcLoadedFiles = [];
+let bcPendingCount = 0;
+
+function bcSetStatus(id, msg, type) {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.className = 'bc-status show ' + type;
+}
+function bcHideStatus(id) { document.getElementById(id).className = 'bc-status'; }
+
+document.getElementById('bcFileInput').addEventListener('change', function() {
+  const files = Array.from(this.files);
+  if (!files.length) return;
+
+  bcLoadedFiles = [];
+  bcPendingCount = files.length;
+
+  // Reset UI
+  const tbody = document.getElementById('bcFileListBody');
+  tbody.innerHTML = '';
+  document.getElementById('bcFileListWrap').classList.remove('bc-hidden');
+  document.getElementById('bcCalcFileSelect').innerHTML = '<option value="">— loading... —</option>';
+  document.getElementById('bcEndingBalancesBody').innerHTML = '';
+  document.getElementById('bcEndingBalancesWrap').classList.add('bc-hidden');
+  document.getElementById('bcEndingBalancesEmpty').style.display = 'block';
+
+  files.forEach((file, idx) => {
+    // Reserve a slot in bcLoadedFiles
+    const parsed = bcParseFilename(file.name);
+    bcLoadedFiles.push({ name: file.name, rows: [], tracked: 0, idx, initials: parsed && parsed.initials, parsedAmount: parsed && parsed.amount });
+
+    // Add a row to the file list table
+    const tr = document.createElement('tr');
+    tr.id = 'bc-frow-' + idx;
+    tr.innerHTML = `
+      <td class="bc-fname">${esc(file.name)}</td>
+      <td><span class="bc-file-status-dot bc-dot-spin" id="bc-fdot-${idx}"></span><span id="bc-fmsg-${idx}">Reading...</span></td>
+      <td id="bc-fcount-${idx}">—</td>
+    `;
+    tbody.appendChild(tr);
+
+    bcParseFile(file, idx);
+  });
+});
+
+// Also update ending balances table when dates change
+['bcReportStart', 'bcReportEnd'].forEach(id => {
+  document.getElementById(id).addEventListener('change', bcRefreshEndingBalancesTable);
+});
+
+function bcParseFile(file, idx) {
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const wb = XLSX.read(e.target.result, { type: 'binary' });
+      const ws = wb.Sheets[wb.SheetNames[0]];
+
+      let maxRow = 0;
+      Object.keys(ws).forEach(key => {
+        if (key.startsWith('!')) return;
+        const m = key.match(/(\d+)$/);
+        if (m) maxRow = Math.max(maxRow, parseInt(m[1]));
+      });
+
+      if (maxRow < 2) {
+        bcMarkFileError(idx, 'No data rows found');
+        return;
+      }
+
+      function cellVal(col, row) {
+        const c = ws[col.toLowerCase() + row] || ws[col.toUpperCase() + row];
+        return c ? c.v : null;
+      }
+
+      const colLetters = 'abcdefghijklm'.split('');
+      const headers = {};
+      colLetters.forEach(col => {
+        const v = cellVal(col, 1);
+        if (v != null) headers[String(v).toLowerCase().trim()] = col;
+      });
+
+      const dateCol = headers['date'] || 'a';
+      const codeCol = headers['code'] || 'b';
+      const tranKey = Object.keys(headers).find(h => h.includes('transaction'));
+      const tranCol = tranKey ? headers[tranKey] : 'c';
+      const amtKey  = Object.keys(headers).find(h => h.includes('amount'));
+      const amtCol  = amtKey ? headers[amtKey] : 'd';
+      const descKey = Object.keys(headers).find(h => h === 'description');
+      const descCol = descKey ? headers[descKey] : 'e';
+
+      const rows = [];
+      for (let r = 2; r <= maxRow; r++) {
+        const rawDate = cellVal(dateCol, r);
+        const rawCode = cellVal(codeCol, r);
+        const rawAmt  = cellVal(amtCol, r);
+        const rawDesc = cellVal(descCol, r) || cellVal(tranCol, r) || '';
+
+        if (rawDate == null || rawCode == null || rawAmt == null) continue;
+        const code   = parseInt(String(rawCode).trim());
+        const amount = parseFloat(rawAmt);
+        if (isNaN(code) || isNaN(amount) || amount === 0) continue;
+
+        let dateStr;
+        if (typeof rawDate === 'number') {
+          dateStr = bcExcelSerialToDateStr(rawDate);
+        } else {
+          const d = new Date(rawDate);
+          if (isNaN(d.getTime())) continue;
+          dateStr = d.getUTCFullYear() + '-' +
+                    String(d.getUTCMonth() + 1).padStart(2, '0') + '-' +
+                    String(d.getUTCDate()).padStart(2, '0');
+        }
+        rows.push({ date: dateStr, code, amount, desc: String(rawDesc) });
+      }
+
+      if (rows.length === 0) {
+        bcMarkFileError(idx, 'No valid transactions found');
+        return;
+      }
+
+      const tracked = rows.filter(r => BC_CREDIT_CODES.has(r.code) || BC_DEBIT_CODES.has(r.code)).length;
+      bcLoadedFiles[idx].rows = rows;
+      bcLoadedFiles[idx].tracked = tracked;
+
+      document.getElementById('bc-fdot-' + idx).className = 'bc-file-status-dot bc-dot-ok';
+      document.getElementById('bc-fmsg-' + idx).textContent = rows.length + ' rows loaded';
+      document.getElementById('bc-fcount-' + idx).innerHTML = '<span class="bc-tracked-count">' + tracked + '</span>';
+
+    } catch(err) {
+      bcMarkFileError(idx, 'Error: ' + err.message);
+    }
+    bcFileLoadDone();
+  };
+  reader.onerror = () => { bcMarkFileError(idx, 'Could not read file'); bcFileLoadDone(); };
+  reader.readAsBinaryString(file);
+}
+
+function bcMarkFileError(idx, msg) {
+  document.getElementById('bc-fdot-' + idx).className = 'bc-file-status-dot bc-dot-err';
+  document.getElementById('bc-fmsg-' + idx).textContent = msg;
+  document.getElementById('bc-fcount-' + idx).textContent = '0';
+  bcLoadedFiles[idx].rows = [];
+  bcLoadedFiles[idx].tracked = 0;
+}
+
+function bcFileLoadDone() {
+  bcPendingCount--;
+  if (bcPendingCount > 0) return;
+
+  // All files done — update selects
+  const okFiles = bcLoadedFiles.filter(f => f.rows.length > 0);
+
+  // Calculator select
+  const sel = document.getElementById('bcCalcFileSelect');
+  sel.innerHTML = okFiles.length === 0
+    ? '<option value="">— no valid files —</option>'
+    : okFiles.map(f => `<option value="${f.idx}">${esc(f.name)}</option>`).join('');
+
+  bcAutoFillCurrentBalance();
+
+  // Ending balances table
+  bcRefreshEndingBalancesTable();
+}
+
+document.getElementById('bcCalcFileSelect').addEventListener('change', bcAutoFillCurrentBalance);
+
+// Auto-fills the "current cash balance" field from the amount parsed out of the
+// selected file's name (e.g. "SW 237.76.xlsx" -> 237.76), when available.
+function bcAutoFillCurrentBalance() {
+  const note = document.getElementById('bcBalanceAutoNote');
+  const selIdx = parseInt(document.getElementById('bcCalcFileSelect').value);
+  if (isNaN(selIdx) || !bcLoadedFiles[selIdx]) { note.className = 'bc-status'; return; }
+
+  const file = bcLoadedFiles[selIdx];
+  if (file.parsedAmount != null) {
+    document.getElementById('bcCurrentBalance').value = file.parsedAmount;
+    note.textContent = 'Auto-filled ' + bcFmt(file.parsedAmount) + ' from filename "' + file.name + '".';
+    note.className = 'bc-status show info';
+  } else {
+    note.textContent = 'Filename doesn\'t include a balance — enter it manually.';
+    note.className = 'bc-status show info';
+  }
+}
+
+function bcRefreshEndingBalancesTable() {
+  const okFiles = bcLoadedFiles.filter(f => f.rows.length > 0);
+  if (okFiles.length === 0) return;
+
+  const startDate = document.getElementById('bcReportStart').value;
+  const endDate   = document.getElementById('bcReportEnd').value;
+
+  const tbody = document.getElementById('bcEndingBalancesBody');
+  // Preserve any already-entered ending balances
+  const existingVals = {};
+  tbody.querySelectorAll('tr[data-idx]').forEach(tr => {
+    const inp = tr.querySelector('input');
+    if (inp && inp.value) existingVals[tr.dataset.idx] = inp.value;
+  });
+
+  tbody.innerHTML = '';
+  okFiles.forEach(f => {
+    const inRange = (startDate && endDate)
+      ? f.rows.filter(r => r.date >= startDate && r.date <= endDate && (BC_CREDIT_CODES.has(r.code) || BC_DEBIT_CODES.has(r.code))).length
+      : f.tracked;
+
+    const prefill = existingVals[f.idx] !== undefined ? existingVals[f.idx]
+                   : (f.parsedAmount != null ? f.parsedAmount : '');
+
+    const label = f.initials
+      ? esc(f.initials) + ' <span style="color:#666">(' + esc(f.name) + ')</span>'
+      : esc(f.name);
+
+    const tr = document.createElement('tr');
+    tr.dataset.idx = f.idx;
+    tr.innerHTML = `
+      <td class="bc-fname">${label}</td>
+      <td><span class="bc-tracked-count">${inRange}</span></td>
+      <td><input type="number" step="0.01" placeholder="e.g. 312.45" data-idx="${f.idx}" class="bc-ending-bal-input" value="${prefill}"></td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  document.getElementById('bcEndingBalancesWrap').classList.remove('bc-hidden');
+  document.getElementById('bcEndingBalancesEmpty').style.display = 'none';
+}
+
+function bcCalculate() {
+  bcHideStatus('bcCalcStatus');
+
+  const selIdx = parseInt(document.getElementById('bcCalcFileSelect').value);
+  if (isNaN(selIdx)) { bcSetStatus('bcCalcStatus', 'Select an account file.', 'err'); return; }
+  const file = bcLoadedFiles[selIdx];
+  if (!file || file.rows.length === 0) { bcSetStatus('bcCalcStatus', 'Selected file has no valid data.', 'err'); return; }
+
+  const balInput = document.getElementById('bcCurrentBalance').value.trim();
+  if (!balInput) { bcSetStatus('bcCalcStatus', 'Enter the current cash balance.', 'err'); return; }
+  const currentBalance = parseFloat(balInput);
+  if (isNaN(currentBalance)) { bcSetStatus('bcCalcStatus', 'Balance must be a number.', 'err'); return; }
+
+  const targetDate = document.getElementById('bcTargetDate').value;
+  if (!targetDate) { bcSetStatus('bcCalcStatus', 'Select a target date.', 'err'); return; }
+
+  const afterRows = file.rows.filter(r =>
+    r.date > targetDate && (BC_CREDIT_CODES.has(r.code) || BC_DEBIT_CODES.has(r.code))
+  );
+
+  let depositsAfter = 0, withdrawalsAfter = 0;
+  afterRows.forEach(r => {
+    if (BC_CREDIT_CODES.has(r.code)) depositsAfter += r.amount;
+    if (BC_DEBIT_CODES.has(r.code))  withdrawalsAfter += r.amount;
+  });
+
+  const estimated = currentBalance - depositsAfter + withdrawalsAfter;
+
+  document.getElementById('bcResultAmount').textContent = bcFmt(estimated);
+  document.getElementById('bcResultDate').textContent   = 'As of ' + bcFmtDate(targetDate) + ' — ' + esc(file.name);
+  document.getElementById('bcSumCurrent').textContent   = bcFmt(currentBalance);
+  document.getElementById('bcSumIn').textContent        = '- ' + bcFmt(depositsAfter);
+  document.getElementById('bcSumOut').textContent       = '+ ' + bcFmt(withdrawalsAfter);
+  document.getElementById('bcSumResult').textContent    = bcFmt(estimated);
+
+  if (afterRows.length === 0) {
+    document.getElementById('bcTxTable').innerHTML = '<p class="bc-no-tx">No tracked transactions found after ' + bcFmtDate(targetDate) + '.</p>';
+  } else {
+    let html = '<table><thead><tr><th>Date</th><th>Code</th><th>Description</th><th>Amount</th><th>Effect</th></tr></thead><tbody>';
+    afterRows.slice().sort((a, b) => b.date.localeCompare(a.date)).forEach(r => {
+      const isCredit = BC_CREDIT_CODES.has(r.code);
+      html += '<tr>' +
+        '<td>' + bcFmtDate(r.date) + '</td>' +
+        '<td><span class="bc-code-badge">' + r.code + '</span></td>' +
+        '<td>' + esc(r.desc) + '</td>' +
+        '<td class="' + (isCredit ? 'bc-red' : 'bc-green') + '">' + bcFmt(r.amount) + '</td>' +
+        '<td class="bc-gray">' + (isCredit ? 'deposit removed' : 'withdrawal added back') + '</td>' +
+        '</tr>';
+    });
+    html += '</tbody></table>';
+    document.getElementById('bcTxTable').innerHTML = html;
+  }
+
+  const rc = document.getElementById('bcResultCard');
+  rc.classList.add('show');
+  rc.scrollIntoView({ behavior: 'smooth' });
+}
+
+function bcCalculateBatch() {
+  bcHideStatus('bcBatchStatus');
+
+  const targetDate = document.getElementById('bcBatchTargetDate').value;
+  if (!targetDate) { bcSetStatus('bcBatchStatus', 'Select a target date.', 'err'); return; }
+
+  const okFiles = bcLoadedFiles.filter(f => f.rows.length > 0);
+  if (okFiles.length === 0) { bcSetStatus('bcBatchStatus', 'Upload files first.', 'err'); return; }
+
+  const tbody = document.getElementById('bcBatchResultBody');
+  tbody.innerHTML = '';
+
+  let calculated = 0, skipped = 0;
+
+  okFiles.forEach(f => {
+    const label = f.initials
+      ? esc(f.initials) + ' <span style="color:#666">(' + esc(f.name) + ')</span>'
+      : esc(f.name);
+
+    const tr = document.createElement('tr');
+
+    if (f.parsedAmount == null) {
+      skipped++;
+      tr.innerHTML = `
+        <td class="bc-fname">${label}</td>
+        <td class="bc-gray">—</td>
+        <td class="bc-gray">no balance in filename</td>
+      `;
+      tbody.appendChild(tr);
+      return;
+    }
+
+    const afterRows = f.rows.filter(r =>
+      r.date > targetDate && (BC_CREDIT_CODES.has(r.code) || BC_DEBIT_CODES.has(r.code))
+    );
+    let depositsAfter = 0, withdrawalsAfter = 0;
+    afterRows.forEach(r => {
+      if (BC_CREDIT_CODES.has(r.code)) depositsAfter += r.amount;
+      if (BC_DEBIT_CODES.has(r.code))  withdrawalsAfter += r.amount;
+    });
+    const estimated = f.parsedAmount - depositsAfter + withdrawalsAfter;
+    calculated++;
+
+    tr.innerHTML = `
+      <td class="bc-fname">${label}</td>
+      <td>${bcFmt(f.parsedAmount)}</td>
+      <td class="bc-green" style="font-weight:700">${bcFmt(estimated)}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  document.getElementById('bcBatchResultWrap').classList.remove('bc-hidden');
+
+  let msg = '✓ Calculated ' + calculated + ' account(s) for ' + bcFmtDate(targetDate);
+  if (skipped > 0) msg += ' · ' + skipped + ' skipped (no balance in filename)';
+  bcSetStatus('bcBatchStatus', msg, calculated > 0 ? 'ok' : 'err');
+}
+
+function bcExportReport() {
+  bcHideStatus('bcExportStatus');
+
+  const startDate = document.getElementById('bcReportStart').value;
+  const endDate   = document.getElementById('bcReportEnd').value;
+  if (!startDate || !endDate) { bcSetStatus('bcExportStatus', 'Select both a start and end date.', 'err'); return; }
+  if (startDate > endDate)    { bcSetStatus('bcExportStatus', 'Start date must be before end date.', 'err'); return; }
+
+  // Collect ending balances from the dynamic inputs
+  const inputs = document.querySelectorAll('.bc-ending-bal-input');
+  if (inputs.length === 0) { bcSetStatus('bcExportStatus', 'Upload files first.', 'err'); return; }
+
+  const entries = [];
+  let missingBalance = false;
+
+  inputs.forEach(inp => {
+    const idx = parseInt(inp.dataset.idx);
+    const file = bcLoadedFiles[idx];
+    const val = inp.value.trim();
+    if (!val) { missingBalance = true; return; }
+    const ending = parseFloat(val);
+    if (isNaN(ending)) { missingBalance = true; return; }
+    entries.push({ file, ending });
+  });
+
+  if (missingBalance) { bcSetStatus('bcExportStatus', 'Enter the ending balance for every account.', 'err'); return; }
+  if (entries.length === 0) { bcSetStatus('bcExportStatus', 'No valid accounts to export.', 'err'); return; }
+
+  const wb = XLSX.utils.book_new();
+
+  entries.forEach(({ file, ending }) => {
+    const rows = file.rows
+      .filter(r => r.date >= startDate && r.date <= endDate && (BC_CREDIT_CODES.has(r.code) || BC_DEBIT_CODES.has(r.code)))
+      .sort((a, b) => a.date.localeCompare(b.date) || a.code - b.code);
+
+    // Calculate opening balance by reversing all transactions from the ending
+    let opening = ending;
+    rows.forEach(r => {
+      if (BC_CREDIT_CODES.has(r.code)) opening -= r.amount;
+      if (BC_DEBIT_CODES.has(r.code))  opening += r.amount;
+    });
+
+    const data = [];
+    data.push(['Acumatica Primary Safe — Running Balance Audit']);
+    data.push(['Account File:', file.name]);
+    data.push(['Date Range:', bcFmtDate(startDate) + '  to  ' + bcFmtDate(endDate)]);
+    data.push(['Opening Balance (calculated):', opening]);
+    data.push(['Ending Balance (known):', ending]);
+    data.push([]);
+    data.push(['Date', 'Tran Code', 'Code Description', 'Transaction Description', 'Type', 'Amount', 'Running Balance']);
+
+    let running = opening;
+    let totalDep = 0, totalWith = 0;
+
+    if (rows.length === 0) {
+      data.push(['No tracked transactions in this date range.']);
+    } else {
+      rows.forEach(r => {
+        const isCredit = BC_CREDIT_CODES.has(r.code);
+        if (isCredit) { running += r.amount; totalDep  += r.amount; }
+        else          { running -= r.amount; totalWith += r.amount; }
+        data.push([
+          bcFmtDate(r.date),
+          r.code,
+          BC_CODE_DESC[r.code] || '',
+          r.desc,
+          isCredit ? 'DEPOSIT' : 'WITHDRAWAL',
+          isCredit ? r.amount : -r.amount,
+          running,
+        ]);
+      });
+    }
+
+    data.push([]);
+    data.push(['SUMMARY']);
+    data.push(['Opening Balance (calculated)', '', '', '', '', '', opening]);
+    data.push(['Total Deposits',              '', '', '', '', '', totalDep]);
+    data.push(['Total Withdrawals',           '', '', '', '', '', totalWith]);
+    data.push(['Closing Balance (verify = known ending)', '', '', '', '', '', running]);
+
+    const ws = XLSX.utils.aoa_to_sheet(data);
+    ws['!cols'] = [
+      { wch: 12 }, { wch: 10 }, { wch: 36 }, { wch: 38 }, { wch: 12 }, { wch: 12 }, { wch: 16 }
+    ];
+
+    // Tab name: initials if filename matched the naming convention, else filename without extension (max 31 chars, Excel limit)
+    let tabName = (file.initials || file.name.replace(/\.[^.]+$/, '')).replace(/[\\/*?:[\]]/g, '-').substring(0, 31);
+    // Avoid duplicate tab names
+    let base = tabName, n = 2;
+    while (wb.SheetNames.includes(tabName)) { tabName = (base.substring(0, 28) + '-' + n++); }
+
+    XLSX.utils.book_append_sheet(wb, ws, tabName);
+  });
+
+  // Download
+  const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+  const buf = new ArrayBuffer(wbout.length);
+  const view = new Uint8Array(buf);
+  for (let i = 0; i < wbout.length; i++) view[i] = wbout.charCodeAt(i) & 0xff;
+  const blob = new Blob([buf], { type: 'application/octet-stream' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'balance_audit_' + startDate + '_to_' + endDate + '.xlsx';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  bcSetStatus('bcExportStatus', '✓ Downloaded ' + entries.length + ' account tab(s) · ' + startDate + ' to ' + endDate, 'ok');
+}
+
+function bcExcelSerialToDateStr(serial) {
+  const ms = (serial - 25569) * 86400 * 1000;
+  const d = new Date(ms);
+  return d.getUTCFullYear() + '-' +
+         String(d.getUTCMonth() + 1).padStart(2, '0') + '-' +
+         String(d.getUTCDate()).padStart(2, '0');
+}
+
+function bcFmt(n) {
+  const neg = n < 0;
+  return (neg ? '-$' : '$') + Math.abs(n).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+function bcFmtDate(d) {
+  const [y, m, day] = d.split('-');
+  return m + '/' + day + '/' + y;
+}
+
+// Parses "INITIALS AMOUNT.xlsx" e.g. "DD 247.31.xls" -> { initials: 'DD', amount: 247.31 }
+function bcParseFilename(name) {
+  const m = name.match(/^(.+?)\s+(\d+(?:\.\d{1,2})?)\.(xlsx?|xls)$/i);
+  if (!m) return null;
+  return { initials: m[1].trim(), amount: parseFloat(m[2]) };
+}
+</script>
 
 <script src="js/features/receiving/receiving-pdf.js"></script>
 <script src="js/features/receiving/receiving-ui.js"></script>
