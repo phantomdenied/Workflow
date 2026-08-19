@@ -834,6 +834,9 @@ const APP_VERSION = 'TEST v1.0.1';
   <div style="padding:0 14px 8px;margin-top:8px;">
     <button class="email-compose-btn" style="background:var(--accent-light);color:var(--accent);" onclick="showScreen('balanceCalcScreen')">🧮 Balance Calculator</button>
   </div>
+  <div style="padding:0 14px 8px;margin-top:8px;">
+    <button class="email-compose-btn" style="background:var(--accent-light);color:var(--accent);" onclick="showScreen('ppeAuditScreen')">🪪 PEP/MMA Audit</button>
+  </div>
   <div style="padding:0 14px 40px;"></div>
 </div>
 
@@ -1738,6 +1741,42 @@ const APP_VERSION = 'TEST v1.0.1';
   </div>
 </div>
 
+<!-- ══ PEP/MMA AUDIT ══ -->
+<div class="screen" id="ppeAuditScreen">
+  <style>
+  .ppe-house-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin:0 14px 14px;overflow:hidden;}
+  .ppe-indiv-row{padding:14px;border-bottom:1px solid var(--border);}
+  .ppe-indiv-row:last-child{border-bottom:none;}
+  .ppe-indiv-name{font-weight:700;font-size:0.92rem;margin-bottom:10px;color:var(--text);}
+  .ppe-date-grid{display:flex;gap:10px;}
+  .ppe-date-field{flex:1;display:flex;flex-direction:column;gap:4px;min-width:0;}
+  .ppe-date-lbl{font-size:0.68rem;font-weight:700;color:var(--muted);font-family:'DM Mono',monospace;text-transform:uppercase;}
+  .ppe-date-input{border:1.5px solid var(--border);border-radius:8px;padding:9px 11px;font-size:0.85rem;font-family:'DM Sans',sans-serif;outline:none;background:var(--surface2);width:100%;color:var(--text);}
+  .ppe-date-input:focus{border-color:var(--accent);}
+  .ppe-date-input.valid{border-color:var(--green);}
+  .ppe-date-input.warn{border-color:var(--orange);}
+  .ppe-date-input.expired{border-color:var(--red);}
+  .ppe-date-status{font-size:0.68rem;font-weight:700;padding:4px 7px;border-radius:6px;margin-top:2px;line-height:1.3;}
+  .ppe-date-status.none{background:var(--surface2);color:var(--muted);}
+  .ppe-date-status.valid{background:var(--green-light);color:var(--green);}
+  .ppe-date-status.warn{background:var(--orange-light);color:var(--orange);}
+  .ppe-date-status.expired{background:var(--red-light);color:var(--red);}
+  .ppe-legend{display:flex;flex-wrap:wrap;gap:8px;padding:0 14px 14px;}
+  .ppe-legend-item{display:flex;align-items:center;gap:5px;font-size:0.72rem;color:var(--muted);}
+  .ppe-legend-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+  </style>
+  <div class="app-header">
+    <button class="back-btn" onclick="showScreen('homeScreen')">←</button>
+    <div><div class="header-title">PEP/MMA Audit</div><div class="header-sub">Review &amp; Update Dates</div></div>
+  </div>
+  <div class="ppe-legend">
+    <div class="ppe-legend-item"><span class="ppe-legend-dot" style="background:var(--green)"></span>Current (within 10 months)</div>
+    <div class="ppe-legend-item"><span class="ppe-legend-dot" style="background:var(--orange)"></span>Renew soon (10–12 months)</div>
+    <div class="ppe-legend-item"><span class="ppe-legend-dot" style="background:var(--red)"></span>Expired (over 1 year)</div>
+  </div>
+  <div id="ppeAuditContainer" style="padding-bottom:40px;"></div>
+</div>
+
 <div class="screen" id="notesScreen">
   <div class="app-header notes-app-header">
     <div style="display:flex;align-items:flex-end;justify-content:space-between;width:100%;padding-bottom:12px;">
@@ -2021,7 +2060,7 @@ function showScreen(id){
   ['navHome','navHistory','navNotes','navSettings'].forEach(n=>{
     const el=document.getElementById(n); if(el) el.classList.remove('active');
   });
-  const map={homeScreen:'navHome',historyScreen:'navHistory',notesScreen:'navNotes',settingsScreen:'navSettings',houseScreen:'navHome',invoiceScreen:'navHome',emailScreen:'navHome',balanceCalcScreen:'navHome'};
+  const map={homeScreen:'navHome',historyScreen:'navHistory',notesScreen:'navNotes',settingsScreen:'navSettings',houseScreen:'navHome',invoiceScreen:'navHome',emailScreen:'navHome',balanceCalcScreen:'navHome',ppeAuditScreen:'navHome'};
   if(map[id]){ const el=document.getElementById(map[id]); if(el) el.classList.add('active'); }
   // Scroll to top
   const el=document.getElementById(id);
@@ -2031,6 +2070,64 @@ function showScreen(id){
   if(id==='settingsScreen'){ renderSettings(); renderSigThumbs(); }
   if(id==='notesScreen') renderNotes();
   if(id==='invoiceScreen') invInit();
+  if(id==='ppeAuditScreen') renderPpeAudit();
+}
+
+// ═══════════════════════════════════════
+// PEP/MMA AUDIT
+// ═══════════════════════════════════════
+function ppeDateStatus(dateStr){
+  if(!dateStr) return {cls:'none', label:'Not set'};
+  const st = auditDateStatus(dateStr);
+  const cls = st.cls==='expired' ? 'expired' : st.cls==='warn' ? 'warn' : 'valid';
+  return {cls, label: st.msg};
+}
+
+function renderPpeAudit(){
+  const cont = document.getElementById('ppeAuditContainer');
+  if(!cont) return;
+  if(S.individuals.length===0){
+    cont.innerHTML = `<div style="text-align:center;padding:48px 20px;color:var(--muted);font-size:0.85rem;">No individuals yet — add them in ⚙️ Settings</div>`;
+    return;
+  }
+  let html='';
+  S.houses.forEach(h=>{
+    const indivs = S.individuals.filter(i=>i.houseId===h.id);
+    if(indivs.length===0) return;
+    html += `<div class="section-label">${esc(h.name)}${h.closed?' (Closed)':''}</div>`;
+    html += `<div class="ppe-house-card">`;
+    indivs.forEach(ind=>{
+      const pepSt = ppeDateStatus(ind.pepDate);
+      const mmaSt = ppeDateStatus(ind.mmaDate);
+      html += `
+      <div class="ppe-indiv-row">
+        <div class="ppe-indiv-name">${esc(ind.name)}</div>
+        <div class="ppe-date-grid">
+          <div class="ppe-date-field">
+            <div class="ppe-date-lbl">PEP Date</div>
+            <input class="ppe-date-input ${pepSt.cls}" type="date" value="${ind.pepDate||''}" onchange="ppeDateEdit('${ind.id}','pepDate',this.value)">
+            <div class="ppe-date-status ${pepSt.cls}">${esc(pepSt.label)}</div>
+          </div>
+          <div class="ppe-date-field">
+            <div class="ppe-date-lbl">MMA Date</div>
+            <input class="ppe-date-input ${mmaSt.cls}" type="date" value="${ind.mmaDate||''}" onchange="ppeDateEdit('${ind.id}','mmaDate',this.value)">
+            <div class="ppe-date-status ${mmaSt.cls}">${esc(mmaSt.label)}</div>
+          </div>
+        </div>
+      </div>`;
+    });
+    html += `</div>`;
+  });
+  cont.innerHTML = html || `<div style="text-align:center;padding:48px 20px;color:var(--muted);font-size:0.85rem;">No individuals assigned to houses yet.</div>`;
+}
+
+function ppeDateEdit(indivId, field, value){
+  const ind = S.individuals.find(i=>i.id===indivId);
+  if(!ind) return;
+  ind[field] = value;
+  saveS();
+  renderPpeAudit();
+  toast('✓ '+(field==='pepDate'?'PEP':'MMA')+' date updated');
 }
 
 function goBackToHouse(){
