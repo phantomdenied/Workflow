@@ -5577,7 +5577,9 @@ function bcExportReport() {
   entries.forEach(({ file, ending }) => {
     const rows = file.rows
       .filter(r => r.date >= startDate && r.date <= endDate && (BC_CREDIT_CODES.has(r.code) || BC_DEBIT_CODES.has(r.code)))
-      .sort((a, b) => a.date.localeCompare(b.date) || a.code - b.code);
+      // Same-day ties: deposits before withdrawals, so the running balance never
+      // shows a false dip below zero just because of arbitrary code-number order.
+      .sort((a, b) => a.date.localeCompare(b.date) || (BC_CREDIT_CODES.has(a.code)?0:1) - (BC_CREDIT_CODES.has(b.code)?0:1) || a.code - b.code);
 
     // Calculate opening balance by reversing all transactions from the ending
     let opening = ending;
