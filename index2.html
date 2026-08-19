@@ -837,6 +837,9 @@ const APP_VERSION = 'TEST v1.0.1';
   <div style="padding:0 14px 8px;margin-top:8px;">
     <button class="email-compose-btn" style="background:var(--accent-light);color:var(--accent);" onclick="showScreen('ppeAuditScreen')">🪪 PEP/MMA Audit</button>
   </div>
+  <div style="padding:0 14px 8px;margin-top:8px;">
+    <button class="email-compose-btn" style="background:var(--accent-light);color:var(--accent);" onclick="showScreen('ezAuditScreen')">⚡ EZ Money Audit</button>
+  </div>
   <div style="padding:0 14px 40px;"></div>
 </div>
 
@@ -1777,6 +1780,67 @@ const APP_VERSION = 'TEST v1.0.1';
   <div id="ppeAuditContainer" style="padding-bottom:40px;"></div>
 </div>
 
+<!-- ══ EZ MONEY AUDIT ══ -->
+<div class="screen" id="ezAuditScreen">
+  <style>
+  .ez-body{padding:14px 14px 60px;max-width:640px;margin:0 auto;}
+  .ez-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:14px;}
+  .ez-lbl{font-size:0.68rem;font-weight:700;color:var(--muted);font-family:'DM Mono',monospace;text-transform:uppercase;margin-bottom:5px;display:block;}
+  .ez-select,.ez-input{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;font-size:0.9rem;font-family:'DM Sans',sans-serif;background:var(--surface2);color:var(--text);outline:none;margin-bottom:12px;}
+  .ez-select:focus,.ez-input:focus{border-color:var(--accent);}
+  .ez-note{font-size:0.78rem;color:var(--muted);margin-top:-6px;}
+  .ez-file-input{width:100%;background:var(--surface2);border:1.5px dashed var(--border);border-radius:8px;padding:12px;font-size:0.85rem;color:var(--muted);cursor:pointer;}
+  .ez-row-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:12px;}
+  .ez-row-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
+  .ez-row-name{font-weight:700;font-size:0.95rem;color:var(--text);}
+  .ez-row-file{font-size:0.72rem;color:var(--muted2);font-family:'DM Mono',monospace;margin-top:2px;}
+  .ez-row-del{background:none;border:none;color:var(--muted);font-size:1.1rem;cursor:pointer;padding:0 4px;}
+  .ez-balance-line{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:var(--surface2);border-radius:8px;font-size:0.85rem;margin-bottom:10px;color:var(--text);}
+  .ez-balance-amt{font-weight:700;font-size:1.05rem;}
+  .ez-flag-banner{background:var(--red-light);border:1px solid var(--red);border-radius:8px;padding:10px 12px;margin-bottom:10px;}
+  .ez-flag-title{color:var(--red);font-weight:700;font-size:0.78rem;margin-bottom:6px;}
+  .ez-flag-ta{width:100%;border:1.5px solid var(--red);border-radius:8px;padding:8px 10px;font-size:0.85rem;font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--text);outline:none;resize:vertical;min-height:50px;}
+  .ez-pep-row{display:flex;gap:10px;margin-bottom:10px;}
+  .ez-pep-field{flex:1;min-width:0;}
+  .ez-pep-update{display:flex;gap:8px;margin-top:6px;align-items:center;}
+  .ez-pep-update input{flex:1;border:1.5px solid var(--border);border-radius:6px;padding:6px 8px;font-size:0.8rem;background:var(--surface2);color:var(--text);}
+  .ez-pep-update button{flex-shrink:0;background:var(--accent);color:#fff;border:none;border-radius:6px;padding:8px 12px;font-size:0.78rem;font-weight:600;cursor:pointer;}
+  .ez-receipt-row{display:flex;gap:10px;}
+  .ez-receipt-row .ez-input{margin-bottom:0;}
+  .ez-unmatched{background:var(--orange-light);border:1px solid var(--orange);border-radius:8px;padding:10px 12px;margin-bottom:10px;}
+  .ez-unmatched-title{color:var(--orange);font-weight:700;font-size:0.78rem;margin-bottom:6px;}
+  .ez-generate-btn{width:100%;background:var(--navy);color:#fff;border:none;border-radius:10px;padding:15px;font-size:0.95rem;font-weight:700;cursor:pointer;margin-top:6px;}
+  .ez-generate-btn:disabled{opacity:0.5;cursor:not-allowed;}
+  </style>
+  <div class="app-header">
+    <button class="back-btn" onclick="showScreen('homeScreen')">←</button>
+    <div><div class="header-title">EZ Money Audit</div><div class="header-sub">Batch Cash Audit from ACal Files</div></div>
+  </div>
+  <div class="ez-body">
+    <div class="ez-card">
+      <label class="ez-lbl">House</label>
+      <select class="ez-select" id="ezHouseSelect" onchange="ezHouseChanged()">
+        <option value="">— select house —</option>
+      </select>
+      <label class="ez-lbl">Date Completed</label>
+      <input class="ez-input" type="date" id="ezDateCompleted" onchange="ezDateChanged()" style="margin-bottom:4px;">
+      <div class="ez-note" id="ezReviewMonthNote"></div>
+    </div>
+
+    <div class="ez-card" id="ezUploadCard" style="display:none;">
+      <label class="ez-lbl">Upload Account History Files (.xlsx)</label>
+      <input type="file" class="ez-file-input" id="ezFileInput" accept=".xlsx,.xls" multiple>
+      <div class="ez-note" style="margin-top:8px;">Filename format: initials + current balance, e.g. "SW 123.33.xlsx"</div>
+    </div>
+
+    <div id="ezGateNote" class="ez-note" style="padding:0 4px;">Select a house and date completed to begin.</div>
+
+    <div id="ezReviewList"></div>
+
+    <button class="ez-generate-btn" id="ezGenerateBtn" style="display:none;" onclick="ezGenerateAll()">Generate All PDFs</button>
+  </div>
+</div>
+
 <div class="screen" id="notesScreen">
   <div class="app-header notes-app-header">
     <div style="display:flex;align-items:flex-end;justify-content:space-between;width:100%;padding-bottom:12px;">
@@ -2060,7 +2124,7 @@ function showScreen(id){
   ['navHome','navHistory','navNotes','navSettings'].forEach(n=>{
     const el=document.getElementById(n); if(el) el.classList.remove('active');
   });
-  const map={homeScreen:'navHome',historyScreen:'navHistory',notesScreen:'navNotes',settingsScreen:'navSettings',houseScreen:'navHome',invoiceScreen:'navHome',emailScreen:'navHome',balanceCalcScreen:'navHome',ppeAuditScreen:'navHome'};
+  const map={homeScreen:'navHome',historyScreen:'navHistory',notesScreen:'navNotes',settingsScreen:'navSettings',houseScreen:'navHome',invoiceScreen:'navHome',emailScreen:'navHome',balanceCalcScreen:'navHome',ppeAuditScreen:'navHome',ezAuditScreen:'navHome'};
   if(map[id]){ const el=document.getElementById(map[id]); if(el) el.classList.add('active'); }
   // Scroll to top
   const el=document.getElementById(id);
@@ -2071,6 +2135,7 @@ function showScreen(id){
   if(id==='notesScreen') renderNotes();
   if(id==='invoiceScreen') invInit();
   if(id==='ppeAuditScreen') renderPpeAudit();
+  if(id==='ezAuditScreen') ezInit();
 }
 
 // ═══════════════════════════════════════
@@ -5614,6 +5679,384 @@ function bcParseFilename(name) {
   const m = name.match(/^(.+?)\s+(\d+(?:\.\d{1,2})?)\.(xlsx?|xls)$/i);
   if (!m) return null;
   return { initials: m[1].trim(), amount: parseFloat(m[2]) };
+}
+</script>
+
+<script>
+// ═══════════════════════════════════════
+// EZ MONEY AUDIT
+// ═══════════════════════════════════════
+let ezHouseId = '';
+let ezDateCompleted = '';
+let ezRows = []; // {rid, filename, initials, rawAmount, txRows, parseError, matchedIndivId, balance, receiptNum, receiptVen, over283Note}
+
+function ezPopulateHouseSelect(){
+  const sel = document.getElementById('ezHouseSelect');
+  if(!sel) return;
+  sel.innerHTML = '<option value="">— select house —</option>' +
+    S.houses.map(h=>`<option value="${h.id}">${esc(h.name)}${h.closed?' (Closed)':''}</option>`).join('');
+}
+
+function ezInit(){
+  ezPopulateHouseSelect();
+  const houseSel = document.getElementById('ezHouseSelect');
+  if(houseSel) houseSel.value = ezHouseId;
+  const dateEl = document.getElementById('ezDateCompleted');
+  if(dateEl) dateEl.value = ezDateCompleted;
+  ezUpdateReviewMonthNote();
+  ezUpdateGate();
+  ezRenderReviewList();
+}
+
+function ezComputeMonths(dateStr){
+  const [y, m] = dateStr.split('-').map(Number);
+  const filingMonthIdx = m - 1;
+  const filingYear = y;
+  let reviewMonthIdx = filingMonthIdx - 1, reviewYear = filingYear;
+  if(reviewMonthIdx < 0){ reviewMonthIdx = 11; reviewYear--; }
+  return {
+    filingMonthIdx, filingYear, reviewMonthIdx, reviewYear,
+    monthKey: filingYear + '-' + String(filingMonthIdx + 1).padStart(2, '0'),
+    reviewMonthKey: reviewYear + '-' + String(reviewMonthIdx + 1).padStart(2, '0'),
+    monthYearLabel: AMP_MONTHS_FULL[reviewMonthIdx] + ' ' + reviewYear,
+  };
+}
+
+function ezUpdateReviewMonthNote(){
+  const note = document.getElementById('ezReviewMonthNote');
+  if(!note) return;
+  if(ezDateCompleted){
+    const info = ezComputeMonths(ezDateCompleted);
+    note.textContent = 'Reviews ' + info.monthYearLabel + ' — filed under ' + AMP_MONTHS_FULL[info.filingMonthIdx] + ' ' + info.filingYear + '.';
+  } else {
+    note.textContent = '';
+  }
+}
+
+function ezUpdateGate(){
+  const ready = !!(ezHouseId && ezDateCompleted);
+  const uploadCard = document.getElementById('ezUploadCard');
+  const gateNote = document.getElementById('ezGateNote');
+  if(uploadCard) uploadCard.style.display = ready ? 'block' : 'none';
+  if(gateNote) gateNote.style.display = ready ? 'none' : 'block';
+}
+
+function ezNameInitials(name){
+  return (name || '').trim().split(/\s+/).map(w => w[0] || '').join('').toUpperCase();
+}
+
+function ezAutoMatch(initials){
+  if(!ezHouseId || !initials) return null;
+  const candidates = S.individuals.filter(i => i.houseId === ezHouseId && ezNameInitials(i.name) === initials.toUpperCase());
+  return candidates.length === 1 ? candidates[0].id : null;
+}
+
+function ezRollbackBalance(txRows, currentAmount, targetDate){
+  if(currentAmount == null || !targetDate) return currentAmount;
+  const afterRows = txRows.filter(r => r.date > targetDate && (BC_CREDIT_CODES.has(r.code) || BC_DEBIT_CODES.has(r.code)));
+  let depositsAfter = 0, withdrawalsAfter = 0;
+  afterRows.forEach(r => {
+    if(BC_CREDIT_CODES.has(r.code)) depositsAfter += r.amount;
+    if(BC_DEBIT_CODES.has(r.code)) withdrawalsAfter += r.amount;
+  });
+  return currentAmount - depositsAfter + withdrawalsAfter;
+}
+
+function ezReadXlsxFile(file){
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = function(e){
+      try {
+        const wb = XLSX.read(e.target.result, { type: 'binary' });
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        let maxRow = 0;
+        Object.keys(ws).forEach(key => {
+          if(key.startsWith('!')) return;
+          const m = key.match(/(\d+)$/);
+          if(m) maxRow = Math.max(maxRow, parseInt(m[1]));
+        });
+        if(maxRow < 2){ resolve({ rows: [], error: 'No data rows found' }); return; }
+        function cellVal(col, row){ const c = ws[col.toLowerCase() + row] || ws[col.toUpperCase() + row]; return c ? c.v : null; }
+        const colLetters = 'abcdefghijklm'.split('');
+        const headers = {};
+        colLetters.forEach(col => { const v = cellVal(col, 1); if(v != null) headers[String(v).toLowerCase().trim()] = col; });
+        const dateCol = headers['date'] || 'a';
+        const codeCol = headers['code'] || 'b';
+        const tranKey = Object.keys(headers).find(h => h.includes('transaction'));
+        const tranCol = tranKey ? headers[tranKey] : 'c';
+        const amtKey = Object.keys(headers).find(h => h.includes('amount'));
+        const amtCol = amtKey ? headers[amtKey] : 'd';
+        const descKey = Object.keys(headers).find(h => h === 'description');
+        const descCol = descKey ? headers[descKey] : 'e';
+        const rows = [];
+        for(let r = 2; r <= maxRow; r++){
+          const rawDate = cellVal(dateCol, r), rawCode = cellVal(codeCol, r), rawAmt = cellVal(amtCol, r);
+          const rawDesc = cellVal(descCol, r) || cellVal(tranCol, r) || '';
+          if(rawDate == null || rawCode == null || rawAmt == null) continue;
+          const code = parseInt(String(rawCode).trim()), amount = parseFloat(rawAmt);
+          if(isNaN(code) || isNaN(amount) || amount === 0) continue;
+          let dateStr;
+          if(typeof rawDate === 'number'){ dateStr = bcExcelSerialToDateStr(rawDate); }
+          else {
+            const d = new Date(rawDate);
+            if(isNaN(d.getTime())) continue;
+            dateStr = d.getUTCFullYear() + '-' + String(d.getUTCMonth() + 1).padStart(2, '0') + '-' + String(d.getUTCDate()).padStart(2, '0');
+          }
+          rows.push({ date: dateStr, code, amount, desc: String(rawDesc) });
+        }
+        resolve({ rows, error: rows.length === 0 ? 'No valid transactions found' : null });
+      } catch(err){ resolve({ rows: [], error: 'Error: ' + err.message }); }
+    };
+    reader.onerror = () => resolve({ rows: [], error: 'Could not read file' });
+    reader.readAsBinaryString(file);
+  });
+}
+
+document.getElementById('ezFileInput').addEventListener('change', async function(){
+  const files = Array.from(this.files);
+  this.value = '';
+  if(!files.length) return;
+  for(const file of files){
+    const parsed = bcParseFilename(file.name);
+    const row = {
+      rid: uid(), filename: file.name,
+      initials: parsed ? parsed.initials : '',
+      rawAmount: parsed ? parsed.amount : null,
+      txRows: [], parseError: parsed ? null : 'Filename doesn\'t match "INITIALS AMOUNT.xlsx" format',
+      matchedIndivId: null, balance: null,
+      receiptNum: '', receiptVen: '', over283Note: '',
+    };
+    ezRows.push(row);
+    if(parsed){
+      const { rows, error } = await ezReadXlsxFile(file);
+      row.txRows = rows;
+      if(error) row.parseError = error;
+      else row.balance = ezRollbackBalance(rows, parsed.amount, ezDateCompleted);
+      row.matchedIndivId = ezAutoMatch(parsed.initials);
+    }
+  }
+  ezRenderReviewList();
+});
+
+function ezHouseChanged(){
+  ezHouseId = document.getElementById('ezHouseSelect').value;
+  ezRows.forEach(row => { if(!row.parseError) row.matchedIndivId = ezAutoMatch(row.initials); });
+  ezRenderReviewList();
+  ezUpdateGate();
+}
+
+function ezDateChanged(){
+  ezDateCompleted = document.getElementById('ezDateCompleted').value;
+  ezUpdateReviewMonthNote();
+  ezRows.forEach(row => { if(row.txRows && row.txRows.length) row.balance = ezRollbackBalance(row.txRows, row.rawAmount, ezDateCompleted); });
+  ezRenderReviewList();
+  ezUpdateGate();
+}
+
+function ezSetField(rid, field, value){
+  const row = ezRows.find(r => r.rid === rid);
+  if(row) row[field] = value;
+}
+function ezSetOver283Note(rid, value){
+  const row = ezRows.find(r => r.rid === rid);
+  if(row) row.over283Note = value;
+}
+function ezAssignRow(rid, indivId){
+  const row = ezRows.find(r => r.rid === rid);
+  if(!row) return;
+  row.matchedIndivId = indivId || null;
+  ezRenderReviewList();
+}
+function ezRemoveRow(rid){
+  ezRows = ezRows.filter(r => r.rid !== rid);
+  ezRenderReviewList();
+}
+function ezFixDate(rid, indivId, field){
+  const inputId = field === 'pepDate' ? 'ezPepFix_' + rid : 'ezMmaFix_' + rid;
+  const val = document.getElementById(inputId)?.value;
+  if(!val){ toast('Pick a date first'); return; }
+  const ind = S.individuals.find(i => i.id === indivId);
+  if(!ind) return;
+  ind[field] = val;
+  saveS();
+  toast('✓ ' + (field === 'pepDate' ? 'PEP' : 'MMA') + ' date updated');
+  ezRenderReviewList();
+}
+
+function ezRenderReviewList(){
+  const cont = document.getElementById('ezReviewList');
+  const genBtn = document.getElementById('ezGenerateBtn');
+  if(!cont) return;
+  if(ezRows.length === 0){ cont.innerHTML = ''; if(genBtn) genBtn.style.display = 'none'; return; }
+
+  const houseIndivs = S.individuals.filter(i => i.houseId === ezHouseId);
+  const dateLabel = ezDateCompleted ? auditFmtDatePDF(ezDateCompleted) : '—';
+  let html = '';
+
+  ezRows.forEach(row => {
+    html += `<div class="ez-row-card" data-rid="${row.rid}">`;
+    const matchedInd = row.matchedIndivId ? S.individuals.find(i => i.id === row.matchedIndivId) : null;
+    html += `<div class="ez-row-hdr">
+      <div>
+        <div class="ez-row-name">${matchedInd ? esc(matchedInd.name) : '⚠️ Unmatched'}</div>
+        <div class="ez-row-file">${esc(row.filename)}</div>
+      </div>
+      <button class="ez-row-del" onclick="ezRemoveRow('${row.rid}')">✕</button>
+    </div>`;
+
+    if(row.parseError){
+      html += `<div class="ez-flag-banner"><div class="ez-flag-title">⚠️ ${esc(row.parseError)}</div></div></div>`;
+      return;
+    }
+
+    if(!matchedInd){
+      html += `<div class="ez-unmatched">
+        <div class="ez-unmatched-title">⚠️ Couldn't match "${esc(row.initials)}" to anyone in this house</div>
+        <select class="ez-select" style="margin-bottom:0;" onchange="ezAssignRow('${row.rid}',this.value)">
+          <option value="">— select individual —</option>
+          ${houseIndivs.map(i => `<option value="${i.id}">${esc(i.name)}</option>`).join('')}
+        </select>
+      </div></div>`;
+      return;
+    }
+
+    const over283 = row.balance != null && row.balance > 283;
+    html += `<div class="ez-balance-line"><span>Balance as of ${esc(dateLabel)}</span><span class="ez-balance-amt">${bcFmt(row.balance || 0)}</span></div>`;
+
+    if(over283){
+      html += `<div class="ez-flag-banner">
+        <div class="ez-flag-title">⚠️ Over $283 — Item 6 will be marked NO. Corrective action required:</div>
+        <textarea class="ez-flag-ta" placeholder="Describe corrective action taken…" oninput="ezSetOver283Note('${row.rid}',this.value)">${esc(row.over283Note)}</textarea>
+      </div>`;
+    }
+
+    const pepSt = ppeDateStatus(matchedInd.pepDate);
+    const mmaSt = ppeDateStatus(matchedInd.mmaDate);
+    html += `<div class="ez-pep-row">
+      <div class="ez-pep-field">
+        <div class="ez-lbl">PEP Date</div>
+        <div class="ppe-date-status ${pepSt.cls}">${esc(pepSt.label)}</div>
+        ${pepSt.cls === 'expired' ? `<div class="ez-pep-update"><input type="date" id="ezPepFix_${row.rid}"><button onclick="ezFixDate('${row.rid}','${matchedInd.id}','pepDate')">Update</button></div>` : ''}
+      </div>
+      <div class="ez-pep-field">
+        <div class="ez-lbl">MMA Date</div>
+        <div class="ppe-date-status ${mmaSt.cls}">${esc(mmaSt.label)}</div>
+        ${mmaSt.cls === 'expired' ? `<div class="ez-pep-update"><input type="date" id="ezMmaFix_${row.rid}"><button onclick="ezFixDate('${row.rid}','${matchedInd.id}','mmaDate')">Update</button></div>` : ''}
+      </div>
+    </div>`;
+
+    html += `<div class="ez-receipt-row">
+      <input class="ez-input" type="text" inputmode="numeric" placeholder="Receipt #" value="${esc(row.receiptNum)}" oninput="ezSetField('${row.rid}','receiptNum',this.value)">
+      <input class="ez-input" type="text" placeholder="Vendor" value="${esc(row.receiptVen)}" oninput="ezSetField('${row.rid}','receiptVen',this.value)">
+    </div>`;
+
+    html += `</div>`;
+  });
+
+  cont.innerHTML = html;
+  if(genBtn) genBtn.style.display = ezRows.some(r => !r.parseError && r.matchedIndivId) ? 'block' : 'none';
+}
+
+async function ezGenerateAll(){
+  if(!ezHouseId || !ezDateCompleted){ toast('Select a house and date completed first'); return; }
+  const validRows = ezRows.filter(r => !r.parseError && r.matchedIndivId);
+  if(validRows.length === 0){ toast('No individuals ready to generate'); return; }
+
+  const errors = [];
+  validRows.forEach(row => {
+    const ind = S.individuals.find(i => i.id === row.matchedIndivId);
+    if(!row.receiptNum.trim()) errors.push(ind.name + ': receipt # missing');
+    if(!row.receiptVen.trim()) errors.push(ind.name + ': vendor missing');
+    if(row.balance != null && row.balance > 283 && !row.over283Note.trim()) errors.push(ind.name + ': corrective note required (over $283)');
+  });
+  if(errors.length > 0){ toast('⚠ ' + errors[0] + (errors.length > 1 ? ' (+' + (errors.length - 1) + ' more)' : '')); return; }
+
+  const btn = document.getElementById('ezGenerateBtn');
+  btn.disabled = true; btn.textContent = 'Generating…';
+
+  const info = ezComputeMonths(ezDateCompleted);
+  let count = 0;
+
+  for(const row of validRows){
+    const ind = S.individuals.find(i => i.id === row.matchedIndivId);
+    const house = S.houses.find(h => h.id === ezHouseId);
+    if(!ind || !house) continue;
+
+    const pepSt = auditDateStatus(ind.pepDate);
+    const mmaSt = auditDateStatus(ind.mmaDate);
+    const anyExpired = pepSt.expired || mmaSt.expired;
+    const weekly = ind.weeklyAllowance != null ? parseFloat(ind.weeklyAllowance) : 0;
+    const over283 = row.balance != null && row.balance > 283;
+    const balStr = (row.balance || 0).toFixed(2);
+
+    const answers = {
+      1: 'YES', 2: anyExpired ? 'NO' : 'YES', 3: 'YES',
+      4: 'YES', 5: 'YES',
+      6: over283 ? 'NO' : 'YES',
+      7: 'YES',
+      8: 'YES', 9: 'YES',
+      10: 'YES', 11: 'YES', 12: 'YES',
+      13: weekly === 0 ? 'NA' : 'YES',
+      14: 'YES', 15: 'NO',
+    };
+
+    const corrective = {};
+    corrective['2'] = 'PEP Date - ' + auditFmtDatePDF(ind.pepDate) + '\nMMA Date - ' + auditFmtDatePDF(ind.mmaDate) + (anyExpired ? '\n*Reported to Money Manager and ResHab' : '');
+    corrective['3'] = ind.name + ' can handle up to $' + weekly.toFixed(2) + ' weekly.';
+    if(over283) corrective['6'] = row.over283Note.trim();
+    if(weekly === 0) corrective['13'] = 'Not Applicable';
+
+    const sigs = S.signatures || [];
+    const sig = sigs.length ? sigs[Math.floor(Math.random() * sigs.length)] : null;
+
+    const record = {
+      indivId: ind.id, indivName: ind.name,
+      houseId: house.id, houseName: house.name,
+      monthKey: info.monthKey, reviewMonthKey: info.reviewMonthKey,
+      visitDate: ezDateCompleted,
+      answers, corrective,
+      onHand: balStr, inAcu: balStr, mismatch: '',
+      receiptNum: row.receiptNum.trim(), receiptVen: row.receiptVen.trim(),
+      sigId: sig ? sig.id : null,
+    };
+
+    const pdfBytes = await buildAuditPDFBytes(record);
+    if(!pdfBytes){ toast('⚠ Could not build PDF for ' + ind.name); continue; }
+
+    const houseCode = (house.name || '??').substring(0, 2).toUpperCase();
+    const parts = ind.name.trim().split(' ');
+    const fi = parts[0]?.[0] || '';
+    const ln = parts[parts.length - 1] || '';
+    const mm = String(info.reviewMonthIdx + 1).padStart(2, '0');
+    const yy = String(info.reviewYear).slice(-2);
+    const filename = `${houseCode} ${fi} ${ln} ${mm} ${yy} Acumatica Audit.pdf`;
+
+    await downloadFile(pdfBytes, filename, 'application/pdf');
+
+    let auditRecord = S.auditVisits.find(v => v.indivId === ind.id && v.monthKey === info.monthKey);
+    if(!auditRecord){
+      auditRecord = { id: uid(), indivId: ind.id, indivName: ind.name, houseId: house.id, houseName: house.name, monthKey: info.monthKey, completedAt: null };
+      S.auditVisits.push(auditRecord);
+    }
+    auditRecord.completedAt = today();
+    auditRecord.reviewMonthKey = info.reviewMonthKey;
+    auditRecord.visitDate = ezDateCompleted;
+    auditRecord.answers = { ...answers };
+    auditRecord.corrective = { ...corrective };
+    auditRecord.onHand = balStr;
+    auditRecord.inAcu = balStr;
+    auditRecord.mismatch = '';
+    auditRecord.receiptNum = row.receiptNum.trim();
+    auditRecord.receiptVen = row.receiptVen.trim();
+    if(sig) auditRecord.sigId = sig.id;
+
+    count++;
+    await new Promise(r => setTimeout(r, 350));
+  }
+
+  saveS();
+  toast(`✓ Generated ${count} audit PDF${count !== 1 ? 's' : ''}`);
+  btn.disabled = false; btn.textContent = 'Generate All PDFs';
 }
 </script>
 
