@@ -5544,6 +5544,10 @@ function bcCalculateBatch() {
   bcSetStatus('bcBatchStatus', msg, calculated > 0 ? 'ok' : 'err');
 }
 
+function bcRound2(n) {
+  return Math.round((n + Number.EPSILON) * 100) / 100;
+}
+
 function bcExportReport() {
   bcHideStatus('bcExportStatus');
 
@@ -5587,6 +5591,7 @@ function bcExportReport() {
       if (BC_CREDIT_CODES.has(r.code)) opening -= r.amount;
       if (BC_DEBIT_CODES.has(r.code))  opening += r.amount;
     });
+    opening = bcRound2(opening);
 
     const data = [];
     data.push(['Acumatica Primary Safe — Running Balance Audit']);
@@ -5607,6 +5612,7 @@ function bcExportReport() {
         const isCredit = BC_CREDIT_CODES.has(r.code);
         if (isCredit) { running += r.amount; totalDep  += r.amount; }
         else          { running -= r.amount; totalWith += r.amount; }
+        running = bcRound2(running);
         data.push([
           bcFmtDate(r.date),
           r.code,
@@ -5622,8 +5628,8 @@ function bcExportReport() {
     data.push([]);
     data.push(['SUMMARY']);
     data.push(['Opening Balance (calculated)', '', '', '', '', '', opening]);
-    data.push(['Total Deposits',              '', '', '', '', '', totalDep]);
-    data.push(['Total Withdrawals',           '', '', '', '', '', totalWith]);
+    data.push(['Total Deposits',              '', '', '', '', '', bcRound2(totalDep)]);
+    data.push(['Total Withdrawals',           '', '', '', '', '', bcRound2(totalWith)]);
     data.push(['Closing Balance (verify = known ending)', '', '', '', '', '', running]);
 
     const ws = XLSX.utils.aoa_to_sheet(data);
