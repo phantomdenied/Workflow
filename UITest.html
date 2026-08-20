@@ -99,6 +99,12 @@ body.dark .home-progress-bar{background:rgba(255,255,255,0.15);}
 .email-tpl-card.active .email-tpl-card-body{display:block;}
 .email-compose-btn{width:100%;padding:14px;border-radius:var(--radius);border:none;background:var(--navy);color:white;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;}
 .email-compose-btn:active{transform:scale(0.98);}
+/* Home screen quick-tools grid — replaces a stack of loose full-width pills */
+.home-tools-card{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin:0 14px 8px;box-shadow:var(--shadow-sm);}
+.home-tool-btn{background:var(--surface);border:none;padding:16px 10px;min-height:84px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background 0.15s,transform 0.12s var(--ease);}
+.home-tool-btn:active{background:var(--surface2);transform:scale(0.97);}
+.home-tool-icon{font-size:1.3rem;width:38px;height:38px;border-radius:11px;background:var(--accent-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.home-tool-lbl{font-size:0.76rem;font-weight:600;color:var(--text);text-align:center;line-height:1.3;}
 .email-list-block{background:var(--surface2);border-radius:10px;padding:12px;margin-bottom:12px;border:1px solid var(--border);}
 .email-list-name-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
 .email-list-name{flex:1;background:var(--white);border:1.5px solid var(--border);border-radius:8px;padding:8px 10px;font-size:0.9rem;color:var(--text);font-family:'DM Sans',sans-serif;outline:none;}
@@ -888,20 +894,15 @@ const APP_VERSION = 'TEST v1.0.1';
 
   <div class="section-label" id="homeSectionLabel">Your Houses</div>
   <div class="home-list" id="homeList"></div>
-  <div style="padding:0 14px 6px;">
+  <div style="padding:0 14px 4px;">
     <button class="email-compose-btn" onclick="openEmailScreen()">✉️ Send Weekly Reminder</button>
   </div>
-  <div style="padding:0 14px 8px;margin-top:8px;">
-    <button class="email-compose-btn" style="background:var(--accent-light);color:var(--accent);" onclick="showScreen('invoiceScreen')">📄 Receiving Log &amp; Invoices</button>
-  </div>
-  <div style="padding:0 14px 8px;margin-top:8px;">
-    <button class="email-compose-btn" style="background:var(--accent-light);color:var(--accent);" onclick="showScreen('balanceCalcScreen')">🧮 Balance Calculator</button>
-  </div>
-  <div style="padding:0 14px 8px;margin-top:8px;">
-    <button class="email-compose-btn" style="background:var(--accent-light);color:var(--accent);" onclick="showScreen('ppeAuditScreen')">🪪 PEP/MMA Audit</button>
-  </div>
-  <div style="padding:0 14px 8px;margin-top:8px;">
-    <button class="email-compose-btn" style="background:var(--accent-light);color:var(--accent);" onclick="showScreen('ezAuditScreen')">⚡ EZ Money Audit</button>
+  <div class="section-label">Tools</div>
+  <div class="home-tools-card">
+    <button class="home-tool-btn" onclick="showScreen('invoiceScreen')"><span class="home-tool-icon">📄</span><span class="home-tool-lbl">Receiving Log &amp; Invoices</span></button>
+    <button class="home-tool-btn" onclick="showScreen('balanceCalcScreen')"><span class="home-tool-icon">🧮</span><span class="home-tool-lbl">Balance Calculator</span></button>
+    <button class="home-tool-btn" onclick="showScreen('ppeAuditScreen')"><span class="home-tool-icon">🪪</span><span class="home-tool-lbl">PEP/MMA Audit</span></button>
+    <button class="home-tool-btn" onclick="showScreen('ezAuditScreen')"><span class="home-tool-icon">⚡</span><span class="home-tool-lbl">EZ Money Audit</span></button>
   </div>
   <div style="padding:0 14px 40px;"></div>
 </div>
