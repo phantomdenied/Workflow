@@ -99,12 +99,6 @@ body.dark .home-progress-bar{background:rgba(255,255,255,0.15);}
 .email-tpl-card.active .email-tpl-card-body{display:block;}
 .email-compose-btn{width:100%;padding:14px;border-radius:var(--radius);border:none;background:var(--navy);color:white;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;}
 .email-compose-btn:active{transform:scale(0.98);}
-/* Home screen quick-tools grid — replaces a stack of loose full-width pills */
-.home-tools-card{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin:0 14px 8px;box-shadow:var(--shadow-sm);}
-.home-tool-btn{background:var(--surface);border:none;padding:16px 10px;min-height:84px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background 0.15s,transform 0.12s var(--ease);}
-.home-tool-btn:active{background:var(--surface2);transform:scale(0.97);}
-.home-tool-icon{font-size:1.3rem;width:38px;height:38px;border-radius:11px;background:var(--accent-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.home-tool-lbl{font-size:0.76rem;font-weight:600;color:var(--text);text-align:center;line-height:1.3;}
 .email-list-block{background:var(--surface2);border-radius:10px;padding:12px;margin-bottom:12px;border:1px solid var(--border);}
 .email-list-name-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
 .email-list-name{flex:1;background:var(--white);border:1.5px solid var(--border);border-radius:8px;padding:8px 10px;font-size:0.9rem;color:var(--text);font-family:'DM Sans',sans-serif;outline:none;}
@@ -612,7 +606,7 @@ body.dark .home-banner::after{background:var(--bg);}
 /* House task selection bar */
 .house-task-action-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:var(--app-max-w);background:var(--white);border-top:1px solid var(--border);padding:10px 14px calc(14px + env(safe-area-inset-bottom));display:none;gap:7px;z-index:50;}
 .house-task-action-bar.visible{display:flex;align-items:center;}
-.hta-count-bar{position:fixed;bottom:72px;left:50%;transform:translateX(-50%);width:100%;max-width:var(--app-max-w);display:none;justify-content:center;z-index:51;pointer-events:none;}
+.hta-count-bar{position:fixed;bottom:calc(78px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);width:100%;max-width:var(--app-max-w);display:none;justify-content:center;z-index:51;pointer-events:none;}
 .hta-count-bar.visible{display:flex;}
 .hta-count-bar span{background:var(--navy);color:white;font-size:0.72rem;font-weight:700;font-family:'DM Mono',monospace;padding:4px 12px;border-radius:20px;letter-spacing:0.04em;}
 .hta-count{font-size:0.78rem;font-weight:700;color:var(--text);white-space:nowrap;margin-right:4px;flex-shrink:0;}
@@ -677,7 +671,7 @@ body.dark .home-banner::after{background:var(--bg);}
 .notes-filter-pill.active{background:white;color:var(--navy);border-color:white;}
 /* Note card */
 /* FAB */
-.notes-fab{position:fixed;bottom:calc(84px + env(safe-area-inset-bottom));right:max(18px, calc(50vw - 240px + 18px));width:52px;height:52px;border-radius:50%;background:var(--nebula-grad);color:white;border:none;font-size:1.3rem;cursor:pointer;box-shadow:0 8px 22px rgba(79,70,229,0.35);z-index:150;display:flex;align-items:center;justify-content:center;transition:transform 0.15s var(--ease);}
+.notes-fab{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom));right:max(18px, calc(50vw - 240px + 18px));width:52px;height:52px;border-radius:50%;background:var(--nebula-grad);color:white;border:none;font-size:1.3rem;cursor:pointer;box-shadow:0 8px 22px rgba(79,70,229,0.35);z-index:150;display:flex;align-items:center;justify-content:center;transition:transform 0.15s var(--ease);}
 .notes-fab:active{transform:scale(0.92);}
 /* Note cards */
 .note-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px;overflow:hidden;position:relative;}
@@ -731,6 +725,26 @@ input:checked + .toggle-slider:before{transform:translateX(22px);}
 .nav-btn{flex:1;padding:8px 4px 6px;border:none;background:transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:1px;font-family:'DM Sans',sans-serif;color:var(--muted2);font-size:0.58rem;font-weight:600;transition:color 0.15s;letter-spacing:0.01em;}
 .nav-btn.active{color:var(--navy);}
 .nav-icon{font-size:1.2rem;line-height:1;}
+
+/* ── NAV DRAWER (replaces bottom nav) ── */
+.nav-trigger{position:fixed;top:calc(14px + env(safe-area-inset-top));left:max(14px, calc(50vw - 240px + 14px));width:44px;height:44px;border-radius:50%;border:none;background:var(--nebula-glow),rgba(15,27,51,0.92);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-shadow:0 6px 18px rgba(0,0,0,0.22);z-index:250;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;transition:transform 0.12s var(--ease);}
+.nav-trigger:active{transform:scale(0.92);}
+.nav-trigger span{display:block;width:18px;height:2px;border-radius:2px;background:white;}
+.drawer-overlay{position:fixed;inset:0;background:rgba(6,10,20,0.55);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);z-index:400;opacity:0;pointer-events:none;transition:opacity 0.25s var(--ease);}
+.drawer-overlay.open{opacity:1;pointer-events:auto;}
+.drawer-panel{position:fixed;top:0;bottom:0;left:max(0px, calc(50vw - 240px));width:82%;max-width:320px;background:var(--white);z-index:410;display:flex;flex-direction:column;transform:translateX(-105%);transition:transform 0.28s var(--ease);box-shadow:12px 0 40px rgba(0,0,0,0.25);}
+.drawer-panel.open{transform:translateX(0);}
+.drawer-hdr{background:var(--nebula-glow),var(--navy);color:white;padding:calc(20px + env(safe-area-inset-top)) 18px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.drawer-hdr-title{font-size:var(--fs-h3);font-weight:700;letter-spacing:-0.02em;}
+.drawer-close{background:rgba(255,255,255,0.12);border:none;color:white;width:32px;height:32px;border-radius:var(--radius-sm);font-size:0.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.drawer-close:active{transform:scale(0.92);}
+.drawer-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:8px 10px calc(20px + env(safe-area-inset-bottom));}
+.drawer-section-lbl{padding:14px 10px 6px;font-size:0.62rem;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted2);font-weight:500;}
+.drawer-item{width:100%;display:flex;align-items:center;gap:12px;padding:12px 10px;border:none;background:transparent;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:600;color:var(--text);cursor:pointer;text-align:left;min-height:var(--tap-min);transition:background 0.15s;}
+.drawer-item:active{background:var(--surface2);transform:scale(0.98);}
+.drawer-item.active{background:var(--accent-light);color:var(--accent);}
+.drawer-item-icon{font-size:1.1rem;width:30px;height:30px;border-radius:9px;background:var(--surface2);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.drawer-item.active .drawer-item-icon{background:var(--white);}
 
 /* ── SYNC STATUS ── */
 .sync-badge{position:fixed;top:calc(14px + env(safe-area-inset-top));right:max(14px, calc(50vw - 240px + 14px));z-index:320;display:none;align-items:center;gap:7px;padding:6px 10px;border-radius:999px;background:rgba(8,16,28,0.86);border:1px solid rgba(255,255,255,0.08);backdrop-filter:blur(8px);box-shadow:0 6px 18px rgba(0,0,0,0.22);font-size:0.68rem;font-weight:700;color:#cbd5e1;font-family:'DM Sans',sans-serif;letter-spacing:0.01em;pointer-events:none;}
@@ -894,17 +908,9 @@ const APP_VERSION = 'TEST v1.0.1';
 
   <div class="section-label" id="homeSectionLabel">Your Houses</div>
   <div class="home-list" id="homeList"></div>
-  <div style="padding:0 14px 4px;">
+  <div style="padding:0 14px 40px;">
     <button class="email-compose-btn" onclick="openEmailScreen()">✉️ Send Weekly Reminder</button>
   </div>
-  <div class="section-label">Tools</div>
-  <div class="home-tools-card">
-    <button class="home-tool-btn" onclick="showScreen('invoiceScreen')"><span class="home-tool-icon">📄</span><span class="home-tool-lbl">Receiving Log &amp; Invoices</span></button>
-    <button class="home-tool-btn" onclick="showScreen('balanceCalcScreen')"><span class="home-tool-icon">🧮</span><span class="home-tool-lbl">Balance Calculator</span></button>
-    <button class="home-tool-btn" onclick="showScreen('ppeAuditScreen')"><span class="home-tool-icon">🪪</span><span class="home-tool-lbl">PEP/MMA Audit</span></button>
-    <button class="home-tool-btn" onclick="showScreen('ezAuditScreen')"><span class="home-tool-icon">⚡</span><span class="home-tool-lbl">EZ Money Audit</span></button>
-  </div>
-  <div style="padding:0 14px 40px;"></div>
 </div>
 
 <!-- ══ EMAIL SCREEN ══ -->
@@ -1955,12 +1961,28 @@ const APP_VERSION = 'TEST v1.0.1';
   <img id="lightboxImg" src="" alt="photo">
 </div>
 
-<div class="bottom-nav" id="bottomNav">
-  <button class="nav-btn active" id="navHome" onclick="showScreen('homeScreen')"><span class="nav-icon">🏠</span>Home</button>
-  <button class="nav-btn" id="navHistory" onclick="showScreen('historyScreen')"><span class="nav-icon">📋</span>History</button>
-  <button class="nav-btn" id="navNotes" onclick="showScreen('notesScreen')"><span class="nav-icon">📝</span>Notes</button>
-  <button class="nav-btn" id="navSettings" onclick="showScreen('settingsScreen')"><span class="nav-icon">⚙️</span>Settings</button>
-</div>
+<button class="nav-trigger" id="navTrigger" onclick="openDrawer()" aria-label="Open menu">
+  <span></span><span></span><span></span>
+</button>
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+<nav class="drawer-panel" id="drawerPanel">
+  <div class="drawer-hdr">
+    <div class="drawer-hdr-title">WorkFlow</div>
+    <button class="drawer-close" onclick="closeDrawer()" aria-label="Close menu">✕</button>
+  </div>
+  <div class="drawer-scroll">
+    <div class="drawer-section-lbl">Menu</div>
+    <button class="drawer-item active" id="navHome" onclick="showScreen('homeScreen');closeDrawer();"><span class="drawer-item-icon">🏠</span>Home</button>
+    <button class="drawer-item" id="navHistory" onclick="showScreen('historyScreen');closeDrawer();"><span class="drawer-item-icon">📋</span>History</button>
+    <button class="drawer-item" id="navNotes" onclick="showScreen('notesScreen');closeDrawer();"><span class="drawer-item-icon">📝</span>Notes</button>
+    <button class="drawer-item" id="navSettings" onclick="showScreen('settingsScreen');closeDrawer();"><span class="drawer-item-icon">⚙️</span>Settings</button>
+    <div class="drawer-section-lbl">Tools</div>
+    <button class="drawer-item" onclick="showScreen('invoiceScreen');closeDrawer();"><span class="drawer-item-icon">📄</span>Receiving Log &amp; Invoices</button>
+    <button class="drawer-item" onclick="showScreen('balanceCalcScreen');closeDrawer();"><span class="drawer-item-icon">🧮</span>Balance Calculator</button>
+    <button class="drawer-item" onclick="showScreen('ppeAuditScreen');closeDrawer();"><span class="drawer-item-icon">🪪</span>PEP/MMA Audit</button>
+    <button class="drawer-item" onclick="showScreen('ezAuditScreen');closeDrawer();"><span class="drawer-item-icon">⚡</span>EZ Money Audit</button>
+  </div>
+</nav>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -2184,10 +2206,20 @@ function initials(name){ return name.split(' ').map(w=>w[0]||'').join('').toUppe
 // ═══════════════════════════════════════
 const HIDE_NAV_SCREENS = ['checklistScreen','auditScreen','reportScreen'];
 
+function openDrawer(){
+  document.getElementById('drawerOverlay').classList.add('open');
+  document.getElementById('drawerPanel').classList.add('open');
+}
+function closeDrawer(){
+  document.getElementById('drawerOverlay').classList.remove('open');
+  document.getElementById('drawerPanel').classList.remove('open');
+}
+
 function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  document.getElementById('bottomNav').style.display = HIDE_NAV_SCREENS.includes(id)?'none':'flex';
+  document.getElementById('navTrigger').style.display = HIDE_NAV_SCREENS.includes(id)?'none':'flex';
+  closeDrawer();
   ['navHome','navHistory','navNotes','navSettings'].forEach(n=>{
     const el=document.getElementById(n); if(el) el.classList.remove('active');
   });
