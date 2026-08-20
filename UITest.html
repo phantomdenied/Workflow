@@ -738,8 +738,7 @@ input:checked + .toggle-slider:before{transform:translateX(22px);}
 .drawer-hdr-title{font-size:var(--fs-h3);font-weight:700;letter-spacing:-0.02em;}
 .drawer-close{background:rgba(255,255,255,0.12);border:none;color:white;width:32px;height:32px;border-radius:var(--radius-sm);font-size:0.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .drawer-close:active{transform:scale(0.92);}
-.drawer-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:8px 10px calc(20px + env(safe-area-inset-bottom));}
-.drawer-section-lbl{padding:14px 10px 6px;font-size:0.62rem;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted2);font-weight:500;}
+.drawer-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px 10px calc(20px + env(safe-area-inset-bottom));}
 .drawer-item{width:100%;display:flex;align-items:center;gap:12px;padding:12px 10px;border:none;background:transparent;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:600;color:var(--text);cursor:pointer;text-align:left;min-height:var(--tap-min);transition:background 0.15s;}
 .drawer-item:active{background:var(--surface2);transform:scale(0.98);}
 .drawer-item.active{background:var(--accent-light);color:var(--accent);}
@@ -1971,16 +1970,14 @@ const APP_VERSION = 'TEST v1.0.1';
     <button class="drawer-close" onclick="closeDrawer()" aria-label="Close menu">✕</button>
   </div>
   <div class="drawer-scroll">
-    <div class="drawer-section-lbl">Menu</div>
     <button class="drawer-item active" id="navHome" onclick="showScreen('homeScreen');closeDrawer();"><span class="drawer-item-icon">🏠</span>Home</button>
     <button class="drawer-item" id="navHistory" onclick="showScreen('historyScreen');closeDrawer();"><span class="drawer-item-icon">📋</span>History</button>
-    <button class="drawer-item" id="navNotes" onclick="showScreen('notesScreen');closeDrawer();"><span class="drawer-item-icon">📝</span>Notes</button>
-    <button class="drawer-item" id="navSettings" onclick="showScreen('settingsScreen');closeDrawer();"><span class="drawer-item-icon">⚙️</span>Settings</button>
-    <div class="drawer-section-lbl">Tools</div>
-    <button class="drawer-item" onclick="showScreen('invoiceScreen');closeDrawer();"><span class="drawer-item-icon">📄</span>Receiving Log &amp; Invoices</button>
+    <button class="drawer-item" onclick="showScreen('ezAuditScreen');closeDrawer();"><span class="drawer-item-icon">⚡</span>EZ Money Audit</button>
     <button class="drawer-item" onclick="showScreen('balanceCalcScreen');closeDrawer();"><span class="drawer-item-icon">🧮</span>Balance Calculator</button>
     <button class="drawer-item" onclick="showScreen('ppeAuditScreen');closeDrawer();"><span class="drawer-item-icon">🪪</span>PEP/MMA Audit</button>
-    <button class="drawer-item" onclick="showScreen('ezAuditScreen');closeDrawer();"><span class="drawer-item-icon">⚡</span>EZ Money Audit</button>
+    <button class="drawer-item" onclick="showScreen('invoiceScreen');closeDrawer();"><span class="drawer-item-icon">📄</span>Receiving Log &amp; Invoices</button>
+    <button class="drawer-item" id="navNotes" onclick="showScreen('notesScreen');closeDrawer();"><span class="drawer-item-icon">📝</span>Notes</button>
+    <button class="drawer-item" id="navSettings" onclick="showScreen('settingsScreen');closeDrawer();"><span class="drawer-item-icon">⚙️</span>Settings</button>
   </div>
 </nav>
 <div class="toast" id="toast"></div>
