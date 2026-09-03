@@ -6236,8 +6236,8 @@ async function buildAuditPDFBytes(a){
     items.forEach(item=>{
       if(!item.yesId) return;
       const av = ans[item.num]||ans[String(item.num)]||'';
-      add(item.yesId, av==='YES'?'YES':'');
-      add(item.noId,  av==='NO'?'NO':'');
+      add(item.yesId, av==='YES'?'X':'');
+      add(item.noId,  av==='NO'?'X':'');
       if(!item.corrId) return;
       let ct = '';
       if(item.special==='cash')         ct = cashNote;
@@ -6251,6 +6251,8 @@ async function buildAuditPDFBytes(a){
       else ct = a.corrective?.[item.num]||'';
       add(item.corrId, ct);
     });
+    // Item 15's outside-bank-account sub-questions (a-e)
+    ['A','B','C','D','E'].forEach(k=>add(k, (a.subAnswers && a.subAnswers[k]) || ''));
 
     const pdfBytes = await fetch('BlankACU_fixed.pdf').then(r=>{ if(!r.ok) throw new Error('BlankACU.pdf not found'); return r.arrayBuffer(); });
     const pdfDoc = await PDFLib.PDFDocument.load(pdfBytes);
@@ -6271,6 +6273,113 @@ async function buildAuditPDFBytes(a){
     await stampSignatureOnPDFById(pdfDoc, 1, [129.325,249.267,398.756,281.267], a.sigId);
     return await pdfDoc.save();
   }catch(e){ console.error('buildAuditPDFBytes:', e); return null; }
+}
+
+// UITest-only fix: the manual Audit screen's own "Export PDF" button
+// (auditExportPDF, defined in audit-core.js) had its own separate,
+// duplicated copy of the field-filling logic above -- which is exactly how
+// it and buildAuditPDFBytes() drifted out of sync (X marks vs "YES"/"NO"
+// text, item 6's corrective note present vs blank, inconsistent font
+// sizes). Overridden here so the manual export builds the same
+// auditRecord shape History/EZ Money Audit save, then hands off to
+// buildAuditPDFBytes() for the actual PDF bytes -- so every export path,
+// regardless of screen, produces byte-identical PDFs.
+async function auditExportPDF(){
+  const errs=auditValidate();
+  if(errs.length>0){
+    const first=errs[0];
+    toast('⚠ '+first.msg);
+    const el=document.getElementById(first.elId);
+    if(el){
+      el.classList.add('aerror');
+      el.scrollIntoView({behavior:'smooth',block:'center'});
+      setTimeout(()=>el.classList.remove('aerror'),2500);
+    }
+    return;
+  }
+
+  auditSaveProfileData();
+
+  const btn=document.getElementById('auditExpBtnMain');
+  btn.disabled=true;
+  document.getElementById('auditExpBtnText').innerHTML='<span class="aspinner"></span> Building…';
+
+  try {
+    const ind=S.individuals.find(i=>i.id===currentAuditIndivId);
+    const house=S.houses.find(h=>h.id===ind?.houseId);
+    const individual=ind?.name||'';
+    const houseCode=(house?.name||'??').substring(0,2).toUpperCase();
+
+    // Selected month IS the filing month; review month = selected - 1
+    const _rm = auditSelectedMonth;
+    const _rmDate = _rm ? new Date(_rm.year, _rm.month, 1) : new Date();
+    const auditMk = _rmDate.getFullYear()+'-'+String(_rmDate.getMonth()+1).padStart(2,'0');
+    let auditRecord = S.auditVisits.find(v=>v.indivId===currentAuditIndivId && v.monthKey===auditMk);
+    if(!auditRecord){
+      auditRecord = {id:uid(), indivId:currentAuditIndivId, indivName:ind?.name||'', houseId:ind?.houseId||'', houseName:house?.name||'', monthKey:auditMk, completedAt:null};
+      S.auditVisits.push(auditRecord);
+    }
+    auditRecord.completedAt = today();
+    auditRecord.answers = {...(window._auditAnswers||{})};
+    auditRecord.visitDate = document.getElementById('aFieldDate')?.value||'';
+    if(auditSelectedMonth){
+      let rm = auditSelectedMonth.month - 1, ry = auditSelectedMonth.year;
+      if(rm < 0){ rm = 11; ry--; }
+      auditRecord.reviewMonthKey = `${ry}-${String(rm+1).padStart(2,'0')}`;
+    }
+    auditRecord.corrective = {};
+    document.querySelectorAll('#auditContainer [id^="aCorrText"]').forEach(el=>{
+      const num = el.id.replace('aCorrText','');
+      auditRecord.corrective[num] = el.value||'';
+    });
+    auditRecord.onHand = document.getElementById('aOnHand')?.value||'';
+    auditRecord.inAcu  = document.getElementById('aInAcu')?.value||'';
+    auditRecord.mismatch = document.getElementById('aMismatchReason')?.value||'';
+    auditRecord.receiptNum = document.getElementById('aReceiptNum')?.value||'';
+    auditRecord.receiptVen = document.getElementById('aReceiptVen')?.value||'';
+    // Item 15's outside-bank-account sub-questions (a-e) -- previously built
+    // into the PDF here but never actually saved, so History/EZ Money Audit
+    // re-exports could never include them. Persisted now too.
+    auditRecord.subAnswers = {};
+    ['A','B','C','D','E'].forEach(k=>{
+      auditRecord.subAnswers[k] = document.getElementById('aSub_'+k)?.value||'';
+    });
+    // Pick (and persist) a signature now so buildAuditPDFBytes stamps the
+    // same one future re-exports will use, instead of a fresh random pick
+    // each time -- matching the original behavior.
+    const _sigs = S.signatures||[];
+    if(_sigs.length) auditRecord.sigId = _sigs[Math.floor(Math.random()*_sigs.length)].id;
+
+    const filled = await buildAuditPDFBytes(auditRecord);
+    if(!filled) throw new Error('Could not build PDF');
+
+    const parts=individual.trim().split(' ');
+    const fi=parts[0]?.[0]||'';
+    const ln=parts[parts.length-1]||'';
+    let _rnm = auditSelectedMonth.month - 1, _rny = auditSelectedMonth.year;
+    if(_rnm < 0){ _rnm = 11; _rny--; }
+    const mm=String(_rnm+1).padStart(2,'0');
+    const yy=String(_rny).slice(-2);
+    const filename=`${houseCode} ${fi} ${ln} ${mm} ${yy} Acumatica Audit.pdf`;
+
+    await downloadFile(filled, filename, 'application/pdf');
+
+    document.getElementById('auditExpBtnText').textContent='✓ Downloaded!';
+    toast(/iPhone|iPad|iPod/i.test(navigator.userAgent)
+      ? '✓ PDF opened — tap Share ⬆ to save'
+      : '✓ PDF saved: '+filename);
+
+    saveS();
+    document.getElementById('auditHeaderSub').textContent = '✓ Completed';
+
+    setTimeout(()=>{btn.disabled=false;document.getElementById('auditExpBtnText').textContent='Export Filled PDF';},2500);
+
+  } catch(e){
+    console.error(e);
+    toast('Export error: '+e.message);
+    btn.disabled=false;
+    document.getElementById('auditExpBtnText').textContent='Export Filled PDF';
+  }
 }
 </script>
 </body>
