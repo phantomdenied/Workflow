@@ -6254,7 +6254,10 @@ async function buildAuditPDFBytes(a){
     // Item 15's outside-bank-account sub-questions (a-e)
     ['A','B','C','D','E'].forEach(k=>add(k, (a.subAnswers && a.subAnswers[k]) || ''));
 
-    const pdfBytes = await fetch('BlankACU_fixed.pdf').then(r=>{ if(!r.ok) throw new Error('BlankACU.pdf not found'); return r.arrayBuffer(); });
+    // UITest-only: row 2's box is taller in this template so a 3-line
+    // corrective note (e.g. an expired PEP/MMA auto-note) doesn't visually
+    // overlap the row2/row3 divider. See BlankACU_fixed_v2.pdf.
+    const pdfBytes = await fetch('BlankACU_fixed_v2.pdf').then(r=>{ if(!r.ok) throw new Error('BlankACU_fixed_v2.pdf not found'); return r.arrayBuffer(); });
     const pdfDoc = await PDFLib.PDFDocument.load(pdfBytes);
     const form = pdfDoc.getForm();
     function forceFontSize9(field){
