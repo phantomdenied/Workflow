@@ -6177,5 +6177,101 @@ async function ezGenerateAll(){
 <script src="js/features/audit/audit-core.js"></script>
 <script src="js/features/da3/da3-core.js"></script>
 <script src="js/features/tasks/tasks-home.js"></script>
+
+<script>
+// UITest-only fix: buildAuditPDFBytes() (used by EZ Money Audit + History's
+// regenerate-from-record path) was filling PDF form fields without forcing a
+// fixed font size, so pdf-lib/the PDF viewer auto-sized each field to its own
+// content -- short text (e.g. "# 0 None") blew up huge, long text shrank tiny.
+// The manual Audit screen's own export path already avoids this by writing
+// the field's /DA (default appearance) string directly to force 9pt before
+// flattening. This override applies the same fix so every PDF, regardless of
+// where it's generated from, renders with the same uniform font size.
+async function buildAuditPDFBytes(a){
+  try{
+    const ind=S.individuals.find(i=>i.id===a.indivId);
+    const house=S.houses.find(h=>h.id===a.houseId);
+    const individual=a.indivName||ind?.name||'';
+
+    const rmk = a.reviewMonthKey || (() => {
+      const [y,m] = (a.monthKey||mkNow()).split('-').map(Number);
+      const d = new Date(y, m-2, 1);
+      return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+    })();
+    const [ry,rmo] = rmk.split('-');
+    const monthYear = (AMP_MONTHS_FULL[parseInt(rmo)-1]||'') + ' ' + ry;
+
+    const onHand  = parseFloat(a.onHand||0).toFixed(2);
+    const inAcu   = parseFloat(a.inAcu||0).toFixed(2);
+    const mismatch = a.mismatch||'';
+    const cashNote = 'On Hand- $'+onHand+'\nIn Acumatica- $'+inAcu+(mismatch?'\n'+mismatch:'');
+    const rn = a.receiptNum||''; const rv = a.receiptVen||'';
+    const receiptRef = (rn||rv) ? ('# '+rn+' '+rv).trim() : '';
+    const ans = a.answers||{};
+    const items = [
+      {num:1,  yesId:'YESRow1',  noId:'NORow1',  corrId:'Corrective Action Taken1 Cash on hand equals cash in safe total listed in Acumatica', special:'cash'},
+      {num:2,  yesId:'YESRow2',  noId:'NORow2',  corrId:'Corrective Action Taken2 PEP  MMA are current within 1 year and attached to the header section in Acumatica', special:'pepMma'},
+      {num:3,  yesId:'YESRow3',  noId:'NORow3',  corrId:'Corrective Action Taken3 Spending money distributed matches amount allowable per MMA', special:'weekly'},
+      {num:4,  yesId:'YESRow4',  noId:'NORow4',  corrId:'Corrective Action Taken4 Money removed from safe is used within 72 hours'},
+      {num:5,  yesId:'YESRow5',  noId:'NORow5',  corrId:'Corrective Action Taken5 Acumatica has been updated at least weekly'},
+      {num:6,  yesId:'YESRow6',  noId:'NORow6',  corrId:'Corrective Action Taken6 Individuals cash in safe balance has NOT been over the maximum of 269 for longer than 14 days', special:'max283'},
+      {num:7,  yesId:'YESRow7',  noId:'NORow7',  corrId:'Corrective Action Taken7 All checks received by house staff have been entered into Acumatica regardless of if they have been cashed or forwarded to another location'},
+      {num:8,  yesId:'YESRow8',  noId:'NORow8',  corrId:'Corrective Action Taken8 All receipts have two signatures shopper  verifier', special:'receipt8'},
+      {num:9,  yesId:'YESRow9',  noId:'NORow9',  corrId:'Corrective Action Taken9 All receipts are appropriate numbered scanned and electronically attached to the transaction line in Acumatica and original receipts are attached to the receipt sheets', special:'receipt9'},
+      {num:10, yesId:'YESRow10', noId:'NORow10', corrId:'Corrective Action Taken10 Confirm the appropriate payment method has been used cash not employees personal credit card and there is no evidence of pledging See notes below on pledging'},
+      {num:11, yesId:'YESRow11', noId:'NORow11', corrId:'Corrective Action Taken11 Check if any rewardspoints were earned example Kohls Old Navy If yes confirm receipts verifying redemption or unused rewards are present'},
+      {num:12, yesId:'YESRow12', noId:'NORow12', corrId:'Corrective Action Taken12 All funds issued to staff have been signed for on the Withdrawal Ledger'},
+      {num:13, yesId:'YESRow13', noId:'NORow13', corrId:'13 If capable individuals have signed for weekly spending on the Withdrawal Ledger'},
+      {num:14, yesId:'YESRow14', noId:'NORow14', corrId:'14 If required purchases have been added to the Personal Property Record in Acumatica'},
+      {num:15, yesId:'YESRow15', noId:'NORow15', corrId:null},
+    ];
+
+    const fieldMap={};
+    const add=(id,val)=>{ if(id) fieldMap[id]=val; };
+    add('Individual', individual);
+    add('Review Month_Year', monthYear);
+    add('Title', 'DA3');
+    add('Date', a.visitDate||'');
+
+    items.forEach(item=>{
+      if(!item.yesId) return;
+      const av = ans[item.num]||ans[String(item.num)]||'';
+      add(item.yesId, av==='YES'?'YES':'');
+      add(item.noId,  av==='NO'?'NO':'');
+      if(!item.corrId) return;
+      let ct = '';
+      if(item.special==='cash')         ct = cashNote;
+      else if(item.special==='pepMma')  ct = a.corrective?.['2']||'';
+      else if(item.special==='weekly')  ct = a.corrective?.['3']||'';
+      else if(item.special==='max283'){
+        ct = '*Maximum $283.00';
+        if(av==='NO') ct += '\n'+(a.corrective?.['6']||'');
+      }
+      else if(item.special==='receipt8'||item.special==='receipt9') ct = receiptRef;
+      else ct = a.corrective?.[item.num]||'';
+      add(item.corrId, ct);
+    });
+
+    const pdfBytes = await fetch('BlankACU_fixed.pdf').then(r=>{ if(!r.ok) throw new Error('BlankACU.pdf not found'); return r.arrayBuffer(); });
+    const pdfDoc = await PDFLib.PDFDocument.load(pdfBytes);
+    const form = pdfDoc.getForm();
+    function forceFontSize9(field){
+      try{
+        const daName = PDFLib.PDFName.of('DA');
+        const existing = field.acroField.dict.get(daName);
+        let daStr = existing ? existing.decodeText() : '/Helv 9 Tf 0 g';
+        daStr = daStr.replace(/(\/[A-Za-z]+\s+)[\d.]+(\s+Tf)/, '$19$2');
+        field.acroField.dict.set(daName, PDFLib.PDFString.of(daStr));
+      }catch(e){}
+    }
+    for(const [fid,val] of Object.entries(fieldMap)){
+      try{ const tf=form.getTextField(fid); tf.setText(val||''); forceFontSize9(tf); }catch(e){}
+    }
+    form.flatten();
+    await stampSignatureOnPDFById(pdfDoc, 1, [129.325,249.267,398.756,281.267], a.sigId);
+    return await pdfDoc.save();
+  }catch(e){ console.error('buildAuditPDFBytes:', e); return null; }
+}
+</script>
 </body>
 </html>
