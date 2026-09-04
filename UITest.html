@@ -1888,7 +1888,10 @@ const APP_VERSION = 'TEST v1.0.1';
   </style>
   <div class="app-header">
     <button class="back-btn" onclick="showScreen('homeScreen')">←</button>
-    <div><div class="header-title">EZ Money Audit</div><div class="header-sub">Batch Cash Audit from ACal Files</div></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;flex:1;">
+      <div><div class="header-title">EZ Money Audit</div><div class="header-sub">Batch Cash Audit from ACal Files</div></div>
+      <button class="notes-new-hdr-btn" onclick="ezReset()">↺ Reset</button>
+    </div>
   </div>
   <div class="ez-body">
     <div class="ez-card">
@@ -5812,6 +5815,16 @@ function ezInit(){
   ezUpdateReviewMonthNote();
   ezUpdateGate();
   ezRenderReviewList();
+}
+
+function ezReset(){
+  const hasState = !!(ezHouseId || ezDateCompleted || ezRows.length);
+  if(hasState && !confirm('Reset EZ Money Audit? This clears the selected house, date, and all uploaded files.')) return;
+  ezHouseId = '';
+  ezDateCompleted = '';
+  ezRows = [];
+  ezInit();
+  if(hasState) toast('✓ EZ Money Audit reset');
 }
 
 function ezComputeMonths(dateStr){
