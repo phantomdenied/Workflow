@@ -5871,20 +5871,29 @@ function ezRollbackBalance(txRows, currentAmount, targetDate){
 // Best-effort receipt # + vendor detection: scan this account's WITHDRAWALS
 // (purchases) for the review month only, find the most recent description
 // containing a "#<digits>" receipt reference, and take everything after it
-// as the vendor (left as free text for manual cleanup). Deposits are
-// excluded -- e.g. "June Monthly Allowance CK # 19059" is a check number on
+// as the vendor (left as free text for manual cleanup) -- e.g. "#39 WALMART
+// Phone card ($3.53 gifted)". Real descriptions often put the "#NN" at the
+// END instead, with nothing useful after it but a trailing date, e.g.
+// "Hair Highlights & Trim 5/18/26 # 36" or "Lake George Steam Boat # 38
+// 6/5/26" -- when what follows the number is empty or just a date, fall
+// back to the text BEFORE the number instead. Deposits are excluded from
+// the scan -- e.g. "June Monthly Allowance CK # 19059" is a check number on
 // money coming in, not a purchase receipt, and would otherwise false-match.
 // No match in that month -> the existing "no receipt" convention (0 / None),
 // which ezRenderReviewList() visually flags so it's not mistaken for a real
 // detected receipt.
 function ezExtractReceipt(txRows, reviewMonthKey){
   const monthRows = (txRows || []).filter(r => r.date && r.date.startsWith(reviewMonthKey) && BC_DEBIT_CODES.has(r.code));
+  const isJustADate = s => /^\d{1,2}\/\d{1,2}(\/\d{2,4})?$/.test(s);
   let best = null;
   monthRows.forEach(r => {
     const m = r.desc.match(/#\s*(\d+)/);
     if(!m) return;
     if(!best || r.date >= best.date){
-      best = { date: r.date, num: m[1], vendor: r.desc.slice(m.index + m[0].length).trim() };
+      const after = r.desc.slice(m.index + m[0].length).trim();
+      const before = r.desc.slice(0, m.index).trim();
+      const vendor = (after && !isJustADate(after)) ? after : before;
+      best = { date: r.date, num: m[1], vendor };
     }
   });
   if(!best) return { receiptNum: '0', receiptVen: 'None' };
