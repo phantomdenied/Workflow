@@ -1885,6 +1885,9 @@ const APP_VERSION = 'TEST v1.0.1';
   .ez-generate-btn{width:100%;background:var(--nebula-grad);color:#fff;border:none;border-radius:var(--radius-sm);padding:16px;min-height:var(--tap-min);font-size:0.95rem;font-weight:700;cursor:pointer;margin-top:6px;box-shadow:0 6px 18px rgba(79,70,229,0.28);transition:transform 0.12s var(--ease),opacity 0.15s;}
   .ez-generate-btn:disabled{opacity:0.5;cursor:not-allowed;box-shadow:none;}
   .ez-generate-btn:active{transform:scale(0.98);}
+  .ez-generate-zip-btn{width:100%;background:var(--surface);color:var(--text);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:16px;min-height:var(--tap-min);font-size:0.95rem;font-weight:700;cursor:pointer;margin-top:10px;transition:transform 0.12s var(--ease),background 0.15s;}
+  .ez-generate-zip-btn:disabled{opacity:0.5;cursor:not-allowed;}
+  .ez-generate-zip-btn:active{transform:scale(0.98);background:var(--surface2);}
   </style>
   <div class="app-header">
     <button class="back-btn" onclick="showScreen('homeScreen')">←</button>
@@ -1915,6 +1918,7 @@ const APP_VERSION = 'TEST v1.0.1';
     <div id="ezReviewList"></div>
 
     <button class="ez-generate-btn" id="ezGenerateBtn" style="display:none;" onclick="ezGenerateAll()">Generate All PDFs</button>
+    <button class="ez-generate-zip-btn" id="ezGenerateZipBtn" style="display:none;" onclick="ezGenerateZip()">📦 Generate Zip</button>
   </div>
 </div>
 
@@ -6051,8 +6055,14 @@ function ezFixDate(rid, indivId, field){
 function ezRenderReviewList(){
   const cont = document.getElementById('ezReviewList');
   const genBtn = document.getElementById('ezGenerateBtn');
+  const zipBtn = document.getElementById('ezGenerateZipBtn');
   if(!cont) return;
-  if(ezRows.length === 0){ cont.innerHTML = ''; if(genBtn) genBtn.style.display = 'none'; return; }
+  if(ezRows.length === 0){
+    cont.innerHTML = '';
+    if(genBtn) genBtn.style.display = 'none';
+    if(zipBtn) zipBtn.style.display = 'none';
+    return;
+  }
 
   const houseIndivs = S.individuals.filter(i => i.houseId === ezHouseId);
   const dateLabel = ezDateCompleted ? auditFmtDatePDF(ezDateCompleted) : '—';
@@ -6123,14 +6133,12 @@ function ezRenderReviewList(){
   });
 
   cont.innerHTML = html;
-  if(genBtn) genBtn.style.display = ezRows.some(r => !r.parseError && r.matchedIndivId) ? 'block' : 'none';
+  const hasValid = ezRows.some(r => !r.parseError && r.matchedIndivId);
+  if(genBtn) genBtn.style.display = hasValid ? 'block' : 'none';
+  if(zipBtn) zipBtn.style.display = hasValid ? 'block' : 'none';
 }
 
-async function ezGenerateAll(){
-  if(!ezHouseId || !ezDateCompleted){ toast('Select a house and date completed first'); return; }
-  const validRows = ezRows.filter(r => !r.parseError && r.matchedIndivId);
-  if(validRows.length === 0){ toast('No individuals ready to generate'); return; }
-
+function ezValidateRows(validRows){
   const errors = [];
   validRows.forEach(row => {
     const ind = S.individuals.find(i => i.id === row.matchedIndivId);
@@ -6138,87 +6146,108 @@ async function ezGenerateAll(){
     if(!row.receiptVen.trim()) errors.push(ind.name + ': vendor missing');
     if(row.balance != null && row.balance > 283 && !row.over283Note.trim()) errors.push(ind.name + ': corrective note required (over $283)');
   });
+  return errors;
+}
+
+// Shared by ezGenerateAll() and ezGenerateZip() -- builds one individual's
+// filled PDF bytes + filename and saves their S.auditVisits record, so both
+// generation paths produce identical output instead of maintaining two
+// separate copies of this logic that could drift apart.
+async function ezBuildPdfForRow(row){
+  const ind = S.individuals.find(i => i.id === row.matchedIndivId);
+  const house = S.houses.find(h => h.id === ezHouseId);
+  if(!ind || !house) return null;
+
+  const info = ezComputeMonths(ezDateCompleted);
+  const pepSt = auditDateStatus(ind.pepDate);
+  const mmaSt = auditDateStatus(ind.mmaDate);
+  const anyExpired = pepSt.expired || mmaSt.expired;
+  const weekly = ind.weeklyAllowance != null ? parseFloat(ind.weeklyAllowance) : 0;
+  const over283 = row.balance != null && row.balance > 283;
+  const balStr = (row.balance || 0).toFixed(2);
+
+  const answers = {
+    1: 'YES', 2: anyExpired ? 'NO' : 'YES', 3: 'YES',
+    4: 'YES', 5: 'YES',
+    6: over283 ? 'NO' : 'YES',
+    7: 'YES',
+    8: 'YES', 9: 'YES',
+    10: 'YES', 11: 'YES', 12: 'YES',
+    13: weekly === 0 ? 'NA' : 'YES',
+    14: 'YES', 15: 'NO',
+  };
+
+  const corrective = {};
+  corrective['2'] = 'PEP Date - ' + auditFmtDatePDF(ind.pepDate) + '\nMMA Date - ' + auditFmtDatePDF(ind.mmaDate) + (anyExpired ? '\n*Reported to Money Manager and ResHab' : '');
+  corrective['3'] = ind.name + ' can handle up to $' + weekly.toFixed(2) + ' weekly.';
+  if(over283) corrective['6'] = row.over283Note.trim();
+  if(weekly === 0) corrective['13'] = 'Not Applicable';
+
+  const sigs = S.signatures || [];
+  const sig = sigs.length ? sigs[Math.floor(Math.random() * sigs.length)] : null;
+
+  const record = {
+    indivId: ind.id, indivName: ind.name,
+    houseId: house.id, houseName: house.name,
+    monthKey: info.monthKey, reviewMonthKey: info.reviewMonthKey,
+    visitDate: ezDateCompleted,
+    answers, corrective,
+    onHand: balStr, inAcu: balStr, mismatch: '',
+    receiptNum: row.receiptNum.trim(), receiptVen: row.receiptVen.trim(),
+    sigId: sig ? sig.id : null,
+  };
+
+  const pdfBytes = await buildAuditPDFBytes(record);
+  if(!pdfBytes) return null;
+
+  const houseCode = (house.name || '??').substring(0, 2).toUpperCase();
+  const parts = ind.name.trim().split(' ');
+  const fi = parts[0]?.[0] || '';
+  const ln = parts[parts.length - 1] || '';
+  const mm = String(info.reviewMonthIdx + 1).padStart(2, '0');
+  const yy = String(info.reviewYear).slice(-2);
+  const filename = `${houseCode} ${fi} ${ln} ${mm} ${yy} Acumatica Audit.pdf`;
+
+  let auditRecord = S.auditVisits.find(v => v.indivId === ind.id && v.monthKey === info.monthKey);
+  if(!auditRecord){
+    auditRecord = { id: uid(), indivId: ind.id, indivName: ind.name, houseId: house.id, houseName: house.name, monthKey: info.monthKey, completedAt: null };
+    S.auditVisits.push(auditRecord);
+  }
+  auditRecord.completedAt = today();
+  auditRecord.reviewMonthKey = info.reviewMonthKey;
+  auditRecord.visitDate = ezDateCompleted;
+  auditRecord.answers = { ...answers };
+  auditRecord.corrective = { ...corrective };
+  auditRecord.onHand = balStr;
+  auditRecord.inAcu = balStr;
+  auditRecord.mismatch = '';
+  auditRecord.receiptNum = row.receiptNum.trim();
+  auditRecord.receiptVen = row.receiptVen.trim();
+  if(sig) auditRecord.sigId = sig.id;
+
+  return { ind, house, pdfBytes, filename };
+}
+
+async function ezGenerateAll(){
+  if(!ezHouseId || !ezDateCompleted){ toast('Select a house and date completed first'); return; }
+  const validRows = ezRows.filter(r => !r.parseError && r.matchedIndivId);
+  if(validRows.length === 0){ toast('No individuals ready to generate'); return; }
+
+  const errors = ezValidateRows(validRows);
   if(errors.length > 0){ toast('⚠ ' + errors[0] + (errors.length > 1 ? ' (+' + (errors.length - 1) + ' more)' : '')); return; }
 
   const btn = document.getElementById('ezGenerateBtn');
   btn.disabled = true; btn.textContent = 'Generating…';
-
-  const info = ezComputeMonths(ezDateCompleted);
   let count = 0;
 
   for(const row of validRows){
-    const ind = S.individuals.find(i => i.id === row.matchedIndivId);
-    const house = S.houses.find(h => h.id === ezHouseId);
-    if(!ind || !house) continue;
-
-    const pepSt = auditDateStatus(ind.pepDate);
-    const mmaSt = auditDateStatus(ind.mmaDate);
-    const anyExpired = pepSt.expired || mmaSt.expired;
-    const weekly = ind.weeklyAllowance != null ? parseFloat(ind.weeklyAllowance) : 0;
-    const over283 = row.balance != null && row.balance > 283;
-    const balStr = (row.balance || 0).toFixed(2);
-
-    const answers = {
-      1: 'YES', 2: anyExpired ? 'NO' : 'YES', 3: 'YES',
-      4: 'YES', 5: 'YES',
-      6: over283 ? 'NO' : 'YES',
-      7: 'YES',
-      8: 'YES', 9: 'YES',
-      10: 'YES', 11: 'YES', 12: 'YES',
-      13: weekly === 0 ? 'NA' : 'YES',
-      14: 'YES', 15: 'NO',
-    };
-
-    const corrective = {};
-    corrective['2'] = 'PEP Date - ' + auditFmtDatePDF(ind.pepDate) + '\nMMA Date - ' + auditFmtDatePDF(ind.mmaDate) + (anyExpired ? '\n*Reported to Money Manager and ResHab' : '');
-    corrective['3'] = ind.name + ' can handle up to $' + weekly.toFixed(2) + ' weekly.';
-    if(over283) corrective['6'] = row.over283Note.trim();
-    if(weekly === 0) corrective['13'] = 'Not Applicable';
-
-    const sigs = S.signatures || [];
-    const sig = sigs.length ? sigs[Math.floor(Math.random() * sigs.length)] : null;
-
-    const record = {
-      indivId: ind.id, indivName: ind.name,
-      houseId: house.id, houseName: house.name,
-      monthKey: info.monthKey, reviewMonthKey: info.reviewMonthKey,
-      visitDate: ezDateCompleted,
-      answers, corrective,
-      onHand: balStr, inAcu: balStr, mismatch: '',
-      receiptNum: row.receiptNum.trim(), receiptVen: row.receiptVen.trim(),
-      sigId: sig ? sig.id : null,
-    };
-
-    const pdfBytes = await buildAuditPDFBytes(record);
-    if(!pdfBytes){ toast('⚠ Could not build PDF for ' + ind.name); continue; }
-
-    const houseCode = (house.name || '??').substring(0, 2).toUpperCase();
-    const parts = ind.name.trim().split(' ');
-    const fi = parts[0]?.[0] || '';
-    const ln = parts[parts.length - 1] || '';
-    const mm = String(info.reviewMonthIdx + 1).padStart(2, '0');
-    const yy = String(info.reviewYear).slice(-2);
-    const filename = `${houseCode} ${fi} ${ln} ${mm} ${yy} Acumatica Audit.pdf`;
-
-    await downloadFile(pdfBytes, filename, 'application/pdf');
-
-    let auditRecord = S.auditVisits.find(v => v.indivId === ind.id && v.monthKey === info.monthKey);
-    if(!auditRecord){
-      auditRecord = { id: uid(), indivId: ind.id, indivName: ind.name, houseId: house.id, houseName: house.name, monthKey: info.monthKey, completedAt: null };
-      S.auditVisits.push(auditRecord);
+    const built = await ezBuildPdfForRow(row);
+    if(!built){
+      const nm = S.individuals.find(i => i.id === row.matchedIndivId)?.name || 'individual';
+      toast('⚠ Could not build PDF for ' + nm);
+      continue;
     }
-    auditRecord.completedAt = today();
-    auditRecord.reviewMonthKey = info.reviewMonthKey;
-    auditRecord.visitDate = ezDateCompleted;
-    auditRecord.answers = { ...answers };
-    auditRecord.corrective = { ...corrective };
-    auditRecord.onHand = balStr;
-    auditRecord.inAcu = balStr;
-    auditRecord.mismatch = '';
-    auditRecord.receiptNum = row.receiptNum.trim();
-    auditRecord.receiptVen = row.receiptVen.trim();
-    if(sig) auditRecord.sigId = sig.id;
-
+    await downloadFile(built.pdfBytes, built.filename, 'application/pdf');
     count++;
     await new Promise(r => setTimeout(r, 350));
   }
@@ -6226,6 +6255,57 @@ async function ezGenerateAll(){
   saveS();
   toast(`✓ Generated ${count} audit PDF${count !== 1 ? 's' : ''}`);
   btn.disabled = false; btn.textContent = 'Generate All PDFs';
+}
+
+// Zips every generated PDF into House/Year/Month.Day, e.g.
+// "Valatie/2026/8.26/VA S Witko 07 26 Acumatica Audit.pdf" -- dated by the
+// filing date (ezDateCompleted), not the review month, matching how the
+// paperwork actually gets filed.
+async function ezGenerateZip(){
+  if(!ezHouseId || !ezDateCompleted){ toast('Select a house and date completed first'); return; }
+  const validRows = ezRows.filter(r => !r.parseError && r.matchedIndivId);
+  if(validRows.length === 0){ toast('No individuals ready to generate'); return; }
+
+  const errors = ezValidateRows(validRows);
+  if(errors.length > 0){ toast('⚠ ' + errors[0] + (errors.length > 1 ? ' (+' + (errors.length - 1) + ' more)' : '')); return; }
+
+  const btn = document.getElementById('ezGenerateZipBtn');
+  btn.disabled = true; btn.textContent = 'Zipping…';
+
+  const house = S.houses.find(h => h.id === ezHouseId);
+  const houseName = house?.name || 'House';
+  const [fy, fm, fd] = ezDateCompleted.split('-').map(Number);
+  const monthDay = `${fm}.${fd}`;
+
+  await loadJSZip();
+  const zip = new JSZip();
+  let count = 0;
+
+  for(const row of validRows){
+    const built = await ezBuildPdfForRow(row);
+    if(!built){
+      const nm = S.individuals.find(i => i.id === row.matchedIndivId)?.name || 'individual';
+      toast('⚠ Could not build PDF for ' + nm);
+      continue;
+    }
+    zip.file(`${houseName}/${fy}/${monthDay}/${built.filename}`, built.pdfBytes);
+    count++;
+  }
+
+  if(count === 0){
+    toast('No PDFs could be built');
+    btn.disabled = false; btn.textContent = 'Generate Zip';
+    return;
+  }
+
+  const monthName = AMP_MONTHS_FULL[fm - 1] || '';
+  const zipName = `${houseName} ${monthName} ${fy} Audits.zip`;
+  const blob = await zip.generateAsync({ type: 'blob' });
+  await downloadFile(await blob.arrayBuffer(), zipName, 'application/zip');
+
+  saveS();
+  toast(`✓ Zipped ${count} audit PDF${count !== 1 ? 's' : ''}`);
+  btn.disabled = false; btn.textContent = 'Generate Zip';
 }
 </script>
 
