@@ -1878,6 +1878,8 @@ const APP_VERSION = 'TEST v1.0.1';
   .ez-pep-update button{flex-shrink:0;background:var(--accent);color:#fff;border:none;border-radius:6px;padding:8px 12px;font-size:0.78rem;font-weight:600;cursor:pointer;}
   .ez-receipt-row{display:flex;gap:10px;}
   .ez-receipt-row .ez-input{margin-bottom:0;}
+  .ez-input-flag{border-color:var(--orange)!important;background:var(--orange-light)!important;}
+  .ez-receipt-flag-note{font-size:0.72rem;color:var(--orange);margin-top:6px;line-height:1.4;}
   .ez-unmatched{background:var(--orange-light);border:1px solid var(--orange);border-radius:8px;padding:10px 12px;margin-bottom:10px;}
   .ez-unmatched-title{color:var(--orange);font-weight:700;font-size:0.78rem;margin-bottom:6px;}
   .ez-generate-btn{width:100%;background:var(--nebula-grad);color:#fff;border:none;border-radius:var(--radius-sm);padding:16px;min-height:var(--tap-min);font-size:0.95rem;font-weight:700;cursor:pointer;margin-top:6px;box-shadow:0 6px 18px rgba(79,70,229,0.28);transition:transform 0.12s var(--ease),opacity 0.15s;}
@@ -5866,6 +5868,29 @@ function ezRollbackBalance(txRows, currentAmount, targetDate){
   return currentAmount - depositsAfter + withdrawalsAfter;
 }
 
+// Best-effort receipt # + vendor detection: scan this account's WITHDRAWALS
+// (purchases) for the review month only, find the most recent description
+// containing a "#<digits>" receipt reference, and take everything after it
+// as the vendor (left as free text for manual cleanup). Deposits are
+// excluded -- e.g. "June Monthly Allowance CK # 19059" is a check number on
+// money coming in, not a purchase receipt, and would otherwise false-match.
+// No match in that month -> the existing "no receipt" convention (0 / None),
+// which ezRenderReviewList() visually flags so it's not mistaken for a real
+// detected receipt.
+function ezExtractReceipt(txRows, reviewMonthKey){
+  const monthRows = (txRows || []).filter(r => r.date && r.date.startsWith(reviewMonthKey) && BC_DEBIT_CODES.has(r.code));
+  let best = null;
+  monthRows.forEach(r => {
+    const m = r.desc.match(/#\s*(\d+)/);
+    if(!m) return;
+    if(!best || r.date >= best.date){
+      best = { date: r.date, num: m[1], vendor: r.desc.slice(m.index + m[0].length).trim() };
+    }
+  });
+  if(!best) return { receiptNum: '0', receiptVen: 'None' };
+  return { receiptNum: best.num, receiptVen: best.vendor };
+}
+
 function ezReadXlsxFile(file){
   return new Promise((resolve) => {
     const reader = new FileReader();
@@ -5935,7 +5960,13 @@ document.getElementById('ezFileInput').addEventListener('change', async function
       const { rows, error } = await ezReadXlsxFile(file);
       row.txRows = rows;
       if(error) row.parseError = error;
-      else row.balance = ezRollbackBalance(rows, parsed.amount, ezDateCompleted);
+      else {
+        row.balance = ezRollbackBalance(rows, parsed.amount, ezDateCompleted);
+        const rmk = ezDateCompleted ? ezComputeMonths(ezDateCompleted).reviewMonthKey : null;
+        const receipt = rmk ? ezExtractReceipt(rows, rmk) : { receiptNum: '0', receiptVen: 'None' };
+        row.receiptNum = receipt.receiptNum;
+        row.receiptVen = receipt.receiptVen;
+      }
       row.matchedIndivId = ezAutoMatch(parsed.initials);
     }
   }
@@ -5952,7 +5983,15 @@ function ezHouseChanged(){
 function ezDateChanged(){
   ezDateCompleted = document.getElementById('ezDateCompleted').value;
   ezUpdateReviewMonthNote();
-  ezRows.forEach(row => { if(row.txRows && row.txRows.length) row.balance = ezRollbackBalance(row.txRows, row.rawAmount, ezDateCompleted); });
+  const rmk = ezDateCompleted ? ezComputeMonths(ezDateCompleted).reviewMonthKey : null;
+  ezRows.forEach(row => {
+    if(row.txRows && row.txRows.length){
+      row.balance = ezRollbackBalance(row.txRows, row.rawAmount, ezDateCompleted);
+      const receipt = rmk ? ezExtractReceipt(row.txRows, rmk) : { receiptNum: '0', receiptVen: 'None' };
+      row.receiptNum = receipt.receiptNum;
+      row.receiptVen = receipt.receiptVen;
+    }
+  });
   ezRenderReviewList();
   ezUpdateGate();
 }
@@ -6049,10 +6088,14 @@ function ezRenderReviewList(){
       </div>
     </div>`;
 
+    const noReceipt = row.receiptNum === '0' && row.receiptVen === 'None';
     html += `<div class="ez-receipt-row">
-      <input class="ez-input" type="text" inputmode="numeric" placeholder="Receipt #" value="${esc(row.receiptNum)}" oninput="ezSetField('${row.rid}','receiptNum',this.value)">
-      <input class="ez-input" type="text" placeholder="Vendor" value="${esc(row.receiptVen)}" oninput="ezSetField('${row.rid}','receiptVen',this.value)">
+      <input class="ez-input${noReceipt ? ' ez-input-flag' : ''}" type="text" inputmode="numeric" placeholder="Receipt #" value="${esc(row.receiptNum)}" oninput="ezSetField('${row.rid}','receiptNum',this.value)">
+      <input class="ez-input${noReceipt ? ' ez-input-flag' : ''}" type="text" placeholder="Vendor" value="${esc(row.receiptVen)}" oninput="ezSetField('${row.rid}','receiptVen',this.value)">
     </div>`;
+    if(noReceipt){
+      html += `<div class="ez-receipt-flag-note">⚠️ No receipt found for this individual in the review month — double-check before generating.</div>`;
+    }
 
     html += `</div>`;
   });
