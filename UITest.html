@@ -6274,8 +6274,12 @@ async function ezGenerateZip(){
 
   const house = S.houses.find(h => h.id === ezHouseId);
   const houseName = house?.name || 'House';
-  const [fy, fm, fd] = ezDateCompleted.split('-').map(Number);
-  const monthDay = `${fm}.${fd}`;
+  // Filed by review period (what was audited), not the filing/completed date --
+  // e.g. filed 9/13/26 reviewing August -> "8.26"; filed 6/1/26 reviewing May -> "5.26".
+  const info = ezComputeMonths(ezDateCompleted);
+  const reviewMonthNum = info.reviewMonthIdx + 1;
+  const reviewYearShort = String(info.reviewYear).slice(-2);
+  const monthYear = `${reviewMonthNum}.${reviewYearShort}`;
 
   await loadJSZip();
   const zip = new JSZip();
@@ -6288,7 +6292,7 @@ async function ezGenerateZip(){
       toast('⚠ Could not build PDF for ' + nm);
       continue;
     }
-    zip.file(`${houseName}/${fy}/${monthDay}/${built.filename}`, built.pdfBytes);
+    zip.file(`${houseName}/${info.reviewYear}/${monthYear}/${built.filename}`, built.pdfBytes);
     count++;
   }
 
@@ -6298,8 +6302,7 @@ async function ezGenerateZip(){
     return;
   }
 
-  const monthName = AMP_MONTHS_FULL[fm - 1] || '';
-  const zipName = `${houseName} ${monthName} ${fy} Audits.zip`;
+  const zipName = `${houseName} ${AMP_MONTHS_FULL[info.reviewMonthIdx]} ${info.reviewYear} Audits.zip`;
   const blob = await zip.generateAsync({ type: 'blob' });
   await downloadFile(await blob.arrayBuffer(), zipName, 'application/zip');
 
