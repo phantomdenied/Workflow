@@ -58,7 +58,7 @@ function da3BuildForm(house, v){
     </div>
     <div class="ainfo-row">
       <div class="ainfo-lbl">Date of Visit</div>
-      <input class="ainfo-input" id="da3VisitDate" type="date" value="${new Date().toISOString().slice(0,10)}" enterkeyhint="done">
+      <input class="ainfo-input" id="da3VisitDate" type="date" value="${(/^\d{2}\/\d{2}\/\d{4}$/.test(v.date||'') ? v.date.slice(6)+'-'+v.date.slice(0,2)+'-'+v.date.slice(3,5) : new Date().toISOString().slice(0,10))}" enterkeyhint="done">
     </div>
   </div>`;
 
