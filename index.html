@@ -15,25 +15,40 @@
 <style>
 :root {
   --bg:#F2F3F5; --white:#fff; --surface:#FFFFFF; --surface2:#F8F8FA; --border:#E4E7EC;
-  --text:#0F1923; --muted:#6B7A8D; --muted2:#9AA5B4;
-  --accent:#1B4FD8; --accent-light:#EBF0FD;
+  --text:#0F1923; --muted:#6B7A8D; --muted2:#9AA5B4; --amber:#D97706;
+  --accent:#4F46E5; --accent-2:#8B5CF6; --accent-light:#EEF0FE;
   --green:#16A34A; --green-light:#DCFCE7;
   --orange:#D97706; --orange-light:#FEF3C7;
   --red:#DC2626; --red-light:#FEE2E2;
   --purple:#7C3AED; --purple-light:#EDE9FE;
-  --navy:#0F2340;
-  --radius:14px; --radius-sm:9px; --shadow:0 1px 4px rgba(0,0,0,0.06);
+  --navy:#0F1B33;
+  --radius:16px; --radius-sm:10px; --radius-lg:22px;
+  --shadow-sm:0 1px 3px rgba(15,23,42,0.06);
+  --shadow:0 4px 16px rgba(15,23,42,0.08);
+  --shadow-lg:0 24px 64px rgba(15,23,42,0.18);
+  --nebula-grad:linear-gradient(135deg,var(--accent) 0%,var(--accent-2) 55%,#C026D3 100%);
+  --nebula-glow:radial-gradient(120% 150% at 12% -15%,rgba(139,92,246,0.35) 0%,rgba(79,70,229,0.12) 38%,transparent 65%);
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:20px; --sp-6:24px; --sp-8:32px;
+  --fs-caption:0.68rem; --fs-label:0.72rem; --fs-body-sm:0.82rem; --fs-body:0.9rem;
+  --fs-body-lg:0.95rem; --fs-h3:1.05rem; --fs-h2:1.3rem; --fs-h1:1.7rem;
+  --app-max-w:480px;
+  --tap-min:44px;
+  --ease:cubic-bezier(.22,.61,.36,1);
 }
 body.dark {
-  --bg:#0a0d14; --white:#131720; --surface:#1a1e2a; --surface2:#1f2433; --border:#252d3d;
-  --text:#e2e8f0; --muted:#64748b; --muted2:#475569;
-  --accent:#4f7ef5; --accent-light:#1a2340;
-  --green:#16A34A; --green-light:#0d2a1f;
-  --orange:#D97706; --orange-light:#2a1800;
-  --red:#DC2626; --red-light:#2a0d0d;
-  --purple:#7C3AED; --purple-light:#1e1430;
+  --bg:#0a0d14; --white:#141824; --surface:#161b28; --surface2:#1b2130; --border:#262e40;
+  --text:#e7ecf5; --muted:#94A3B8; --muted2:#64748B; --amber:#e8a23c;
+  --accent:#7C8CF8; --accent-2:#A78BFA; --accent-light:#1c2140;
+  --green:#3ECF7E; --green-light:#0d2a1f;
+  --orange:#F0A93E; --orange-light:#2a1e08;
+  --red:#F0605F; --red-light:#2e1213;
+  --purple:#A78BFA; --purple-light:#221a3a;
   --navy:#080f1a;
-  --shadow:0 2px 12px rgba(0,0,0,0.4);
+  --shadow-sm:0 1px 3px rgba(0,0,0,0.35);
+  --shadow:0 4px 18px rgba(0,0,0,0.45);
+  --shadow-lg:0 28px 70px rgba(0,0,0,0.6);
+  --nebula-grad:linear-gradient(135deg,var(--accent) 0%,var(--accent-2) 55%,#e879f9 100%);
+  --nebula-glow:radial-gradient(120% 150% at 12% -15%,rgba(124,140,248,0.28) 0%,rgba(167,139,250,0.14) 38%,transparent 65%);
 }
 body.dark .home-banner,body.dark .app-header{background:#080f1a;}
 body.dark .checklist-section-hdr{background:#080f1a;}
@@ -105,21 +120,26 @@ body.dark .asig-note{background:#1e1430;border-color:#4a3a70;color:#b8a4df;}
 body.dark .cmeta-field .cmeta-label{color:#9ca3af;}
 body.dark .cmeta-field .cmeta-val{color:#e2e8f0;}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px;-webkit-font-smoothing:antialiased;}
+html{background:#05070c;min-height:100%;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px;-webkit-font-smoothing:antialiased;max-width:var(--app-max-w);margin:0 auto;position:relative;transition:background 0.25s var(--ease),color 0.25s var(--ease);}
+@media (min-width:560px){
+  html{background:radial-gradient(120% 100% at 50% 0%,#161b2e 0%,#05070c 60%);}
+  body{box-shadow:0 0 0 1px rgba(255,255,255,0.06),var(--shadow-lg);}
+}
 
 /* ── SCREENS ── */
 .screen{display:none;min-height:100vh;}
 .screen.active{display:block;}
 
 /* ── STICKY HEADER ── */
-.app-header{background:var(--navy);color:white;padding:52px 16px 14px;position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:12px;}
+.app-header{background:var(--nebula-glow),var(--navy);color:white;padding:52px 16px 14px;position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:12px;}
 /* JS sets --header-h on each checklist screen open; fallback 84px */
 .back-btn{background:rgba(255,255,255,0.1);border:none;color:white;width:36px;height:36px;border-radius:var(--radius-sm);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.header-title{font-size:1.05rem;font-weight:700;line-height:1.2;letter-spacing:-0.02em;}
+.header-title{font-size:var(--fs-h3);font-weight:700;line-height:1.2;letter-spacing:-0.02em;}
 .header-sub{font-size:0.62rem;color:rgba(255,255,255,0.4);font-family:'DM Mono',monospace;margin-top:2px;letter-spacing:0.05em;text-transform:uppercase;}
 
 /* ── HOME TOP BANNER ── */
-.home-banner{background:var(--navy);color:white;padding:52px 20px 30px;position:relative;}
+.home-banner{background:var(--nebula-glow),var(--navy);color:white;padding:52px 20px 30px;position:relative;}
 .home-banner::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:24px;background:var(--bg);border-radius:20px 20px 0 0;}
 body.dark .home-banner::after{background:var(--bg);}
 .home-banner-row1{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
@@ -127,14 +147,14 @@ body.dark .home-banner::after{background:var(--bg);}
 .home-datetime{font-size:0.72rem;color:rgba(255,255,255,0.45);font-family:'DM Mono',monospace;letter-spacing:0.03em;}
 .home-banner-row2{display:flex;align-items:center;justify-content:space-between;gap:12px;}
 .home-banner-text{flex:1;}
-.home-name{font-size:1.6rem;font-weight:700;letter-spacing:-0.03em;}
+.home-name{font-size:var(--fs-h1);font-weight:700;letter-spacing:-0.03em;}
 .home-month{display:inline-block;background:rgba(255,255,255,0.12);border-radius:20px;padding:4px 13px;font-size:0.72rem;font-family:'DM Mono',monospace;margin-top:10px;letter-spacing:0.02em;}
 .home-overall-label{font-size:0.65rem;color:rgba(255,255,255,0.45);margin-top:8px;font-family:'DM Mono',monospace;}
 /* Progress ring */
 .home-ring-wrap{position:relative;width:64px;height:64px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
 .home-ring{width:64px;height:64px;transform:rotate(-90deg);}
 .home-ring-bg{fill:none;stroke:rgba(255,255,255,0.12);stroke-width:5;}
-.home-ring-fill{fill:none;stroke:rgba(255,255,255,0.85);stroke-width:5;stroke-linecap:round;stroke-dasharray:150.8;stroke-dashoffset:150.8;transition:stroke-dashoffset 0.6s ease;}
+.home-ring-fill{fill:none;stroke:rgba(255,255,255,0.92);stroke-width:5;stroke-linecap:round;stroke-dasharray:150.8;stroke-dashoffset:150.8;transition:stroke-dashoffset 0.8s var(--ease);filter:drop-shadow(0 0 6px rgba(167,139,250,0.45));}
 .home-ring-pct{position:absolute;font-size:0.72rem;font-weight:700;color:white;font-family:'DM Mono',monospace;letter-spacing:-0.02em;}
 
 /* ── SETUP BANNER ── */
@@ -182,8 +202,8 @@ body.dark .home-banner::after{background:var(--bg);}
 .chip-grey{background:var(--bg);color:var(--muted2);}
 
 /* ── HOUSE DETAIL SCREEN ── */
-.house-subnav{display:flex;align-items:center;gap:10px;padding:6px 16px 8px;background:var(--navy);}
-.house-detail-banner{background:var(--navy);color:white;padding:4px 16px 22px;position:relative;}
+.house-subnav{display:flex;align-items:center;gap:10px;padding:6px 16px 8px;background:var(--nebula-glow),var(--navy);}
+.house-detail-banner{background:var(--nebula-glow),var(--navy);color:white;padding:4px 16px 22px;position:relative;}
 .house-detail-banner::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:20px;background:var(--bg);border-radius:18px 18px 0 0;}
 .house-detail-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
 .house-stat-pill{background:rgba(255,255,255,0.1);border-radius:10px;padding:10px 12px;}
@@ -247,7 +267,7 @@ body.dark .home-banner::after{background:var(--bg);}
 .prog-fill{height:100%;transition:width 0.3s;}
 .prog-fill.da3{background:var(--green);}
 .prog-fill.audit{background:var(--purple);}
-.checklist-section-hdr{background:var(--navy);color:white;padding:8px 18px;font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;font-family:'DM Mono',monospace;}
+.checklist-section-hdr{background:var(--nebula-glow),var(--navy);color:white;padding:10px 18px;font-size:0.62rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;font-family:'DM Mono',monospace;}
 .task-row{background:var(--white);border-bottom:1px solid var(--border);}
 .task-row-main{display:flex;align-items:flex-start;gap:13px;padding:13px 15px;cursor:pointer;}
 .task-check{width:26px;height:26px;border-radius:6px;border:2px solid var(--border);flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:13px;color:white;transition:all 0.15s;background:var(--white);}
@@ -279,7 +299,7 @@ body.dark .home-banner::after{background:var(--bg);}
 .audit-meta-bar{background:var(--purple-light);border-bottom:1px solid var(--border);padding:11px 18px;display:grid;grid-template-columns:1fr 1fr;gap:7px;}
 .ameta-label{font-size:0.63rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);font-family:'DM Mono',monospace;margin-bottom:2px;}
 .ameta-val{font-size:0.85rem;font-weight:600;color:var(--purple);}
-.audit-section-hdr{background:var(--navy);color:white;padding:8px 18px;font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;font-family:'DM Mono',monospace;}
+.audit-section-hdr{background:var(--nebula-glow),var(--navy);color:white;padding:10px 18px;font-size:0.62rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;font-family:'DM Mono',monospace;}
 /* Audit form cards */
 .acard{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:8px;transition:border-color 0.2s,background 0.2s;overflow:hidden;position:relative;}
 .acard.answered-yes{border-color:var(--green);}
@@ -296,12 +316,12 @@ body.dark .home-banner::after{background:var(--bg);}
 .aitem-text{font-size:0.87rem;line-height:1.55;margin-bottom:12px;font-weight:500;}
 .anote-tag{font-size:0.72rem;font-weight:700;color:var(--orange);margin:-6px 0 10px;display:block;}
 .ayn-row{display:flex;gap:7px;}
-.ayn-btn{flex:1;padding:10px 6px;border-radius:var(--radius-sm);border:1.5px solid var(--border);background:var(--bg);font-family:'DM Sans',sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:5px;}
+.ayn-btn{flex:1;min-height:var(--tap-min);padding:12px 6px;border-radius:var(--radius-sm);border:1.5px solid var(--border);background:var(--surface2);font-family:'DM Sans',sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer;transition:all 0.15s var(--ease);display:flex;align-items:center;justify-content:center;gap:5px;}
 .ayn-btn.ayes{color:var(--green);}
 .ayn-btn.ano{color:var(--red);}
 .ayn-btn.ana{color:var(--muted);}
-.ayn-btn.ayes.active{background:var(--green);color:white;border-color:var(--green);}
-.ayn-btn.ano.active{background:var(--red);color:white;border-color:var(--red);}
+.ayn-btn.ayes.active{background:var(--green);color:white;border-color:var(--green);box-shadow:0 3px 10px rgba(22,163,74,0.3);}
+.ayn-btn.ano.active{background:var(--red);color:white;border-color:var(--red);box-shadow:0 3px 10px rgba(220,38,38,0.3);}
 .ayn-btn.ana.active{background:var(--muted);color:white;border-color:var(--muted);}
 .ayn-btn:active{transform:scale(0.96);}
 .acorr{margin-top:11px;display:none;}
@@ -364,7 +384,7 @@ body.dark .home-banner::after{background:var(--bg);}
 .ainfo-input.prefilled{background:var(--surface2);color:var(--text);border-style:dashed;cursor:default;opacity:0.8;}
 .asig-note{background:var(--purple-light);border:1px solid #c9b8e8;border-radius:10px;padding:11px 13px;font-size:0.77rem;color:var(--purple);line-height:1.6;margin-bottom:10px;}
 /* Export bar */
-.audit-export-bar{position:fixed;bottom:0;left:0;right:0;padding:10px 14px 28px;background:var(--white);border-top:1px solid var(--border);display:none;gap:8px;z-index:20;}
+.audit-export-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:var(--app-max-w);padding:10px 14px calc(14px + env(safe-area-inset-bottom));background:var(--white);border-top:1px solid var(--border);display:none;gap:8px;z-index:20;}
 .audit-export-bar.visible{display:flex;}
 .audit-exp-btn{flex:1;padding:12px;background:var(--navy);color:white;border:none;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:opacity 0.15s;}
 .audit-exp-btn:disabled{opacity:0.5;cursor:default;}
@@ -377,9 +397,9 @@ body.dark .home-banner::after{background:var(--bg);}
 .yn-q{font-size:0.87rem;font-weight:500;line-height:1.4;margin-bottom:9px;}
 .yn-q .qnum{font-family:'DM Mono',monospace;font-weight:700;color:var(--accent);margin-right:5px;}
 .yn-btns{display:flex;gap:8px;}
-.yn-btn{flex:1;padding:9px;border:2px solid var(--border);border-radius:8px;background:transparent;font-family:'DM Sans',sans-serif;font-weight:700;font-size:0.87rem;cursor:pointer;transition:all 0.15s;color:var(--muted);}
-.yn-btn.yes-btn.active{background:var(--green-light);border-color:var(--green);color:var(--green);}
-.yn-btn.no-btn.active{background:var(--red-light);border-color:var(--red);color:var(--red);}
+.yn-btn{flex:1;min-height:var(--tap-min);padding:12px 9px;border:2px solid var(--border);border-radius:var(--radius-sm);background:var(--surface2);font-family:'DM Sans',sans-serif;font-weight:700;font-size:0.87rem;cursor:pointer;transition:all 0.15s var(--ease);color:var(--muted);}
+.yn-btn.yes-btn.active{background:var(--green-light);border-color:var(--green);color:var(--green);box-shadow:0 2px 8px rgba(22,163,74,0.18);}
+.yn-btn.no-btn.active{background:var(--red-light);border-color:var(--red);color:var(--red);box-shadow:0 2px 8px rgba(220,38,38,0.18);}
 .no-flag-banner{margin-top:9px;background:var(--red-light);border:1px solid #f5a0a0;border-radius:8px;padding:7px 11px;font-size:0.77rem;color:var(--red);font-weight:600;display:none;}
 .no-flag-banner.show{display:block;}
 .yn-notes-toggle{font-size:0.71rem;color:var(--muted);cursor:pointer;margin-top:8px;display:inline-flex;align-items:center;gap:3px;}
@@ -419,7 +439,7 @@ body.dark .home-banner::after{background:var(--bg);}
 .hist-dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
 .hist-dash-cell{background:var(--bg);border-radius:10px;padding:10px 12px;}
 .hist-dash-lbl{font-size:0.65rem;color:var(--muted2);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:0.05em;}
-.hist-dash-val{font-size:1.3rem;font-weight:700;margin-top:2px;letter-spacing:-0.02em;}
+.hist-dash-val{font-size:var(--fs-h2);font-weight:700;margin-top:2px;letter-spacing:-0.02em;}
 .hist-dash-val.ok{color:var(--green);}
 .hist-dash-val.warn{color:var(--orange);}
 .hist-dash-val.bad{color:var(--red);}
@@ -430,17 +450,17 @@ body.dark .home-banner::after{background:var(--bg);}
 .hist-batch-btn:disabled{opacity:0.5;}
 .hist-month-nav{display:flex;align-items:center;justify-content:space-between;background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;margin-bottom:10px;}
 .hist-month-lbl{font-weight:700;font-size:0.95rem;letter-spacing:-0.01em;}
-.hist-month-arrow{background:none;border:1px solid var(--border);border-radius:8px;width:34px;height:34px;font-size:1.1rem;cursor:pointer;color:var(--text);display:flex;align-items:center;justify-content:center;}
-.hist-month-arrow:active{background:var(--bg);}
+.hist-month-arrow{background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;width:40px;height:40px;font-size:1.25rem;font-weight:700;cursor:pointer;color:var(--accent);display:flex;align-items:center;justify-content:center;transition:transform 0.12s var(--ease),background 0.15s;}
+.hist-month-arrow:active{background:var(--accent-light);transform:scale(0.92);}
 /* Inline month nav in header */
 .hist-month-nav-inline{display:flex;align-items:center;gap:8px;}
-.hist-month-arrow-inline{background:rgba(255,255,255,0.12);border:none;border-radius:8px;width:30px;height:30px;font-size:1.1rem;cursor:pointer;color:white;display:flex;align-items:center;justify-content:center;}
+.hist-month-arrow-inline{background:rgba(255,255,255,0.14);border:none;border-radius:10px;width:34px;height:34px;font-size:1.2rem;cursor:pointer;color:white;display:flex;align-items:center;justify-content:center;transition:transform 0.12s var(--ease),background 0.15s;}
 .hist-app-header .hist-month-lbl{font-weight:600;font-size:0.85rem;color:white;letter-spacing:0.01em;font-family:'DM Mono',monospace;min-width:80px;text-align:center;}
 .house-subnav{display:flex;align-items:center;gap:10px;padding:8px 16px;background:var(--navy);}
 .house-month-nav-lbl{font-weight:600;font-size:0.78rem;flex:1;text-align:center;color:rgba(255,255,255,0.75);font-family:'DM Mono',monospace;letter-spacing:0.04em;}
 .house-month-nav-btn{background:rgba(255,255,255,0.12);border:none;border-radius:8px;width:30px;height:30px;font-size:1rem;cursor:pointer;color:rgba(255,255,255,0.8);}
-.empty-hist{text-align:center;padding:50px 20px;color:var(--muted);font-size:0.83rem;}
-.empty-hist .icon{font-size:2.2rem;display:block;margin-bottom:11px;}
+.empty-hist{text-align:center;padding:56px 20px;color:var(--muted);font-size:0.85rem;}
+.empty-hist .icon{font-size:2rem;display:flex;align-items:center;justify-content:center;width:64px;height:64px;border-radius:50%;background:var(--nebula-glow),var(--surface2);margin:0 auto 14px;}
 /* Missing names collapse */
 .hist-missing-toggle{font-size:0.78rem;font-weight:600;color:var(--red);cursor:pointer;display:flex;align-items:center;gap:6px;padding:4px 0;}
 .hist-missing-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;display:none;}
@@ -461,8 +481,8 @@ body.dark .home-banner::after{background:var(--bg);}
 .save-btn{width:100%;padding:14px;background:var(--navy);border:none;border-radius:var(--radius);color:white;font-family:'DM Sans',sans-serif;font-weight:700;font-size:0.93rem;cursor:pointer;letter-spacing:0.02em;}
 .indiv-house-lbl{font-size:0.65rem;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted2);padding:10px 3px 5px;}
 /* Collapsible settings sections */
-.settings-section-hdr{display:flex;align-items:center;gap:10px;padding:12px 18px 8px;cursor:pointer;user-select:none;}
-.settings-section-icon{font-size:1rem;}
+.settings-section-hdr{display:flex;align-items:center;gap:10px;padding:13px 16px;margin:0 14px;border-radius:12px;cursor:pointer;user-select:none;transition:background 0.15s;}
+.settings-section-icon{font-size:1.02rem;width:30px;height:30px;border-radius:9px;background:var(--accent-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .settings-section-title{font-size:0.62rem;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted2);font-weight:500;flex:1;}
 .settings-section-arrow{color:var(--muted2);font-size:0.8rem;transition:transform 0.2s;}
 .settings-section-hdr.open .settings-section-arrow{transform:rotate(90deg);}
@@ -475,10 +495,10 @@ body.dark .home-banner::after{background:var(--bg);}
 .rpt-toggle-pill.active{background:var(--navy);color:white;border-color:var(--navy);}
 .report-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
 .report-top{color:white;padding:18px;text-align:center;}
-.report-top.da3-top{background:var(--navy);}
-.report-top.audit-top{background:var(--navy);}
+.report-top.da3-top{background:var(--nebula-glow),var(--navy);}
+.report-top.audit-top{background:var(--nebula-glow),var(--navy);}
 .report-agency{font-size:0.65rem;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.12em;font-family:'DM Mono',monospace;}
-.report-title{font-size:1.05rem;font-weight:700;margin:5px 0 2px;letter-spacing:-0.02em;}
+.report-title{font-size:var(--fs-h3);font-weight:700;margin:5px 0 2px;letter-spacing:-0.02em;}
 .report-subtitle{font-size:0.73rem;color:rgba(255,255,255,0.6);}
 .report-meta-grid{display:grid;grid-template-columns:1fr 1fr;}
 .report-meta-cell{padding:11px 15px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);}
@@ -548,7 +568,7 @@ body.dark .home-banner::after{background:var(--bg);}
 .ics-status.success{background:var(--green-light);color:var(--green);border:1px solid #a8d5be;}
 .ics-status.error{background:var(--red-light);color:var(--red);border:1px solid #f5a0a0;}
 .ics-status.info{background:var(--accent-light);color:var(--accent);border:1px solid #b0c4dc;}
-.rt-empty{background:var(--white);border:1.5px dashed var(--border);border-radius:var(--radius);padding:16px;text-align:center;color:var(--muted);font-size:0.82rem;cursor:pointer;}
+.rt-empty{background:var(--white);border:1.5px dashed var(--border);border-radius:var(--radius);padding:30px 16px;text-align:center;color:var(--muted);font-size:0.82rem;cursor:pointer;}
 .rt-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:7px;overflow:hidden;transition:transform 0.12s;}
 .rt-card:active{transform:scale(0.985);}
 .rt-card-body{display:flex;align-items:center;gap:12px;padding:12px 14px;}
@@ -584,9 +604,9 @@ body.dark .home-banner::after{background:var(--bg);}
 .rt-card.completed-card{opacity:0.6;border-style:dashed;}
 .rt-menu-btn{background:transparent;border:none;color:var(--muted);font-size:1.1rem;cursor:pointer;padding:2px 4px;line-height:1;}
 /* House task selection bar */
-.house-task-action-bar{position:fixed;bottom:0;left:0;right:0;background:var(--white);border-top:1px solid var(--border);padding:10px 14px 28px;display:none;gap:7px;z-index:50;}
+.house-task-action-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:var(--app-max-w);background:var(--white);border-top:1px solid var(--border);padding:10px 14px calc(14px + env(safe-area-inset-bottom));display:none;gap:7px;z-index:50;}
 .house-task-action-bar.visible{display:flex;align-items:center;}
-.hta-count-bar{position:fixed;bottom:72px;left:0;right:0;display:none;justify-content:center;z-index:51;pointer-events:none;}
+.hta-count-bar{position:fixed;bottom:calc(78px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);width:100%;max-width:var(--app-max-w);display:none;justify-content:center;z-index:51;pointer-events:none;}
 .hta-count-bar.visible{display:flex;}
 .hta-count-bar span{background:var(--navy);color:white;font-size:0.72rem;font-weight:700;font-family:'DM Mono',monospace;padding:4px 12px;border-radius:20px;letter-spacing:0.04em;}
 .hta-count{font-size:0.78rem;font-weight:700;color:var(--text);white-space:nowrap;margin-right:4px;flex-shrink:0;}
@@ -598,12 +618,12 @@ body.dark .home-banner::after{background:var(--bg);}
 .rt-card.task-selected{border-color:var(--accent);background:var(--accent-light);}
 .rt-card.task-followup{border-color:var(--purple);background:var(--purple-light);}
 /* Modal */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:500;display:none;align-items:flex-end;justify-content:center;overscroll-behavior:contain;}
+.modal-overlay{position:fixed;inset:0;background:rgba(6,10,20,0.55);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);z-index:500;display:none;align-items:flex-end;justify-content:center;overscroll-behavior:contain;}
 .modal-overlay.open{display:flex;}
-.modal-sheet{background:var(--white);border-radius:20px 20px 0 0;padding:20px 18px 40px;width:100%;max-height:92vh;overflow-y:auto;animation:slideUp 0.25s ease;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;}
+.modal-sheet{background:var(--white);border-radius:var(--radius-lg) var(--radius-lg) 0 0;padding:22px 20px calc(36px + env(safe-area-inset-bottom));width:100%;max-width:var(--app-max-w);max-height:92vh;overflow-y:auto;animation:slideUp 0.28s var(--ease);overscroll-behavior:contain;-webkit-overflow-scrolling:touch;box-shadow:0 -12px 48px rgba(15,23,42,0.16);}
 @keyframes slideUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
-.modal-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 18px;}
-.modal-title{font-size:1rem;font-weight:700;margin-bottom:16px;color:var(--text);letter-spacing:-0.01em;}
+.modal-handle{width:40px;height:5px;background:var(--border);border-radius:3px;margin:0 auto 18px;}
+.modal-title{font-size:var(--fs-h3);font-weight:700;margin-bottom:16px;color:var(--text);letter-spacing:-0.01em;}
 .modal-field{margin-bottom:14px;}
 .modal-lbl{font-size:0.68rem;font-weight:600;color:var(--muted2);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.08em;font-family:'DM Mono',monospace;display:block;}
 .modal-input{width:100%;border:1.5px solid var(--border);border-radius:9px;padding:11px 13px;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:var(--bg);color:var(--text);outline:none;transition:border-color 0.2s;}
@@ -651,7 +671,7 @@ body.dark .home-banner::after{background:var(--bg);}
 .notes-filter-pill.active{background:white;color:var(--navy);border-color:white;}
 /* Note card */
 /* FAB */
-.notes-fab{position:fixed;bottom:84px;right:18px;width:52px;height:52px;border-radius:50%;background:var(--navy);color:white;border:none;font-size:1.3rem;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,0.22);z-index:150;display:flex;align-items:center;justify-content:center;transition:transform 0.15s;}
+.notes-fab{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom));right:max(18px, calc(50vw - 240px + 18px));width:52px;height:52px;border-radius:50%;background:var(--nebula-grad);color:white;border:none;font-size:1.3rem;cursor:pointer;box-shadow:0 8px 22px rgba(79,70,229,0.35);z-index:150;display:flex;align-items:center;justify-content:center;transition:transform 0.15s var(--ease);}
 .notes-fab:active{transform:scale(0.92);}
 /* Note cards */
 .note-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px;overflow:hidden;position:relative;}
@@ -677,7 +697,7 @@ body.dark .home-banner::after{background:var(--bg);}
 /* New note bar */
 .new-note-bar{position:sticky;bottom:68px;left:0;right:0;padding:10px 14px;background:var(--bg);border-top:1px solid var(--border);z-index:50;}
 .new-note-btn{width:100%;padding:13px;background:var(--navy);border:none;border-radius:var(--radius);color:white;font-family:'DM Sans',sans-serif;font-weight:700;font-size:0.93rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;}
-.note-compose-sheet{background:var(--white);border-radius:20px 20px 0 0;padding:18px 16px 32px;width:100%;max-height:88vh;overflow-y:auto;animation:slideUp 0.25s ease;}
+.note-compose-sheet{background:var(--white);border-radius:var(--radius-lg) var(--radius-lg) 0 0;padding:20px 18px calc(30px + env(safe-area-inset-bottom));width:100%;max-width:var(--app-max-w);max-height:88vh;overflow-y:auto;animation:slideUp 0.28s var(--ease);box-shadow:0 -12px 48px rgba(15,23,42,0.16);}
 .note-compose-ta{width:100%;min-height:120px;border:1.5px solid var(--border);border-radius:10px;padding:12px;font-family:'DM Sans',sans-serif;font-size:0.95rem;background:var(--bg);color:var(--text);resize:none;outline:none;margin-bottom:12px;line-height:1.55;}
 .note-compose-ta:focus{border-color:var(--accent);}
 .note-tool-row{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;}
@@ -701,13 +721,32 @@ input:checked + .toggle-slider{background:var(--accent);}
 input:checked + .toggle-slider:before{transform:translateX(22px);}
 
 /* ── BOTTOM NAV ── */
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--white);border-top:1px solid var(--border);display:flex;z-index:200;padding-bottom:env(safe-area-inset-bottom);}
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:var(--app-max-w);background:var(--white);border-top:1px solid var(--border);display:flex;z-index:200;padding-bottom:env(safe-area-inset-bottom);box-shadow:0 -1px 12px rgba(15,23,42,0.05);}
 .nav-btn{flex:1;padding:8px 4px 6px;border:none;background:transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:1px;font-family:'DM Sans',sans-serif;color:var(--muted2);font-size:0.58rem;font-weight:600;transition:color 0.15s;letter-spacing:0.01em;}
 .nav-btn.active{color:var(--navy);}
 .nav-icon{font-size:1.2rem;line-height:1;}
 
+/* ── NAV DRAWER (replaces bottom nav) ── */
+.nav-trigger{position:fixed;top:calc(14px + env(safe-area-inset-top));left:max(14px, calc(50vw - 240px + 14px));width:44px;height:44px;border-radius:50%;border:none;background:var(--nebula-glow),rgba(15,27,51,0.92);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-shadow:0 6px 18px rgba(0,0,0,0.22);z-index:250;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;transition:transform 0.12s var(--ease);}
+.nav-trigger:active{transform:scale(0.92);}
+.nav-trigger span{display:block;width:18px;height:2px;border-radius:2px;background:white;}
+.drawer-overlay{position:fixed;inset:0;background:rgba(6,10,20,0.55);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);z-index:400;opacity:0;pointer-events:none;transition:opacity 0.25s var(--ease);}
+.drawer-overlay.open{opacity:1;pointer-events:auto;}
+.drawer-panel{position:fixed;top:0;bottom:0;left:max(0px, calc(50vw - 240px));width:82%;max-width:320px;background:var(--white);z-index:410;display:flex;flex-direction:column;transform:translateX(-105%);transition:transform 0.28s var(--ease);box-shadow:12px 0 40px rgba(0,0,0,0.25);}
+.drawer-panel.open{transform:translateX(0);}
+.drawer-hdr{background:var(--nebula-glow),var(--navy);color:white;padding:calc(20px + env(safe-area-inset-top)) 18px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.drawer-hdr-title{font-size:var(--fs-h3);font-weight:700;letter-spacing:-0.02em;}
+.drawer-close{background:rgba(255,255,255,0.12);border:none;color:white;width:32px;height:32px;border-radius:var(--radius-sm);font-size:0.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.drawer-close:active{transform:scale(0.92);}
+.drawer-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px 10px calc(20px + env(safe-area-inset-bottom));}
+.drawer-item{width:100%;display:flex;align-items:center;gap:12px;padding:12px 10px;border:none;background:transparent;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:600;color:var(--text);cursor:pointer;text-align:left;min-height:var(--tap-min);transition:background 0.15s;}
+.drawer-item:active{background:var(--surface2);transform:scale(0.98);}
+.drawer-item.active{background:var(--accent-light);color:var(--accent);}
+.drawer-item-icon{font-size:1.1rem;width:30px;height:30px;border-radius:9px;background:var(--surface2);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.drawer-item.active .drawer-item-icon{background:var(--white);}
+
 /* ── SYNC STATUS ── */
-.sync-badge{position:fixed;top:14px;right:14px;z-index:320;display:none;align-items:center;gap:7px;padding:6px 10px;border-radius:999px;background:rgba(8,16,28,0.86);border:1px solid rgba(255,255,255,0.08);backdrop-filter:blur(8px);box-shadow:0 6px 18px rgba(0,0,0,0.22);font-size:0.68rem;font-weight:700;color:var(--muted2);font-family:'DM Sans',sans-serif;letter-spacing:0.01em;pointer-events:none;}
+.sync-badge{position:fixed;top:calc(14px + env(safe-area-inset-top));right:max(14px, calc(50vw - 240px + 14px));z-index:320;display:none;align-items:center;gap:7px;padding:6px 10px;border-radius:999px;background:rgba(8,16,28,0.86);border:1px solid rgba(255,255,255,0.08);backdrop-filter:blur(8px);box-shadow:0 6px 18px rgba(0,0,0,0.22);font-size:0.68rem;font-weight:700;color:#cbd5e1;font-family:'DM Sans',sans-serif;letter-spacing:0.01em;pointer-events:none;}
 .sync-badge.synced{color:var(--green);}
 .sync-badge.saving{color:var(--orange);}
 .sync-badge.error{color:var(--red);}
@@ -732,6 +771,49 @@ input:checked + .toggle-slider:before{transform:translateX(22px);}
   .report-card{box-shadow:none;border:1px solid #ccc;}
   #reportScreen{display:block!important;}
   *{print-color-adjust:exact;-webkit-print-color-adjust:exact;}
+}
+
+/* ── ADDED: microinteractions, touch targets, card depth, checkbox pop, empty-state icon ── */
+.yn-btn:active,.submit-btn:active,.print-btn:active,.save-btn:active,.modal-save-btn:active,
+.modal-cancel-btn:active,.modal-del-btn:active,.rt-check:active,.na-btn:active,
+.add-row-btn:active,.hist-batch-btn:active,.audit-exp-btn:active,.hta-btn:active,
+.new-note-btn:active,.inv-photo-btn:active,.inv-zip-btn:active,.rt-add-btn:active,
+.rt-import-btn:active,.setup-go-btn:active,.email-compose-btn:active,.nav-btn:active,
+.hist-month-arrow-inline:active{
+  transform:scale(0.97);
+}
+.task-row-main:active .task-check{transform:scale(0.88);}
+.sub-item-row:active .sub-check{transform:scale(0.88);}
+.rt-card-body:active .rt-check{transform:scale(0.9);}
+.yn-btn,.submit-btn,.print-btn,.save-btn,.modal-save-btn,.modal-cancel-btn,.modal-del-btn,
+.na-btn,.add-row-btn,.hist-batch-btn,.audit-exp-btn,.hta-btn,.new-note-btn,.inv-photo-btn,
+.inv-zip-btn,.rt-add-btn,.rt-import-btn,.setup-go-btn,.email-compose-btn,.nav-btn,.rt-check,
+.hist-month-arrow-inline{
+  transition:transform 0.12s var(--ease),background 0.15s,border-color 0.15s,color 0.15s,opacity 0.15s;
+}
+/* Minimum comfortable touch target (44px) */
+.nav-btn,.back-btn,.del-btn,.house-month-nav-btn,.amp-nav,
+.email-manage-btn,.inv-del-btn,.note-action-btn{min-height:var(--tap-min);}
+.back-btn{min-width:var(--tap-min);}
+
+/* Satisfying check-off animation, triggered by JS's existing state classes */
+@keyframes checkPop{0%{transform:scale(0.55);}55%{transform:scale(1.18);}100%{transform:scale(1);}}
+.task-row.checked .task-check,.sub-item-row.checked .sub-check,.rt-check.done{animation:checkPop 0.32s var(--ease);}
+
+/* Lofted card depth for a more premium feel */
+.home-house-card,.da3-card,.indiv-card,.note-card,.rt-card,.settings-card,.history-item,
+.inv-card,.inv-row-card,.hist-dashboard,.acard,.ainfo-card,.report-card,.email-list-card,
+.email-tpl-card{
+  box-shadow:var(--shadow-sm);
+  transition:box-shadow 0.15s var(--ease),transform 0.12s var(--ease),border-color 0.15s var(--ease);
+}
+
+/* Decorative icon for the plain-text recurring-tasks empty state (CSS-only, no markup change) */
+.rt-empty::before{content:'📋';display:block;font-size:1.9rem;margin-bottom:10px;opacity:0.75;}
+
+/* Focus-visible outline for keyboard users, consistent across inputs */
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible{
+  outline:2px solid var(--accent);outline-offset:2px;
 }
 </style>
 <script>
@@ -766,164 +848,6 @@ const APP_VERSION = 'TEST v1.0.1';
 </script>
 </head>
 <body>
-<div id="syncBadge" class="sync-badge"><span id="syncDot" class="sync-dot"></span><span id="syncText">Saved</span></div>
-
-<!-- Firebase SDK -->
-<script type="module">
-// ═══════════════════════════════════════
-// FIREBASE SETUP
-// ═══════════════════════════════════════
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyDDZXZsI-Z_o_bDX5nSMbnXKGm3MFpBfVc",
-  authDomain: "bl-search-b3b6a.firebaseapp.com",
-  projectId: "bl-search-b3b6a",
-  storageBucket: "bl-search-b3b6a.firebasestorage.app",
-  messagingSenderId: "941571479533",
-  appId: "1:941571479533:web:116d4f044f1677ead2f9e4"
-};
-
-const fbApp = initializeApp(firebaseConfig);
-const db = getFirestore(fbApp);
-const auth = getAuth(fbApp);
-const DOC_ID = 'region4_main';
-function getDocRef(){ return auth.currentUser ? doc(db,'workflow',DOC_ID) : null; }
-
-// Expose to window so the main script can call these
-window._fbConsecFails = 0;
-window._fbSave = async function(data){
-  const ref = getDocRef();
-  if(!ref){ try{localStorage.setItem('r4hub_v3',JSON.stringify(data));}catch(_){} return; }
-  try {
-    window._fbStatus('saving');
-    await setDoc(ref, { payload: JSON.stringify(data), updatedAt: Date.now() });
-    window._fbConsecFails = 0;
-    window._fbStatus('synced');
-  } catch(e){
-    console.error('Firebase save error:', e);
-    window._fbConsecFails = (window._fbConsecFails || 0) + 1;
-    window._fbStatus('error');
-    try{ localStorage.setItem('r4hub_v3', JSON.stringify(data)); }catch(_){}
-    // Show sync failure banner after 3 consecutive failures
-    if(window._fbConsecFails >= 3 && !window._syncBannerDismissed){
-      const banner = document.getElementById('syncFailBanner');
-      if(banner) banner.style.display = 'block';
-    }
-  }
-};
-
-window._fbLoad = async function(){
-  const ref = getDocRef();
-  if(!ref){ try{ const d=localStorage.getItem('r4hub_v3'); return d?JSON.parse(d):null; }catch(_){ return null; } }
-  try {
-    window._fbStatus('loading');
-    const _tout = new Promise((_,r)=>setTimeout(()=>r(new Error('timeout')),5000));
-    const snap = await Promise.race([getDoc(ref), _tout]);
-    if(snap.exists()){
-      const data = JSON.parse(snap.data().payload);
-      window._fbStatus('synced');
-      return data;
-    }
-    window._fbStatus('synced');
-    return null;
-  } catch(e){
-    console.error('Firebase load error:', e);
-    window._fbStatus('error');
-    // Fall back to localStorage
-    try{
-      const d = localStorage.getItem('r4hub_v3');
-      return d ? JSON.parse(d) : null;
-    }catch(_){ return null; }
-  }
-};
-
-window._fbSignIn = async function(email, password){
-  try {
-    await signInWithEmailAndPassword(auth, email, password);
-    localStorage.setItem('wf_signin_ts', Date.now().toString());
-    return { ok: true };
-  } catch(e){
-    return { ok: false, message: e.code==='auth/invalid-credential'?'Incorrect email or password':e.message };
-  }
-};
-
-// 1-hour session timeout check
-window._fbCheckSession = function(){
-  const ts = parseInt(localStorage.getItem('wf_signin_ts')||'0');
-  if(!ts) return false;
-  return (Date.now() - ts) < 60 * 60 * 1000; // 1 hour
-};
-window._fbSignOut = async function(){ await signOut(auth); };
-
-onAuthStateChanged(auth, function(user){
-  window._fbCurrentUser = user || null;
-  if(!window._fbAuthInitialized){
-    window._fbAuthInitialized = true;
-    window._fbReady = true;
-    document.dispatchEvent(new Event('fbReady'));
-  } else {
-    document.dispatchEvent(new CustomEvent('fbAuthChanged', { detail: { user: user } }));
-  }
-});
-</script>
-
-<div class="login-screen" id="loginScreen">
-  <div id="appVersionLogin" style="
-    position:absolute;
-    top:10px;
-    right:12px;
-    font-size:11px;
-    color:rgba(255,255,255,0.78);
-    z-index:2;
-    pointer-events:none;
-    font-family:'DM Sans',sans-serif;
-    font-weight:600;
-    letter-spacing:0.02em;
-  "></div>
-  <div class="login-brand">
-    <svg class="login-icon" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="72" height="72" rx="18" fill="rgba(255,255,255,0.12)"/>
-      <path d="M18 44 L36 20 L54 44" stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-      <rect x="26" y="44" width="20" height="14" rx="3" fill="white" fill-opacity="0.95"/>
-      <rect x="30" y="48" width="5" height="5" rx="1.5" fill="#1a3a5c"/>
-      <rect x="37" y="48" width="5" height="5" rx="1.5" fill="#1a3a5c"/>
-      <circle cx="54" cy="24" r="9" fill="#2d8a6a"/>
-      <path d="M50 24 L53 27 L58 21" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-    <div class="login-app-name">Work<span>Flow</span></div>
-    <div class="login-subtitle">Your operations, organized.</div>
-  </div>
-  <div class="login-card">
-    <div class="login-field">
-      <div class="login-lbl">Email</div>
-      <input class="login-input" id="loginEmail" type="email" placeholder="your@email.com" autocapitalize="none" autocorrect="off">
-    </div>
-    <div class="login-field">
-      <div class="login-lbl">Password</div>
-      <input class="login-input" id="loginPassword" type="password" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" id="loginPasswordInput">
-    </div>
-    <button class="login-btn" id="loginBtn" onclick="doLogin()">Sign In &rarr;</button>
-    <div class="login-error" id="loginError"></div>
-  </div>
-  <a href="index2.html" style="position:relative;z-index:1;margin-top:20px;font-size:0.65rem;color:rgba(255,255,255,0.25);font-family:'DM Mono',monospace;text-decoration:none;letter-spacing:0.05em;">🧪 test</a>
-  <a href="UITest.html" style="position:relative;z-index:1;margin-top:10px;font-size:0.65rem;color:rgba(255,255,255,0.25);font-family:'DM Mono',monospace;text-decoration:none;letter-spacing:0.05em;">🧪 test 2 (new UI)</a>
-</div>
-
-<!-- ══ DECRYPTION PROMPT ══ -->
-<div class="modal-overlay" id="decryptPromptModal" style="display:none;z-index:995;">
-  <div class="modal-sheet" style="max-width:360px;margin:auto;padding:28px 24px;">
-    <div style="font-size:1.1rem;font-weight:700;margin-bottom:6px;">🔒 Data is Encrypted</div>
-    <div style="font-size:0.82rem;color:var(--muted);margin-bottom:18px;line-height:1.5;">This device doesn't have your decryption password yet. Enter it below to access your data.</div>
-    <div class="modal-lbl">Decryption Password</div>
-    <input class="s-input" id="decryptPromptInput" type="password" placeholder="Enter your password…" autocapitalize="none" autocorrect="off" style="margin-bottom:14px;">
-    <div id="decryptPromptError" style="display:none;color:var(--red);font-size:0.78rem;margin-bottom:10px;"></div>
-    <button class="modal-save-btn" onclick="decryptPromptSubmit()">Unlock →</button>
-  </div>
-</div>
-
 <!-- ══ HOME ══ -->
 <div class="screen active" id="homeScreen">
   <div class="home-banner">
@@ -955,25 +879,11 @@ onAuthStateChanged(auth, function(user){
       </div>
     </div>
   </div>
-  <!-- Sync failure banner -->
-  <div id="syncFailBanner" style="display:none;margin:0 14px 8px;background:#fff1f1;border:1.5px solid var(--red);border-radius:var(--radius-sm);padding:11px 13px;">
-    <div style="display:flex;align-items:flex-start;gap:10px;">
-      <span style="font-size:1.1rem;flex-shrink:0;">⚠️</span>
-      <div style="flex:1;font-size:0.8rem;color:var(--red);line-height:1.5;">
-        <strong>Sync failed</strong> — data is saved locally only.<br>
-        Consider exporting a backup in case you switch devices.
-      </div>
-      <div style="display:flex;flex-direction:column;gap:5px;flex-shrink:0;">
-        <button onclick="exportDataBackup()" style="background:var(--red);color:white;border:none;border-radius:7px;padding:5px 9px;font-size:0.72rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;">Export</button>
-        <button onclick="document.getElementById('syncFailBanner').style.display='none';window._syncBannerDismissed=true;" style="background:none;border:1px solid var(--red);border-radius:7px;padding:4px 9px;font-size:0.72rem;font-weight:600;color:var(--red);cursor:pointer;font-family:'DM Sans',sans-serif;">Dismiss</button>
-      </div>
-    </div>
-  </div>
   <div id="storageWarnBanner" style="display:none;margin:0 14px 8px;background:#fff1f1;border:1.5px solid var(--red);border-radius:var(--radius-sm);padding:11px 13px;">
     <div style="display:flex;align-items:flex-start;gap:10px;">
       <span style="font-size:1.1rem;flex-shrink:0;">⚠️</span>
       <div style="flex:1;font-size:0.8rem;color:var(--red);line-height:1.5;">
-        <strong>This browser is blocking local storage</strong> — the local backup copy of your data won't save on this device, and if Firebase sync fails too, changes can be lost.<br>
+        <strong>This browser is blocking local storage</strong> — nothing you do will be saved, and it can disappear the moment you switch apps or the tab reloads.<br>
         This usually means <strong>Private Browsing</strong> is on. Open this page in a normal tab instead.
       </div>
     </div>
@@ -997,14 +907,8 @@ onAuthStateChanged(auth, function(user){
 
   <div class="section-label" id="homeSectionLabel">Your Houses</div>
   <div class="home-list" id="homeList"></div>
-  <div style="padding:0 14px 6px;">
+  <div style="padding:0 14px 40px;">
     <button class="email-compose-btn" onclick="openEmailScreen()">✉️ Send Weekly Reminder</button>
-  </div>
-  <div style="padding:0 14px 8px;margin-top:8px;">
-    <button class="email-compose-btn" style="background:var(--accent-light);color:var(--accent);" onclick="showScreen('invoiceScreen')">📄 Receiving Log &amp; Invoices</button>
-  </div>
-  <div style="padding:0 14px 120px;margin-top:8px;">
-    <button class="email-compose-btn" style="background:var(--navy);color:white;font-weight:700;" id="saveAllBtn" onclick="saveAllToFirebase()">💾 Save All</button>
   </div>
 </div>
 
@@ -1453,7 +1357,7 @@ onAuthStateChanged(auth, function(user){
           <div style="font-size:0.7rem;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:0.1em;color:var(--accent);font-weight:700;margin-bottom:8px;">📝 Notes</div>
           <div style="font-size:0.83rem;color:var(--text);line-height:1.65;">
             The <strong>Notes</strong> tab lets you keep quick notes for anything — follow-ups, observations, reminders. You can attach a photo to any note.<br><br>
-            Notes can be linked to a specific house or kept general. They are saved with your data and sync to Firebase along with everything else.
+            Notes can be linked to a specific house or kept general. They are saved with your data on this device, along with everything else.
           </div>
         </div>
 
@@ -1472,7 +1376,7 @@ onAuthStateChanged(auth, function(user){
           <div style="font-size:0.7rem;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:0.1em;color:var(--accent);font-weight:700;margin-bottom:8px;">📄 Receiving Log &amp; Invoices</div>
           <div style="font-size:0.83rem;color:var(--text);line-height:1.65;">
             The <strong>Receiving Log</strong> is accessible from the bottom of the home screen. Use it to log incoming invoices and track deliveries for each house.<br><br>
-            Photos can be attached to each entry for documentation. Entries are stored with your data and sync to Firebase.
+            Photos can be attached to each entry for documentation. Entries are stored with your data on this device.
           </div>
         </div>
 
@@ -1482,29 +1386,7 @@ onAuthStateChanged(auth, function(user){
           <div style="font-size:0.83rem;color:var(--text);line-height:1.65;">
             Go to <strong>Settings → Data Sync / Backup → Export Data Backup</strong> to download a copy of all your data as a JSON file. Save this somewhere safe — email it to yourself or put it in Google Drive.<br><br>
             To restore or move to a new device, use <strong>Import Data Backup</strong>. Choose <strong>Full Overwrite</strong> to replace everything, or <strong>Smart Merge</strong> to combine data keeping the most recent version of each record.<br><br>
-            The <strong>💾 Save All</strong> button on the home screen manually forces an immediate sync to Firebase. Normal saves happen automatically in the background.
-          </div>
-        </div>
-
-        <!-- Encryption -->
-        <div style="border-bottom:1px solid var(--border);padding:14px 16px;">
-          <div style="font-size:0.7rem;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:0.1em;color:var(--accent);font-weight:700;margin-bottom:8px;">🔒 Encryption</div>
-          <div style="font-size:0.83rem;color:var(--text);line-height:1.65;">
-            Encryption scrambles your data in Firebase so only someone with your password can read it. Your password is stored on your device only — it is never sent anywhere.<br><br>
-            <strong>First-time setup:</strong><br>
-            1. Export an unencrypted backup first as a safety net<br>
-            2. Go to <strong>Settings → Data Encryption</strong><br>
-            3. Enter a password and tap <strong>🔑 Set Password</strong><br>
-            4. Tap <strong>🔍 Verify Password</strong> — it will confirm everything is good<br>
-            5. Tap <strong>🔒 Encrypt Data</strong> to secure your Firebase data<br><br>
-            <strong>On a new or additional device:</strong><br>
-            1. Open the app and sign in<br>
-            2. Go to <strong>Settings → Data Encryption</strong><br>
-            3. Enter the <strong>same password</strong> you used on your other device<br>
-            4. Tap <strong>🔑 Set Password</strong>, then <strong>🔍 Verify Password</strong><br>
-            5. Green checkmark means the password is correct and your data is accessible<br><br>
-            Once set up, all saves are encrypted automatically — you don't need to do anything else.<br><br>
-            ⚠️ <strong>Do not forget your password.</strong> There is no recovery option. If you lose it, you will need to import an unencrypted backup to reset.
+            All data lives only on this device's local storage — there is no cloud sync, so export a backup regularly and before switching devices.
           </div>
         </div>
 
@@ -1626,7 +1508,7 @@ onAuthStateChanged(auth, function(user){
               <input class="s-input" id="sApiKey" type="password" placeholder="AIza..." autocapitalize="none" autocorrect="off" autocomplete="off" style="flex:1;font-family:'DM Mono',monospace;font-size:0.82rem;">
               <button class="save-btn" style="width:auto;padding:10px 14px;font-size:0.82rem;flex-shrink:0;" onclick="saveApiKey()">Save</button>
             </div>
-            <div style="font-size:0.72rem;color:var(--muted);margin-top:6px;line-height:1.5;">Your key is stored in Firebase — never in the app code or GitHub. Get a free key at aistudio.google.com</div>
+            <div style="font-size:0.72rem;color:var(--muted);margin-top:6px;line-height:1.5;">Your key is stored on this device only — never in the app code or GitHub. Get a free key at aistudio.google.com</div>
             <div id="apiKeyStatus" style="font-size:0.75rem;margin-top:5px;font-family:'DM Mono',monospace;"></div>
           </div>
         </div>
@@ -1683,29 +1565,9 @@ onAuthStateChanged(auth, function(user){
       </div>
     </div>
 
-    <div class="settings-section-hdr" onclick="toggleSettingsSection('encBody',this)">
-      <span class="settings-section-icon">🔒</span>
-      <span class="settings-section-title">Data Encryption</span>
-      <span class="settings-section-arrow">›</span>
-    </div>
-    <div class="settings-section-body" id="encBody">
-      <div class="settings-card" style="padding:14px;">
-        <div id="encStatus" style="font-size:0.82rem;font-weight:700;margin-bottom:10px;">🔓 Not encrypted</div>
-        <div style="font-size:0.75rem;color:var(--muted);margin-bottom:12px;line-height:1.5;">Set a password to encrypt all data stored in Firebase. Your password is saved on this device only. Do not forget it — there is no recovery option.</div>
-        <div class="s-lbl">Encryption Password</div>
-        <input class="s-input" id="encPasswordInput" type="password" placeholder="Enter password…" autocapitalize="none" autocorrect="off" style="margin-bottom:10px;">
-        <div style="display:flex;flex-direction:column;gap:8px;">
-          <button class="save-btn" style="background:var(--navy);" onclick="encDoSetPassword()">🔑 Set Password</button>
-          <button class="save-btn" style="background:var(--muted2);color:white;" id="encVerifyBtn" onclick="encDoVerify()">🔍 Verify Password</button>
-          <button class="save-btn" style="background:var(--accent);opacity:0.4;cursor:not-allowed;" id="encEncryptBtn" onclick="encDoEncrypt()" disabled>🔒 Encrypt Data</button>
-          <button class="save-btn" style="background:var(--bg);color:var(--muted);border:1.5px solid var(--border);" onclick="encDoRemove()">🔓 Remove Encryption</button>
-        </div>
-      </div>
-    </div>
     <div style="height:8px"></div>
     <button class="save-btn" onclick="saveSettings()" style="margin-bottom:12px;">Save Settings</button>
-    <button class="save-btn" style="background:var(--red);" onclick="doSignOut()">Sign Out</button>
-    <div style="text-align:center;font-size:0.65rem;color:var(--muted2);font-family:'DM Mono',monospace;padding:10px 0 4px;letter-spacing:0.08em;">WorkFlow v1.27</div>
+    <div style="text-align:center;font-size:0.65rem;color:var(--muted2);font-family:'DM Mono',monospace;padding:10px 0 4px;letter-spacing:0.08em;">WorkFlow v1.28 (local-first)</div>
     <div style="height:20px"></div>
   </div>
 </div>
@@ -1771,6 +1633,295 @@ onAuthStateChanged(auth, function(user){
   </div>
 </div>
 
+<!-- ══ BALANCE CALCULATOR ══ -->
+<div class="screen" id="balanceCalcScreen">
+  <style>
+  #balanceCalcScreen{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;}
+  #balanceCalcScreen .bc-body{padding:16px 16px 60px;max-width:600px;margin:0 auto;}
+  #balanceCalcScreen h2{font-size:var(--fs-label);color:var(--green);text-transform:uppercase;letter-spacing:0.1em;font-family:'DM Mono',monospace;font-weight:700;margin-bottom:14px;}
+  #balanceCalcScreen label{display:block;font-size:var(--fs-body-sm);color:var(--muted);margin-bottom:6px;font-weight:500;}
+  #balanceCalcScreen input[type="file"]{width:100%;background:var(--surface2);border:1.5px dashed var(--border);border-radius:var(--radius-sm);padding:13px;color:var(--muted);font-size:0.85rem;cursor:pointer;transition:border-color 0.15s;}
+  #balanceCalcScreen input[type="file"]:hover{border-color:var(--accent);}
+  #balanceCalcScreen input[type="number"],#balanceCalcScreen input[type="date"],#balanceCalcScreen select{width:100%;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:11px 12px;color:var(--text);font-size:0.95rem;margin-bottom:12px;font-family:'DM Sans',sans-serif;transition:border-color 0.15s;}
+  #balanceCalcScreen input[type="number"]:focus,#balanceCalcScreen input[type="date"]:focus,#balanceCalcScreen select:focus{outline:none;border-color:var(--accent);}
+  #balanceCalcScreen .bc-row2{display:flex;gap:12px;}
+  #balanceCalcScreen .bc-row2>div{flex:1;}
+  #balanceCalcScreen .bc-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px;box-shadow:var(--shadow-sm);}
+  #balanceCalcScreen .bc-btn{width:100%;font-weight:700;border:none;border-radius:var(--radius-sm);padding:14px;font-size:1rem;cursor:pointer;min-height:var(--tap-min);transition:transform 0.12s var(--ease),opacity 0.15s;}
+  #balanceCalcScreen .bc-btn:active{transform:scale(0.98);}
+  #balanceCalcScreen .bc-btn-green{background:var(--green);color:#fff;}
+  #balanceCalcScreen .bc-btn-green:hover{opacity:0.9;}
+  #balanceCalcScreen .bc-btn-blue{background:var(--nebula-grad);color:#fff;}
+  #balanceCalcScreen .bc-btn-blue:hover{opacity:0.92;}
+  #balanceCalcScreen .bc-status{margin-top:10px;padding:11px 14px;border-radius:var(--radius-sm);font-size:0.82rem;display:none;}
+  #balanceCalcScreen .bc-status.show{display:block;}
+  #balanceCalcScreen .bc-status.ok{background:var(--green-light);border:1px solid var(--green);color:var(--green);}
+  #balanceCalcScreen .bc-status.err{background:var(--red-light);border:1px solid var(--red);color:var(--red);}
+  #balanceCalcScreen .bc-status.info{background:var(--accent-light);border:1px solid var(--accent);color:var(--accent);}
+  #balanceCalcScreen .bc-result{display:none;}
+  #balanceCalcScreen .bc-result.show{display:block;}
+  #balanceCalcScreen .bc-balance-box{text-align:center;padding:22px;background:var(--green-light);border:1px solid var(--green);border-radius:var(--radius);margin-bottom:14px;}
+  #balanceCalcScreen .bc-balance-label{font-size:0.8rem;color:var(--muted);margin-bottom:6px;}
+  #balanceCalcScreen .bc-balance-amount{font-size:2.2rem;font-weight:700;color:var(--green);letter-spacing:-0.02em;}
+  #balanceCalcScreen .bc-balance-date{font-size:0.8rem;color:var(--muted);margin-top:4px;}
+  #balanceCalcScreen .bc-summary-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);font-size:0.85rem;}
+  #balanceCalcScreen .bc-summary-row:last-child{border-bottom:none;}
+  #balanceCalcScreen .bc-green{color:var(--green);}
+  #balanceCalcScreen .bc-red{color:var(--red);}
+  #balanceCalcScreen .bc-gray{color:var(--muted);}
+  #balanceCalcScreen table{width:100%;border-collapse:collapse;font-size:0.75rem;}
+  #balanceCalcScreen th{background:var(--surface2);color:var(--muted);padding:9px 6px;text-align:left;position:sticky;top:0;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;font-size:0.65rem;}
+  #balanceCalcScreen td{padding:8px 6px;border-bottom:1px solid var(--border);vertical-align:top;}
+  #balanceCalcScreen .bc-code-badge{background:var(--green-light);color:var(--green);border-radius:5px;padding:1px 7px;font-weight:600;}
+  #balanceCalcScreen .bc-toggle-btn{background:none;border:1.5px solid var(--border);color:var(--muted);font-size:0.75rem;padding:6px 13px;border-radius:8px;cursor:pointer;font-weight:600;transition:all 0.15s;}
+  #balanceCalcScreen .bc-toggle-btn:hover{border-color:var(--accent);color:var(--accent);}
+  #balanceCalcScreen .bc-tx-table-wrap{display:none;margin-top:12px;max-height:300px;overflow-y:auto;border-radius:var(--radius-sm);}
+  #balanceCalcScreen .bc-tx-table-wrap.show{display:block;}
+  #balanceCalcScreen .bc-no-tx{color:var(--muted);font-size:0.82rem;padding:10px 0;}
+  #balanceCalcScreen .bc-code-legend{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+  #balanceCalcScreen .bc-code-pill{font-size:0.72rem;padding:3px 9px;border-radius:20px;font-weight:600;}
+  #balanceCalcScreen .bc-pill-green{background:var(--green-light);color:var(--green);border:1px solid var(--green);}
+  #balanceCalcScreen .bc-pill-red{background:var(--red-light);color:var(--red);border:1px solid var(--red);}
+  #balanceCalcScreen .bc-file-table{width:100%;border-collapse:collapse;margin-top:10px;}
+  #balanceCalcScreen .bc-file-table th{background:var(--surface2);color:var(--muted);padding:9px 10px;font-size:0.65rem;text-align:left;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;}
+  #balanceCalcScreen .bc-file-table td{padding:9px 10px;border-bottom:1px solid var(--border);font-size:0.8rem;vertical-align:middle;}
+  #balanceCalcScreen .bc-file-table tr:last-child td{border-bottom:none;}
+  #balanceCalcScreen .bc-file-table input[type="number"]{margin-bottom:0;padding:7px 9px;font-size:0.85rem;}
+  #balanceCalcScreen .bc-file-status-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;}
+  #balanceCalcScreen .bc-dot-ok{background:var(--green);}
+  #balanceCalcScreen .bc-dot-err{background:var(--red);}
+  #balanceCalcScreen .bc-dot-spin{background:var(--accent);animation:bc-spin-dot 1s linear infinite;}
+  @keyframes bc-spin-dot{0%{opacity:1}50%{opacity:.2}100%{opacity:1}}
+  #balanceCalcScreen .bc-fname{color:var(--text);word-break:break-all;}
+  #balanceCalcScreen .bc-tracked-count{color:var(--green);font-weight:600;}
+  #balanceCalcScreen .bc-hidden{display:none;}
+  </style>
+  <div class="app-header">
+    <button class="back-btn" onclick="showScreen('homeScreen')">←</button>
+    <div><div class="header-title">Balance Calculator</div><div class="header-sub">Acumatica Cash Audit</div></div>
+  </div>
+  <div class="bc-body">
+
+    <!-- TRACKED CODES LEGEND -->
+    <div class="bc-card">
+      <h2>Tracked Transaction Codes</h2>
+      <label style="margin-bottom:6px">Credits — money INTO primary safe</label>
+      <div class="bc-code-legend">
+        <span class="bc-code-pill bc-pill-green">690 · Return of Change / Refund</span>
+        <span class="bc-code-pill bc-pill-green">730 · Personal Account Check</span>
+        <span class="bc-code-pill bc-pill-green">750 · Wages</span>
+        <span class="bc-code-pill bc-pill-green">760 · Gifts / Refunds / Other</span>
+      </div>
+      <br>
+      <label style="margin-bottom:6px">Debits — money OUT of primary safe</label>
+      <div class="bc-code-legend">
+        <span class="bc-code-pill bc-pill-red">670 · Withdrawal from Primary Safe</span>
+        <span class="bc-code-pill bc-pill-red">710 · Return to Business Office</span>
+      </div>
+      <p style="color:#555;font-size:0.75rem;margin-top:10px">All other codes are ignored.</p>
+    </div>
+
+    <!-- STEP 1: UPLOAD (multiple files) -->
+    <div class="bc-card">
+      <h2>1. Upload Account History Files</h2>
+      <label>Select one or more .xlsx exports from Acumatica — each file = one account tab in the report</label>
+      <input type="file" id="bcFileInput" accept=".xlsx,.xls" multiple>
+      <div id="bcFileListWrap" class="bc-hidden" style="margin-top:14px">
+        <table class="bc-file-table">
+          <thead><tr><th>File</th><th>Status</th><th>Tracked Txns</th></tr></thead>
+          <tbody id="bcFileListBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- STEP 2: BALANCE CALCULATOR (single account) -->
+    <div class="bc-card">
+      <h2>2. Estimate Balance on a Past Date (Single Account)</h2>
+      <label>Select account</label>
+      <select id="bcCalcFileSelect">
+        <option value="">— upload files first —</option>
+      </select>
+      <label>Current cash balance for that account (right now)</label>
+      <input type="number" id="bcCurrentBalance" placeholder="e.g. 312.45" step="0.01">
+      <div id="bcBalanceAutoNote" class="bc-status info" style="margin-top:-6px;margin-bottom:12px"></div>
+      <label>Target date — what date do you want to know the balance for?</label>
+      <input type="date" id="bcTargetDate">
+      <button class="bc-btn bc-btn-green" onclick="bcCalculate()">Calculate Balance</button>
+      <div id="bcCalcStatus" class="bc-status"></div>
+    </div>
+
+    <!-- RESULT -->
+    <div class="bc-card bc-result" id="bcResultCard">
+      <h2>Result</h2>
+      <div class="bc-balance-box">
+        <div class="bc-balance-label">ESTIMATED CASH BALANCE ON</div>
+        <div class="bc-balance-amount" id="bcResultAmount">$0.00</div>
+        <div class="bc-balance-date" id="bcResultDate"></div>
+      </div>
+      <div class="bc-summary-row"><span>Current balance (today)</span><span class="bc-green" id="bcSumCurrent"></span></div>
+      <div class="bc-summary-row"><span>Deposits after target date (removed)</span><span class="bc-red" id="bcSumIn"></span></div>
+      <div class="bc-summary-row"><span>Withdrawals after target date (added back)</span><span class="bc-green" id="bcSumOut"></span></div>
+      <div class="bc-summary-row" style="font-weight:700"><span>Estimated balance on target date</span><span class="bc-green" id="bcSumResult"></span></div>
+      <br>
+      <button class="bc-toggle-btn" onclick="document.getElementById('bcTxTable').classList.toggle('show')">Show / Hide Transactions Used</button>
+      <div class="bc-tx-table-wrap" id="bcTxTable"></div>
+    </div>
+
+    <!-- STEP 2B: BATCH TARGET DATE MODE (ALL ACCOUNTS) -->
+    <div class="bc-card">
+      <h2>2B. Batch Mode — All Accounts on One Target Date</h2>
+      <p style="color:#888;font-size:0.8rem;margin-bottom:14px">Uses the current balance parsed from each "INITIALS AMOUNT.xlsx" filename as the starting point, then rolls every account back to the target date at once.</p>
+      <label>Target date — what date do you want balances for?</label>
+      <input type="date" id="bcBatchTargetDate">
+      <button class="bc-btn bc-btn-green" onclick="bcCalculateBatch()">Calculate All Accounts</button>
+      <div id="bcBatchStatus" class="bc-status"></div>
+      <div id="bcBatchResultWrap" class="bc-hidden" style="margin-top:16px">
+        <table class="bc-file-table">
+          <thead><tr><th>Account</th><th>Current Balance</th><th>Balance on Target Date</th></tr></thead>
+          <tbody id="bcBatchResultBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- STEP 3: MULTI-ACCOUNT AUDIT EXPORT -->
+    <div class="bc-card">
+      <h2>3. Export Running Balance Report</h2>
+      <p style="color:#888;font-size:0.8rem;margin-bottom:14px">Each uploaded file gets its own tab in one Excel workbook. Enter the known ending balance for each account below.</p>
+
+      <div class="bc-row2">
+        <div>
+          <label>Report start date</label>
+          <input type="date" id="bcReportStart">
+        </div>
+        <div>
+          <label>Report end date</label>
+          <input type="date" id="bcReportEnd">
+        </div>
+      </div>
+
+      <div id="bcEndingBalancesWrap" class="bc-hidden" style="margin-bottom:14px">
+        <label style="margin-bottom:8px">Ending balance for each account (as of the report end date)</label>
+        <table class="bc-file-table">
+          <thead><tr><th>Account File</th><th>Tracked Txns in Range</th><th>Ending Balance</th></tr></thead>
+          <tbody id="bcEndingBalancesBody"></tbody>
+        </table>
+      </div>
+      <div id="bcEndingBalancesEmpty" style="color:#555;font-size:0.8rem;margin-bottom:14px">Upload files first to enter ending balances.</div>
+
+      <button class="bc-btn bc-btn-blue" onclick="bcExportReport()">Download Excel Report</button>
+      <div id="bcExportStatus" class="bc-status"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ PEP/MMA AUDIT ══ -->
+<div class="screen" id="ppeAuditScreen">
+  <style>
+  .ppe-house-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin:0 14px 14px;overflow:hidden;box-shadow:var(--shadow-sm);}
+  .ppe-indiv-row{padding:14px;border-bottom:1px solid var(--border);}
+  .ppe-indiv-row:last-child{border-bottom:none;}
+  .ppe-indiv-name{font-weight:700;font-size:0.92rem;margin-bottom:10px;color:var(--text);}
+  .ppe-date-grid{display:flex;gap:10px;}
+  .ppe-date-field{flex:1;display:flex;flex-direction:column;gap:4px;min-width:0;}
+  .ppe-date-lbl{font-size:0.68rem;font-weight:700;color:var(--muted);font-family:'DM Mono',monospace;text-transform:uppercase;}
+  .ppe-date-input{border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:11px 11px;min-height:var(--tap-min);font-size:0.85rem;font-family:'DM Sans',sans-serif;outline:none;background:var(--surface2);width:100%;color:var(--text);transition:border-color 0.15s;}
+  .ppe-date-input:focus{border-color:var(--accent);}
+  .ppe-date-input.valid{border-color:var(--green);}
+  .ppe-date-input.warn{border-color:var(--orange);}
+  .ppe-date-input.expired{border-color:var(--red);}
+  .ppe-date-status{font-size:0.68rem;font-weight:700;padding:4px 7px;border-radius:6px;margin-top:2px;line-height:1.3;}
+  .ppe-date-status.none{background:var(--surface2);color:var(--muted);}
+  .ppe-date-status.valid{background:var(--green-light);color:var(--green);}
+  .ppe-date-status.warn{background:var(--orange-light);color:var(--orange);}
+  .ppe-date-status.expired{background:var(--red-light);color:var(--red);}
+  .ppe-legend{display:flex;flex-wrap:wrap;gap:8px;padding:0 14px 14px;}
+  .ppe-legend-item{display:flex;align-items:center;gap:5px;font-size:0.72rem;color:var(--muted);}
+  .ppe-legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+  </style>
+  <div class="app-header">
+    <button class="back-btn" onclick="showScreen('homeScreen')">←</button>
+    <div><div class="header-title">PEP/MMA Audit</div><div class="header-sub">Review &amp; Update Dates</div></div>
+  </div>
+  <div class="ppe-legend">
+    <div class="ppe-legend-item"><span class="ppe-legend-dot" style="background:var(--green)"></span>Current (within 10 months)</div>
+    <div class="ppe-legend-item"><span class="ppe-legend-dot" style="background:var(--orange)"></span>Renew soon (10–12 months)</div>
+    <div class="ppe-legend-item"><span class="ppe-legend-dot" style="background:var(--red)"></span>Expired (over 1 year)</div>
+  </div>
+  <div id="ppeAuditContainer" style="padding-bottom:40px;"></div>
+</div>
+
+<!-- ══ EZ MONEY AUDIT ══ -->
+<div class="screen" id="ezAuditScreen">
+  <style>
+  .ez-body{padding:14px 14px 60px;max-width:640px;margin:0 auto;}
+  .ez-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:14px;box-shadow:var(--shadow-sm);}
+  .ez-lbl{font-size:0.68rem;font-weight:700;color:var(--muted);font-family:'DM Mono',monospace;text-transform:uppercase;margin-bottom:5px;display:block;}
+  .ez-select,.ez-input{width:100%;border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:11px 12px;min-height:var(--tap-min);font-size:0.9rem;font-family:'DM Sans',sans-serif;background:var(--surface2);color:var(--text);outline:none;margin-bottom:12px;transition:border-color 0.15s;}
+  .ez-select:focus,.ez-input:focus{border-color:var(--accent);}
+  .ez-note{font-size:0.78rem;color:var(--muted);margin-top:-6px;}
+  .ez-file-input{width:100%;background:var(--surface2);border:1.5px dashed var(--border);border-radius:8px;padding:12px;font-size:0.85rem;color:var(--muted);cursor:pointer;}
+  .ez-row-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:12px;box-shadow:var(--shadow-sm);transition:box-shadow 0.15s;}
+  .ez-row-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
+  .ez-row-name{font-weight:700;font-size:0.95rem;color:var(--text);}
+  .ez-row-file{font-size:0.72rem;color:var(--muted2);font-family:'DM Mono',monospace;margin-top:2px;}
+  .ez-row-del{background:none;border:none;color:var(--muted);font-size:1.1rem;cursor:pointer;padding:0 4px;}
+  .ez-balance-line{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:var(--surface2);border-radius:8px;font-size:0.85rem;margin-bottom:10px;color:var(--text);}
+  .ez-balance-amt{font-weight:700;font-size:1.05rem;}
+  .ez-flag-banner{background:var(--red-light);border:1px solid var(--red);border-radius:8px;padding:10px 12px;margin-bottom:10px;}
+  .ez-flag-title{color:var(--red);font-weight:700;font-size:0.78rem;margin-bottom:6px;}
+  .ez-flag-ta{width:100%;border:1.5px solid var(--red);border-radius:8px;padding:8px 10px;font-size:0.85rem;font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--text);outline:none;resize:vertical;min-height:50px;}
+  .ez-pep-row{display:flex;gap:10px;margin-bottom:10px;}
+  .ez-pep-field{flex:1;min-width:0;}
+  .ez-pep-update{display:flex;gap:8px;margin-top:6px;align-items:center;}
+  .ez-pep-update input{flex:1;border:1.5px solid var(--border);border-radius:6px;padding:6px 8px;font-size:0.8rem;background:var(--surface2);color:var(--text);}
+  .ez-pep-update button{flex-shrink:0;background:var(--accent);color:#fff;border:none;border-radius:6px;padding:8px 12px;font-size:0.78rem;font-weight:600;cursor:pointer;}
+  .ez-receipt-row{display:flex;gap:10px;}
+  .ez-receipt-row .ez-input{margin-bottom:0;}
+  .ez-input-flag{border-color:var(--orange)!important;background:var(--orange-light)!important;}
+  .ez-receipt-flag-note{font-size:0.72rem;color:var(--orange);margin-top:6px;line-height:1.4;}
+  .ez-unmatched{background:var(--orange-light);border:1px solid var(--orange);border-radius:8px;padding:10px 12px;margin-bottom:10px;}
+  .ez-unmatched-title{color:var(--orange);font-weight:700;font-size:0.78rem;margin-bottom:6px;}
+  .ez-generate-btn{width:100%;background:var(--nebula-grad);color:#fff;border:none;border-radius:var(--radius-sm);padding:16px;min-height:var(--tap-min);font-size:0.95rem;font-weight:700;cursor:pointer;margin-top:6px;box-shadow:0 6px 18px rgba(79,70,229,0.28);transition:transform 0.12s var(--ease),opacity 0.15s;}
+  .ez-generate-btn:disabled{opacity:0.5;cursor:not-allowed;box-shadow:none;}
+  .ez-generate-btn:active{transform:scale(0.98);}
+  .ez-generate-zip-btn{width:100%;background:var(--surface);color:var(--text);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:16px;min-height:var(--tap-min);font-size:0.95rem;font-weight:700;cursor:pointer;margin-top:10px;transition:transform 0.12s var(--ease),background 0.15s;}
+  .ez-generate-zip-btn:disabled{opacity:0.5;cursor:not-allowed;}
+  .ez-generate-zip-btn:active{transform:scale(0.98);background:var(--surface2);}
+  </style>
+  <div class="app-header">
+    <button class="back-btn" onclick="showScreen('homeScreen')">←</button>
+    <div style="display:flex;align-items:center;justify-content:space-between;flex:1;">
+      <div><div class="header-title">EZ Money Audit</div><div class="header-sub">Batch Cash Audit from ACal Files</div></div>
+      <button class="notes-new-hdr-btn" onclick="ezReset()">↺ Reset</button>
+    </div>
+  </div>
+  <div class="ez-body">
+    <div class="ez-card">
+      <label class="ez-lbl">House</label>
+      <select class="ez-select" id="ezHouseSelect" onchange="ezHouseChanged()">
+        <option value="">— select house —</option>
+      </select>
+      <label class="ez-lbl">Date Completed</label>
+      <input class="ez-input" type="date" id="ezDateCompleted" onchange="ezDateChanged()" style="margin-bottom:4px;">
+      <div class="ez-note" id="ezReviewMonthNote"></div>
+    </div>
+
+    <div class="ez-card" id="ezUploadCard" style="display:none;">
+      <label class="ez-lbl">Upload Account History Files (.xlsx)</label>
+      <input type="file" class="ez-file-input" id="ezFileInput" accept=".xlsx,.xls" multiple>
+      <div class="ez-note" style="margin-top:8px;">Filename format: initials + current balance, e.g. "SW 123.33.xlsx"</div>
+    </div>
+
+    <div id="ezGateNote" class="ez-note" style="padding:0 4px;">Select a house and date completed to begin.</div>
+
+    <div id="ezReviewList"></div>
+
+    <button class="ez-generate-btn" id="ezGenerateBtn" style="display:none;" onclick="ezGenerateAll()">Generate All PDFs</button>
+    <button class="ez-generate-zip-btn" id="ezGenerateZipBtn" style="display:none;" onclick="ezGenerateZip()">📦 Generate Zip</button>
+  </div>
+</div>
+
 <div class="screen" id="notesScreen">
   <div class="app-header notes-app-header">
     <div style="display:flex;align-items:flex-end;justify-content:space-between;width:100%;padding-bottom:12px;">
@@ -1818,12 +1969,26 @@ onAuthStateChanged(auth, function(user){
   <img id="lightboxImg" src="" alt="photo">
 </div>
 
-<div class="bottom-nav" id="bottomNav">
-  <button class="nav-btn active" id="navHome" onclick="showScreen('homeScreen')"><span class="nav-icon">🏠</span>Home</button>
-  <button class="nav-btn" id="navHistory" onclick="showScreen('historyScreen')"><span class="nav-icon">📋</span>History</button>
-  <button class="nav-btn" id="navNotes" onclick="showScreen('notesScreen')"><span class="nav-icon">📝</span>Notes</button>
-  <button class="nav-btn" id="navSettings" onclick="showScreen('settingsScreen')"><span class="nav-icon">⚙️</span>Settings</button>
-</div>
+<button class="nav-trigger" id="navTrigger" onclick="openDrawer()" aria-label="Open menu">
+  <span></span><span></span><span></span>
+</button>
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+<nav class="drawer-panel" id="drawerPanel">
+  <div class="drawer-hdr">
+    <div class="drawer-hdr-title">WorkFlow</div>
+    <button class="drawer-close" onclick="closeDrawer()" aria-label="Close menu">✕</button>
+  </div>
+  <div class="drawer-scroll">
+    <button class="drawer-item active" id="navHome" onclick="showScreen('homeScreen');closeDrawer();"><span class="drawer-item-icon">🏠</span>Home</button>
+    <button class="drawer-item" id="navHistory" onclick="showScreen('historyScreen');closeDrawer();"><span class="drawer-item-icon">📋</span>History</button>
+    <button class="drawer-item" onclick="showScreen('ezAuditScreen');closeDrawer();"><span class="drawer-item-icon">⚡</span>EZ Money Audit</button>
+    <button class="drawer-item" onclick="showScreen('balanceCalcScreen');closeDrawer();"><span class="drawer-item-icon">🧮</span>Balance Calculator</button>
+    <button class="drawer-item" onclick="showScreen('ppeAuditScreen');closeDrawer();"><span class="drawer-item-icon">🪪</span>PEP/MMA Audit</button>
+    <button class="drawer-item" onclick="showScreen('invoiceScreen');closeDrawer();"><span class="drawer-item-icon">📄</span>Receiving Log &amp; Invoices</button>
+    <button class="drawer-item" id="navNotes" onclick="showScreen('notesScreen');closeDrawer();"><span class="drawer-item-icon">📝</span>Notes</button>
+    <button class="drawer-item" id="navSettings" onclick="showScreen('settingsScreen');closeDrawer();"><span class="drawer-item-icon">⚙️</span>Settings</button>
+  </div>
+</nav>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -1941,7 +2106,7 @@ let reportBack = 'historyScreen';
 
 // ═══════════════════════════════════════
 // PHOTO STORAGE — IndexedDB
-// Photos are kept out of Firebase/localStorage to avoid size limits.
+// Photos are kept out of the main localStorage record to avoid size limits.
 // Each photo is stored by note ID in a local IndexedDB.
 // ═══════════════════════════════════════
 const _photoDB = (()=>{
@@ -1976,105 +2141,28 @@ const _photoDB = (()=>{
   };
 })();
 
-// Debounced save — batches rapid changes into one Firebase write
-let _saveTimer = null;
 function saveS(){
   const sToSave = {...S, notes:(S.notes||[]).map(n=>{ const {photoData,...rest}=n; return rest; })};
-  // Always save plaintext to localStorage (local device only)
-  try{ localStorage.setItem('r4hub_v3', JSON.stringify(sToSave)); }catch(_){}
-  // Firebase write — encrypt if key is set
-  if(window._fbSave){
-    window._fbStatus('saving');
-    clearTimeout(_saveTimer);
-    _saveTimer = setTimeout(async ()=>{
-      try {
-        if(window._encKey){
-          const blob = await encEncrypt(sToSave);
-          if(blob){ window._fbSave(blob); }
-          else { console.error('encEncrypt returned null — saving unencrypted'); window._fbSave(sToSave); }
-        } else {
-          window._fbSave(sToSave);
-        }
-      } catch(e){
-        console.error('saveS encrypt error:', e);
-        window._fbSave(sToSave); // fallback to unencrypted
-      }
-    }, 800);
+  try{
+    localStorage.setItem('r4hub_v3', JSON.stringify(sToSave));
+    return true;
+  }catch(e){
+    console.error('saveS failed:', e);
+    toast('⚠️ Could not save — storage is blocked or full');
+    const banner = document.getElementById('storageWarnBanner');
+    if(banner) banner.style.display = 'block';
+    return false;
   }
 }
 
-// Flush pending save immediately — called on page unload
-async function flushSave(){
-  if(!_saveTimer) return;
-  clearTimeout(_saveTimer);
-  _saveTimer = null;
-  const sToSave = {...S, notes:(S.notes||[]).map(n=>{ const {photoData,...rest}=n; return rest; })};
-  if(window._fbSave){
-    try {
-      if(window._encKey){
-        const blob = await encEncrypt(sToSave);
-        if(blob){ window._fbSave(blob); }
-        else { window._fbSave(sToSave); }
-      } else {
-        window._fbSave(sToSave);
-      }
-    } catch(e){
-      console.error('flushSave error:', e);
-      window._fbSave(sToSave);
-    }
-  }
-}
+// Kept as a no-op alias — some call sites await a flush before navigating away
+async function flushSave(){ saveS(); }
 
-// loadS is now async — called at init
 async function loadS(){
-  if(window._fbLoad){
-    const data = await window._fbLoad();
-    if(data){
-      let parsed = data;
-      if(data._enc){
-        // Always extract salt from payload — this is the authoritative source
-        if(data.salt){
-          localStorage.setItem('wf_enc_salt', data.salt);
-          // Re-derive key with the correct salt from Firebase payload
-          const pw = localStorage.getItem('wf_enc_password');
-          if(pw){
-            try {
-              window._encKey = await encDeriveKey(pw, data.salt);
-              window._encVerified = true;
-            } catch(e){ window._encKey = null; }
-          }
-        }
-        if(!window._encKey){
-          // No password on this device yet — show prompt to enter it
-          console.warn('Encrypted data found but no key — showing decryption prompt');
-          window._pendingEncBlob = data; // store for after password entry
-          showDecryptPrompt();
-          return; // halt loadS — will resume after password entered
-        } else {
-          parsed = await encDecrypt(data);
-          if(!parsed){
-            console.warn('Decryption failed — wrong password or corrupt data');
-            window._encKey = null;
-            window._encVerified = false;
-            window._pendingEncBlob = data;
-            showDecryptPrompt('Wrong password — please try again.');
-            return;
-          }
-        }
-      }
-      S = {...S, ...parsed};
-    } else {
-      try{
-        const d = localStorage.getItem('r4hub_v3');
-        if(d){ S = {...S, ...JSON.parse(d)}; }
-      }catch(e){}
-    }
-  } else {
-    try{
-      const d = localStorage.getItem('r4hub_v3');
-      if(d){ S = {...S, ...JSON.parse(d)}; }
-    }catch(e){}
-  }
+  try{
+    const d = localStorage.getItem('r4hub_v3');
+    if(d){ S = {...S, ...JSON.parse(d)}; }
+  }catch(e){}
   // Rehydrate photos from IndexedDB
   if(S.notes && S.notes.length){
     const ids = S.notes.map(n=>n.id);
@@ -2082,21 +2170,6 @@ async function loadS(){
     S.notes.forEach(n=>{ if(photos[n.id]) n.photoData = photos[n.id]; });
   }
 }
-
-// Sync status indicator
-window._fbStatus = function(state){
-  const badge = document.getElementById('syncBadge');
-  const dot = document.getElementById('syncDot');
-  const text = document.getElementById('syncText');
-  if(!badge || !dot || !text) return;
-  const label = state==='synced' ? 'Saved'
-    : state==='saving' ? 'Saving…'
-    : state==='loading' ? 'Loading…'
-    : 'Sync issue';
-  badge.className = 'sync-badge show ' + state;
-  badge.title = label;
-  text.textContent = label;
-};
 
 // ═══════════════════════════════════════
 // HELPERS
@@ -2139,23 +2212,92 @@ function initials(name){ return name.split(' ').map(w=>w[0]||'').join('').toUppe
 // ═══════════════════════════════════════
 const HIDE_NAV_SCREENS = ['checklistScreen','auditScreen','reportScreen'];
 
+function openDrawer(){
+  document.getElementById('drawerOverlay').classList.add('open');
+  document.getElementById('drawerPanel').classList.add('open');
+}
+function closeDrawer(){
+  document.getElementById('drawerOverlay').classList.remove('open');
+  document.getElementById('drawerPanel').classList.remove('open');
+}
+
 function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  document.getElementById('bottomNav').style.display = HIDE_NAV_SCREENS.includes(id)?'none':'flex';
+  document.getElementById('navTrigger').style.display = HIDE_NAV_SCREENS.includes(id)?'none':'flex';
+  closeDrawer();
   ['navHome','navHistory','navNotes','navSettings'].forEach(n=>{
     const el=document.getElementById(n); if(el) el.classList.remove('active');
   });
-  const map={homeScreen:'navHome',historyScreen:'navHistory',notesScreen:'navNotes',settingsScreen:'navSettings',houseScreen:'navHome',invoiceScreen:'navHome',emailScreen:'navHome'};
+  const map={homeScreen:'navHome',historyScreen:'navHistory',notesScreen:'navNotes',settingsScreen:'navSettings',houseScreen:'navHome',invoiceScreen:'navHome',emailScreen:'navHome',balanceCalcScreen:'navHome',ppeAuditScreen:'navHome',ezAuditScreen:'navHome'};
   if(map[id]){ const el=document.getElementById(map[id]); if(el) el.classList.add('active'); }
   // Scroll to top
   const el=document.getElementById(id);
   if(el) el.scrollTop=0;
   if(id==='homeScreen') renderHome();
   if(id==='historyScreen'){ histInitMonth(); renderHistory(); }
-  if(id==='settingsScreen'){ renderSettings(); renderSigThumbs(); updateEncUI(); }
+  if(id==='settingsScreen'){ renderSettings(); renderSigThumbs(); }
   if(id==='notesScreen') renderNotes();
   if(id==='invoiceScreen') invInit();
+  if(id==='ppeAuditScreen') renderPpeAudit();
+  if(id==='ezAuditScreen') ezInit();
+}
+
+// ═══════════════════════════════════════
+// PEP/MMA AUDIT
+// ═══════════════════════════════════════
+function ppeDateStatus(dateStr){
+  if(!dateStr) return {cls:'none', label:'Not set'};
+  const st = auditDateStatus(dateStr);
+  const cls = st.cls==='expired' ? 'expired' : st.cls==='warn' ? 'warn' : 'valid';
+  return {cls, label: st.msg};
+}
+
+function renderPpeAudit(){
+  const cont = document.getElementById('ppeAuditContainer');
+  if(!cont) return;
+  if(S.individuals.length===0){
+    cont.innerHTML = `<div style="text-align:center;padding:48px 20px;color:var(--muted);font-size:0.85rem;">No individuals yet — add them in ⚙️ Settings</div>`;
+    return;
+  }
+  let html='';
+  S.houses.forEach(h=>{
+    const indivs = S.individuals.filter(i=>i.houseId===h.id);
+    if(indivs.length===0) return;
+    html += `<div class="section-label">${esc(h.name)}${h.closed?' (Closed)':''}</div>`;
+    html += `<div class="ppe-house-card">`;
+    indivs.forEach(ind=>{
+      const pepSt = ppeDateStatus(ind.pepDate);
+      const mmaSt = ppeDateStatus(ind.mmaDate);
+      html += `
+      <div class="ppe-indiv-row">
+        <div class="ppe-indiv-name">${esc(ind.name)}</div>
+        <div class="ppe-date-grid">
+          <div class="ppe-date-field">
+            <div class="ppe-date-lbl">PEP Date</div>
+            <input class="ppe-date-input ${pepSt.cls}" type="date" value="${ind.pepDate||''}" onchange="ppeDateEdit('${ind.id}','pepDate',this.value)">
+            <div class="ppe-date-status ${pepSt.cls}">${esc(pepSt.label)}</div>
+          </div>
+          <div class="ppe-date-field">
+            <div class="ppe-date-lbl">MMA Date</div>
+            <input class="ppe-date-input ${mmaSt.cls}" type="date" value="${ind.mmaDate||''}" onchange="ppeDateEdit('${ind.id}','mmaDate',this.value)">
+            <div class="ppe-date-status ${mmaSt.cls}">${esc(mmaSt.label)}</div>
+          </div>
+        </div>
+      </div>`;
+    });
+    html += `</div>`;
+  });
+  cont.innerHTML = html || `<div style="text-align:center;padding:48px 20px;color:var(--muted);font-size:0.85rem;">No individuals assigned to houses yet.</div>`;
+}
+
+function ppeDateEdit(indivId, field, value){
+  const ind = S.individuals.find(i=>i.id===indivId);
+  if(!ind) return;
+  ind[field] = value;
+  saveS();
+  renderPpeAudit();
+  toast('✓ '+(field==='pepDate'?'PEP':'MMA')+' date updated');
 }
 
 function goBackToHouse(){
@@ -4047,55 +4189,6 @@ async function syncICSNow(){
   }
 }
 
-async function saveAllToFirebase(){
-  const btn = document.getElementById('saveAllBtn');
-  if(btn){ btn.disabled = true; btn.textContent = '⏳ Saving…'; }
-  try {
-    if(window._encKey){
-      toast('🔒 Saving encrypted data to Firebase…');
-    } else {
-      toast('⚠️ Saving unencrypted data to Firebase…');
-    }
-    const sToSave = {...S, notes:(S.notes||[]).map(n=>{ const {photoData,...rest}=n; return rest; })};
-    if(window._fbSave){
-      let payload;
-      try {
-        if(window._encKey){
-          payload = await encEncrypt(sToSave);
-          if(!payload) throw new Error('Encryption returned null');
-        } else {
-          payload = sToSave;
-        }
-      } catch(e){
-        throw new Error('Encryption failed: ' + e.message);
-      }
-      // _fbSave is fire-and-forget internally; wait a moment then check sync dot
-      window._fbSave(payload);
-      try{ localStorage.setItem('r4hub_v3', JSON.stringify(sToSave)); }catch(_){}
-      // Give Firebase 3s to confirm
-      await new Promise(r => setTimeout(r, 3000));
-      const dot = document.getElementById('syncDot');
-      const synced = dot && dot.className.includes('synced');
-      if(!synced && dot && dot.className.includes('error')){
-        throw new Error('Firebase write failed — check connection');
-      }
-      if(window._encKey){
-        toast('✓ Data saved to Firebase — encrypted 🔒');
-      } else {
-        toast('✓ Data saved to Firebase — unencrypted 🔓');
-      }
-    } else {
-      toast('⚠️ Firebase not available — saved locally only');
-    }
-  } catch(e) {
-    console.error('Save All error:', e);
-    toast('✗ Save failed: ' + e.message);
-    window._fbStatus('error');
-  } finally {
-    if(btn){ btn.disabled = false; btn.textContent = '💾 Save All'; }
-  }
-}
-
 async function autoSyncICS(){
   if(!S.icsUrl||!S.icsAutoSync) return;
   if(S.icsLastSync){
@@ -4298,10 +4391,9 @@ function haptic(style='light'){
     if(dist > 70 && window.scrollY <= 0){
       haptic('medium');
       toast('↻ Refreshing…');
-      if(window._fbLoad){
-        const data = await window._fbLoad();
-        if(data){ S={...S,...data}; renderHome(); toast('✓ Up to date'); }
-      }
+      await loadS();
+      renderHome();
+      toast('✓ Up to date');
     }
   }, {passive:true});
 })();
@@ -4635,35 +4727,6 @@ function saveApiKey(){
   }
   document.getElementById('sApiKey').value='';
   toast('✓ API key saved!');
-}
-
-// ═══════════════════════════════════════
-// INIT
-// ═══════════════════════════════════════
-// AUTH
-function showLoginScreen(){
-  var s=document.getElementById('loginScreen');
-  if(s) s.classList.remove('hidden');
-}
-function hideLoginScreen(){var s=document.getElementById('loginScreen');if(s)s.classList.add('hidden');}
-async function doLogin(){
-  var e=document.getElementById('loginEmail');
-  var p=document.getElementById('loginPassword');
-  var btn=document.getElementById('loginBtn');
-  var err=document.getElementById('loginError');
-  var email=(e?e.value:'').trim(), password=p?p.value:'';
-  if(!email||!password){if(err)err.textContent='Please enter email and password';return;}
-  if(!window._fbSignIn){if(err)err.textContent='App still loading — please wait a moment';return;}
-  if(btn){btn.disabled=true;btn.textContent='Signing in...';}
-  if(err)err.textContent='';
-  try{
-    var r=await window._fbSignIn(email,password);
-    if(r.ok){hideLoginScreen();haptic('medium');await initApp();}
-    else{if(err)err.textContent=r.message||'Sign in failed';if(btn){btn.disabled=false;btn.textContent='Sign In →';}}
-  }catch(ex){
-    if(err)err.textContent='Error: '+ex.message;
-    if(btn){btn.disabled=false;btn.textContent='Sign In →';}
-  }
 }
 
 // ═══════════════════════════════════════
@@ -5154,19 +5217,19 @@ async function importMergeChoice(mode){
   if(statusEl){ statusEl.style.display='block'; statusEl.textContent='Importing…'; }
 
   if(mode === 'overwrite'){
-    // If the backup is encrypted, decrypt it first
-    let rawData = imported;
-    if(imported._enc){
-      rawData = await encDecrypt(imported) || {};
-      if(!rawData || Object.keys(rawData).length === 0){ toast('✗ Could not decrypt backup — wrong password?'); return; }
-    }
-    const {_exportedAt, _version, _enc, iv, d, ...data} = rawData;
+    if(imported._enc){ toast('✗ This backup is encrypted — import is not supported for encrypted backups'); return; }
+    const {_exportedAt, _version, _enc, iv, d, ...data} = imported;
     S = {...S, ...data};
-    saveS();
+    const saved = saveS();
     renderHome();
     const hCount = (S.houses||[]).length, iCount = (S.individuals||[]).length;
-    if(statusEl) statusEl.textContent = `✓ Full overwrite done. Imported ${hCount} house${hCount!==1?'s':''}, ${iCount} individual${iCount!==1?'s':''}.`;
-    toast(`✓ Imported ${hCount} house${hCount!==1?'s':''}, ${iCount} individual${iCount!==1?'s':''}`);
+    if(!saved){
+      if(statusEl) statusEl.textContent = `✗ Loaded ${hCount} houses, ${iCount} individuals into view, but could NOT save — storage is blocked (Private Browsing?). This will be lost if you leave this page.`;
+      toast('✗ Import not saved — storage is blocked. Use a normal tab, not Private Browsing.');
+    } else {
+      if(statusEl) statusEl.textContent = `✓ Full overwrite done. Imported ${hCount} house${hCount!==1?'s':''}, ${iCount} individual${iCount!==1?'s':''}.`;
+      toast(`✓ Imported ${hCount} house${hCount!==1?'s':''}, ${iCount} individual${iCount!==1?'s':''}`);
+    }
   } else {
     // Smart merge — newer record wins per id
     const {_exportedAt, _version, ...importedData} = imported;
@@ -5191,360 +5254,26 @@ async function importMergeChoice(mode){
     });
     const scalarKeys = Object.keys(importedData).filter(k => !arrayKeys.includes(k));
     scalarKeys.forEach(k => { S[k] = importedData[k]; });
-    saveS();
+    const saved = saveS();
     renderHome();
     const hFromFile = (importedData.houses||[]).length, iFromFile = (importedData.individuals||[]).length;
     const hCount = (S.houses||[]).length, iCount = (S.individuals||[]).length;
-    if(statusEl) statusEl.textContent = `✓ Smart merge done. File had ${hFromFile} house${hFromFile!==1?'s':''}/${iFromFile} individual${iFromFile!==1?'s':''} — now have ${hCount}/${iCount} total.`;
-    toast(`✓ Merged — now have ${hCount} house${hCount!==1?'s':''}, ${iCount} individual${iCount!==1?'s':''}`);
+    if(!saved){
+      if(statusEl) statusEl.textContent = `✗ Merged ${hCount} houses, ${iCount} individuals into view, but could NOT save — storage is blocked (Private Browsing?). This will be lost if you leave this page.`;
+      toast('✗ Merge not saved — storage is blocked. Use a normal tab, not Private Browsing.');
+    } else {
+      if(statusEl) statusEl.textContent = `✓ Smart merge done. File had ${hFromFile} house${hFromFile!==1?'s':''}/${iFromFile} individual${iFromFile!==1?'s':''} — now have ${hCount}/${iCount} total.`;
+      toast(`✓ Merged — now have ${hCount} house${hCount!==1?'s':''}, ${iCount} individual${iCount!==1?'s':''}`);
+    }
   }
 }
 
-async function doSignOut(){
-  if(!confirm('Sign out of WorkFlow?'))return;
-  await window._fbSignOut();
-  showLoginScreen();
-  showScreen('homeScreen');
-}
-document.addEventListener('fbAuthChanged',function(ev){if(!ev.detail.user)showLoginScreen();});
 // Flush pending saves when app is closed or backgrounded
 window.addEventListener('beforeunload', ()=>{ flushSave(); });
 document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='hidden') flushSave(); });
 
-document.addEventListener('DOMContentLoaded',function(){
-  var b=document.getElementById('loginBtn');
-  if(b)b.addEventListener('click',doLogin);
-  var pw=document.getElementById('loginPassword');
-  if(pw)pw.addEventListener('keydown',function(ev){if(ev.key==='Enter')doLogin();});
-});
-
-
-// ═══════════════════════════════════════
-// ENCRYPTION
-// ═══════════════════════════════════════
-window._encKey = null; // CryptoKey held in memory
-
-async function encDeriveKey(password, saltHex){
-  const enc = new TextEncoder();
-  const keyMaterial = await crypto.subtle.importKey(
-    'raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']
-  );
-  const salt = hexToBytes(saltHex);
-  return crypto.subtle.deriveKey(
-    {name:'PBKDF2', salt, iterations:200000, hash:'SHA-256'},
-    keyMaterial,
-    {name:'AES-GCM', length:256},
-    false,
-    ['encrypt','decrypt']
-  );
-}
-
-function hexToBytes(hex){
-  const arr = new Uint8Array(hex.length/2);
-  for(let i=0;i<hex.length;i+=2) arr[i/2]=parseInt(hex.substr(i,2),16);
-  return arr;
-}
-
-function bytesToHex(buf){
-  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
-}
-
-function bytesToBase64(buf){
-  const bytes = new Uint8Array(buf);
-  let binary = '';
-  for(let i=0;i<bytes.length;i++) binary += String.fromCharCode(bytes[i]);
-  return btoa(binary);
-}
-
-function base64ToBytes(b64){
-  const binary = atob(b64);
-  const bytes = new Uint8Array(binary.length);
-  for(let i=0;i<binary.length;i++) bytes[i] = binary.charCodeAt(i);
-  return bytes;
-}
-
-async function compress(str){
-  const enc = new TextEncoder();
-  const stream = new CompressionStream('gzip');
-  const writer = stream.writable.getWriter();
-  writer.write(enc.encode(str));
-  writer.close();
-  const chunks = [];
-  const reader = stream.readable.getReader();
-  while(true){
-    const {done, value} = await reader.read();
-    if(done) break;
-    chunks.push(value);
-  }
-  const total = chunks.reduce((a,b)=>a+b.length,0);
-  const result = new Uint8Array(total);
-  let offset = 0;
-  for(const chunk of chunks){ result.set(chunk, offset); offset += chunk.length; }
-  return result;
-}
-
-async function decompress(bytes){
-  const stream = new DecompressionStream('gzip');
-  const writer = stream.writable.getWriter();
-  writer.write(bytes);
-  writer.close();
-  const chunks = [];
-  const reader = stream.readable.getReader();
-  while(true){
-    const {done, value} = await reader.read();
-    if(done) break;
-    chunks.push(value);
-  }
-  const total = chunks.reduce((a,b)=>a+b.length,0);
-  const result = new Uint8Array(total);
-  let offset = 0;
-  for(const chunk of chunks){ result.set(chunk, offset); offset += chunk.length; }
-  return new TextDecoder().decode(result);
-}
-
-async function encEncrypt(obj){
-  if(!window._encKey) return null;
-  const iv = crypto.getRandomValues(new Uint8Array(12));
-  // Compress then encrypt — keeps payload well under Firestore 1MB limit
-  const compressed = await compress(JSON.stringify(obj));
-  const data = await crypto.subtle.encrypt(
-    {name:'AES-GCM', iv},
-    window._encKey,
-    compressed
-  );
-  const salt = localStorage.getItem('wf_enc_salt') || '';
-  return {_enc:true, salt, iv:bytesToHex(iv), d:bytesToBase64(data), c:true};
-}
-
-async function encDecrypt(blob){
-  if(!window._encKey || !blob._enc) return null;
-  try {
-    const iv = hexToBytes(blob.iv);
-    // Support base64 (new) and hex (legacy)
-    const data = blob.d.indexOf('+') !== -1 || blob.d.indexOf('/') !== -1 || blob.d.indexOf('=') !== -1
-      ? base64ToBytes(blob.d)
-      : hexToBytes(blob.d);
-    const decrypted = await crypto.subtle.decrypt({name:'AES-GCM', iv}, window._encKey, data);
-    // Decompress if compressed flag set, else decode directly (legacy)
-    if(blob.c){
-      const plainStr = await decompress(new Uint8Array(decrypted));
-      return JSON.parse(plainStr);
-    } else {
-      return JSON.parse(new TextDecoder().decode(decrypted));
-    }
-  } catch(e) {
-    console.error('Decryption failed:', e);
-    return null;
-  }
-}
-
-function showDecryptPrompt(errMsg){
-  const modal = document.getElementById('decryptPromptModal');
-  const errEl = document.getElementById('decryptPromptError');
-  if(errMsg){ errEl.textContent = errMsg; errEl.style.display = 'block'; }
-  else { errEl.style.display = 'none'; }
-  if(modal) modal.style.display = 'flex';
-  // Keep load overlay visible behind the prompt
-  setTimeout(()=>{ document.getElementById('decryptPromptInput')?.focus(); }, 100);
-}
-
-async function decryptPromptSubmit(){
-  const inp = document.getElementById('decryptPromptInput');
-  const pw = inp ? inp.value.trim() : '';
-  if(!pw){ showDecryptPrompt('Please enter your password.'); return; }
-
-  const blob = window._pendingEncBlob;
-  if(!blob){ return; }
-
-  try {
-    // Derive key using password + salt from the payload
-    const salt = blob.salt;
-    if(!salt){ showDecryptPrompt('No salt found in data — cannot decrypt.'); return; }
-    const key = await encDeriveKey(pw, salt);
-    window._encKey = key;
-
-    // Try to decrypt
-    const decrypted = await encDecrypt(blob);
-    if(!decrypted){
-      window._encKey = null;
-      showDecryptPrompt('Wrong password — please try again.');
-      return;
-    }
-
-    // Success — save password and salt to localStorage for future sessions
-    localStorage.setItem('wf_enc_password', pw);
-    localStorage.setItem('wf_enc_salt', salt);
-    window._encVerified = true;
-    window._pendingEncBlob = null;
-
-    // Hide prompt and load overlay
-    const modal = document.getElementById('decryptPromptModal');
-    if(modal) modal.style.display = 'none';
-    const overlay = document.getElementById('loadOverlay');
-    if(overlay) overlay.classList.add('hidden');
-
-    // Apply decrypted data
-    S = {...S, ...decrypted};
-    if(!S.rTasks) S.rTasks = [];
-    (S.rTasks||[]).forEach(t=>{ if(!t.taskType) t.taskType='recurring'; if(!t.dayType) t.dayType='dow'; });
-    if(!S.notes) S.notes = [];
-    applyDarkMode();
-    renderHome();
-    autoSyncICS();
-    toast('✓ Data unlocked successfully');
-  } catch(e) {
-    window._encKey = null;
-    showDecryptPrompt('Error: ' + e.message);
-  }
-}
-
-// Allow Enter key in prompt
-document.addEventListener('DOMContentLoaded', function(){
-  const inp = document.getElementById('decryptPromptInput');
-  if(inp) inp.addEventListener('keydown', e=>{ if(e.key==='Enter') decryptPromptSubmit(); });
-});
-
-// Salt stored inside the encrypted payload — no separate Firebase doc needed
-async function encInit(){
-  const pw = localStorage.getItem('wf_enc_password');
-  if(!pw){ window._encKey = null; window._encVerified = false; return; }
-  let salt = localStorage.getItem('wf_enc_salt');
-  if(!salt){ window._encKey = null; window._encVerified = false; return; }
-  try {
-    // Just derive the key — do NOT load Firebase here (loadS will do that)
-    window._encKey = await encDeriveKey(pw, salt);
-    // Mark verified optimistically — saveS will work immediately
-    // encDoVerify() can be used to explicitly confirm at any time
-    window._encVerified = true;
-  } catch(e) {
-    console.error('Key derivation failed:', e);
-    window._encKey = null;
-    window._encVerified = false;
-  }
-}
-
-// Set password only — generates new salt, derives key, saves to localStorage. No Firebase write.
-async function encDoSetPassword(){
-  const inp = document.getElementById('encPasswordInput');
-  const pw = inp ? inp.value.trim() : '';
-  if(!pw){ toast('Enter a password first'); return; }
-  if(pw === '••••••••'){ toast('Enter your new password to change it'); return; }
-  const existing = localStorage.getItem('wf_enc_password');
-  if(existing && pw !== existing){
-    if(!confirm('⚠️ Warning: changing your password generates a new key. You must verify and re-encrypt after this. Export a backup first.\n\nContinue?')) return;
-    if(!confirm('Are you absolutely sure? Data encrypted with the old password cannot be read until you re-encrypt with the new one.')) return;
-  }
-  const salt = bytesToHex(crypto.getRandomValues(new Uint8Array(16)));
-  localStorage.setItem('wf_enc_salt', salt);
-  window._encKey = await encDeriveKey(pw, salt);
-  localStorage.setItem('wf_enc_password', pw);
-  window._encVerified = false;
-  toast('🔑 Password set — tap Verify Password to confirm');
-  updateEncUI();
-}
-
-// Verify — pull Firebase data and try to decrypt it
-async function encDoVerify(){
-  const btn = document.getElementById('encVerifyBtn');
-  if(btn){ btn.disabled=true; btn.textContent='🔍 Verifying…'; }
-  try {
-    if(!window._encKey){
-      toast('⚠️ Set a password first');
-      return;
-    }
-    // Pull raw Firebase data
-    let fbData = null;
-    if(window._fbLoad) fbData = await window._fbLoad();
-
-    if(!fbData || !fbData._enc){
-      // No encrypted data in Firebase — first-time setup, auto-pass
-      window._encVerified = true;
-      toast('✓ No existing encrypted data — password accepted for first-time setup');
-      updateEncUI();
-      return;
-    }
-
-    // Try to decrypt
-    const decrypted = await encDecrypt(fbData);
-    if(decrypted && decrypted.houses !== undefined){
-      window._encVerified = true;
-      toast('✓ Password verified — key matches Firebase data');
-    } else {
-      window._encVerified = false;
-      toast('✗ Wrong password — could not decrypt Firebase data');
-    }
-    updateEncUI();
-  } catch(e){
-    window._encVerified = false;
-    toast('✗ Verification failed: ' + e.message);
-    updateEncUI();
-  } finally {
-    if(btn){ btn.disabled=false; btn.textContent='🔍 Verify Password'; }
-  }
-}
-
-// Encrypt data — only allowed after verify passes
-async function encDoEncrypt(){
-  if(!window._encKey){ toast('Set a password first'); return; }
-  if(!window._encVerified){ toast('⚠️ Verify your password first'); return; }
-  await saveS();
-  toast('🔒 Data encrypted and saved to Firebase');
-  updateEncUI();
-}
-
-// Remove encryption — decrypts Firebase data back to plaintext, clears password
-async function encDoRemove(){
-  if(!confirm('Remove encryption? Data will be stored as plain text in Firebase until you set a new password and encrypt again.')) return;
-  window._encKey = null;
-  window._encVerified = false;
-  localStorage.removeItem('wf_enc_password');
-  localStorage.removeItem('wf_enc_salt');
-  await saveS();
-  toast('🔓 Encryption removed — data is now unencrypted');
-  updateEncUI();
-}
-
-function updateEncUI(){
-  const pw = localStorage.getItem('wf_enc_password');
-  const hasKey = !!window._encKey;
-  const verified = !!window._encVerified;
-  const status = document.getElementById('encStatus');
-  const inp = document.getElementById('encPasswordInput');
-  const encBtn = document.getElementById('encEncryptBtn');
-
-  let statusText = '🔓 Not encrypted';
-  let statusColor = 'var(--muted)';
-  if(pw && hasKey && verified){
-    statusText = '✅ Password verified — ready to encrypt';
-    statusColor = 'var(--green)';
-  } else if(pw && hasKey && !verified){
-    statusText = '🔑 Password set — verify before encrypting';
-    statusColor = 'var(--amber)';
-  }
-  if(status){ status.textContent = statusText; status.style.color = statusColor; }
-  if(inp) inp.value = pw ? '••••••••' : '';
-
-  // Lock/unlock Encrypt Data button
-  if(encBtn){
-    if(hasKey && verified){
-      encBtn.disabled = false;
-      encBtn.style.opacity = '1';
-      encBtn.style.cursor = 'pointer';
-    } else {
-      encBtn.disabled = true;
-      encBtn.style.opacity = '0.4';
-      encBtn.style.cursor = 'not-allowed';
-    }
-  }
-}
 
 async function initApp(){
-  if(!window._fbCurrentUser){
-    const ov=document.getElementById('loadOverlay'); if(ov)ov.classList.add('hidden');
-    showLoginScreen();
-    return;
-  }
-  await encInit();
   await loadS();
   if(!S.rTasks) S.rTasks=[];
   (S.rTasks||[]).forEach(t=>{ if(!t.taskType) t.taskType='recurring'; if(!t.dayType) t.dayType='dow'; });
@@ -5557,22 +5286,1031 @@ async function initApp(){
   autoSyncICS();
 }
 
-// Wait for Firebase module to signal ready, then init
-// If Firebase takes >4s, init anyway with local data
-let fbInitDone = false;
-function startInit(){
-  if(fbInitDone) return;
-  fbInitDone = true;
-  initApp();
-}
-document.dispatchEvent(new Event('mainReady'));
-if(window._fbReady){ startInit(); }
-else {
-  document.addEventListener('fbReady', startInit);
-  setTimeout(startInit, 1500);
-}
+document.addEventListener('DOMContentLoaded', initApp);
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+// ═══════════════════════════════════════
+// BALANCE CALCULATOR (from ACal)
+// ═══════════════════════════════════════
+const BC_CREDIT_CODES = new Set([690, 730, 750, 760]);
+const BC_DEBIT_CODES  = new Set([670, 710]);
+
+const BC_CODE_DESC = {
+  690: 'Return of Change to Primary Safe / Refund',
+  730: 'Cash Deposit – Personal Account Check',
+  750: 'Cash Deposit – Wages',
+  760: 'Cash Deposit – Gifts/Refunds/Other',
+  670: 'Cash Withdrawal – From Primary Safe',
+  710: 'Cash Withdrawal – Return to Business Office',
+};
+
+// bcLoadedFiles: [{name, rows, tracked}]
+let bcLoadedFiles = [];
+let bcPendingCount = 0;
+
+function bcSetStatus(id, msg, type) {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.className = 'bc-status show ' + type;
+}
+function bcHideStatus(id) { document.getElementById(id).className = 'bc-status'; }
+
+document.getElementById('bcFileInput').addEventListener('change', function() {
+  const files = Array.from(this.files);
+  if (!files.length) return;
+
+  bcLoadedFiles = [];
+  bcPendingCount = files.length;
+
+  // Reset UI
+  const tbody = document.getElementById('bcFileListBody');
+  tbody.innerHTML = '';
+  document.getElementById('bcFileListWrap').classList.remove('bc-hidden');
+  document.getElementById('bcCalcFileSelect').innerHTML = '<option value="">— loading... —</option>';
+  document.getElementById('bcEndingBalancesBody').innerHTML = '';
+  document.getElementById('bcEndingBalancesWrap').classList.add('bc-hidden');
+  document.getElementById('bcEndingBalancesEmpty').style.display = 'block';
+
+  files.forEach((file, idx) => {
+    // Reserve a slot in bcLoadedFiles
+    const parsed = bcParseFilename(file.name);
+    bcLoadedFiles.push({ name: file.name, rows: [], tracked: 0, idx, initials: parsed && parsed.initials, parsedAmount: parsed && parsed.amount });
+
+    // Add a row to the file list table
+    const tr = document.createElement('tr');
+    tr.id = 'bc-frow-' + idx;
+    tr.innerHTML = `
+      <td class="bc-fname">${esc(file.name)}</td>
+      <td><span class="bc-file-status-dot bc-dot-spin" id="bc-fdot-${idx}"></span><span id="bc-fmsg-${idx}">Reading...</span></td>
+      <td id="bc-fcount-${idx}">—</td>
+    `;
+    tbody.appendChild(tr);
+
+    bcParseFile(file, idx);
+  });
+});
+
+// Also update ending balances table when dates change
+['bcReportStart', 'bcReportEnd'].forEach(id => {
+  document.getElementById(id).addEventListener('change', bcRefreshEndingBalancesTable);
+});
+
+function bcParseFile(file, idx) {
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const wb = XLSX.read(e.target.result, { type: 'binary' });
+      const ws = wb.Sheets[wb.SheetNames[0]];
+
+      let maxRow = 0;
+      Object.keys(ws).forEach(key => {
+        if (key.startsWith('!')) return;
+        const m = key.match(/(\d+)$/);
+        if (m) maxRow = Math.max(maxRow, parseInt(m[1]));
+      });
+
+      if (maxRow < 2) {
+        bcMarkFileError(idx, 'No data rows found');
+        return;
+      }
+
+      function cellVal(col, row) {
+        const c = ws[col.toLowerCase() + row] || ws[col.toUpperCase() + row];
+        return c ? c.v : null;
+      }
+
+      const colLetters = 'abcdefghijklm'.split('');
+      const headers = {};
+      colLetters.forEach(col => {
+        const v = cellVal(col, 1);
+        if (v != null) headers[String(v).toLowerCase().trim()] = col;
+      });
+
+      const dateCol = headers['date'] || 'a';
+      const codeCol = headers['code'] || 'b';
+      const tranKey = Object.keys(headers).find(h => h.includes('transaction'));
+      const tranCol = tranKey ? headers[tranKey] : 'c';
+      const amtKey  = Object.keys(headers).find(h => h.includes('amount'));
+      const amtCol  = amtKey ? headers[amtKey] : 'd';
+      const descKey = Object.keys(headers).find(h => h === 'description');
+      const descCol = descKey ? headers[descKey] : 'e';
+
+      const rows = [];
+      for (let r = 2; r <= maxRow; r++) {
+        const rawDate = cellVal(dateCol, r);
+        const rawCode = cellVal(codeCol, r);
+        const rawAmt  = cellVal(amtCol, r);
+        const rawDesc = cellVal(descCol, r) || cellVal(tranCol, r) || '';
+
+        if (rawDate == null || rawCode == null || rawAmt == null) continue;
+        const code   = parseInt(String(rawCode).trim());
+        const amount = parseFloat(rawAmt);
+        if (isNaN(code) || isNaN(amount) || amount === 0) continue;
+
+        let dateStr;
+        if (typeof rawDate === 'number') {
+          dateStr = bcExcelSerialToDateStr(rawDate);
+        } else {
+          const d = new Date(rawDate);
+          if (isNaN(d.getTime())) continue;
+          dateStr = d.getUTCFullYear() + '-' +
+                    String(d.getUTCMonth() + 1).padStart(2, '0') + '-' +
+                    String(d.getUTCDate()).padStart(2, '0');
+        }
+        rows.push({ date: dateStr, code, amount, desc: String(rawDesc) });
+      }
+
+      if (rows.length === 0) {
+        bcMarkFileError(idx, 'No valid transactions found');
+        return;
+      }
+
+      const tracked = rows.filter(r => BC_CREDIT_CODES.has(r.code) || BC_DEBIT_CODES.has(r.code)).length;
+      bcLoadedFiles[idx].rows = rows;
+      bcLoadedFiles[idx].tracked = tracked;
+
+      document.getElementById('bc-fdot-' + idx).className = 'bc-file-status-dot bc-dot-ok';
+      document.getElementById('bc-fmsg-' + idx).textContent = rows.length + ' rows loaded';
+      document.getElementById('bc-fcount-' + idx).innerHTML = '<span class="bc-tracked-count">' + tracked + '</span>';
+
+    } catch(err) {
+      bcMarkFileError(idx, 'Error: ' + err.message);
+    }
+    bcFileLoadDone();
+  };
+  reader.onerror = () => { bcMarkFileError(idx, 'Could not read file'); bcFileLoadDone(); };
+  reader.readAsBinaryString(file);
+}
+
+function bcMarkFileError(idx, msg) {
+  document.getElementById('bc-fdot-' + idx).className = 'bc-file-status-dot bc-dot-err';
+  document.getElementById('bc-fmsg-' + idx).textContent = msg;
+  document.getElementById('bc-fcount-' + idx).textContent = '0';
+  bcLoadedFiles[idx].rows = [];
+  bcLoadedFiles[idx].tracked = 0;
+}
+
+function bcFileLoadDone() {
+  bcPendingCount--;
+  if (bcPendingCount > 0) return;
+
+  // All files done — update selects
+  const okFiles = bcLoadedFiles.filter(f => f.rows.length > 0);
+
+  // Calculator select
+  const sel = document.getElementById('bcCalcFileSelect');
+  sel.innerHTML = okFiles.length === 0
+    ? '<option value="">— no valid files —</option>'
+    : okFiles.map(f => `<option value="${f.idx}">${esc(f.name)}</option>`).join('');
+
+  bcAutoFillCurrentBalance();
+
+  // Ending balances table
+  bcRefreshEndingBalancesTable();
+}
+
+document.getElementById('bcCalcFileSelect').addEventListener('change', bcAutoFillCurrentBalance);
+
+// Auto-fills the "current cash balance" field from the amount parsed out of the
+// selected file's name (e.g. "SW 237.76.xlsx" -> 237.76), when available.
+function bcAutoFillCurrentBalance() {
+  const note = document.getElementById('bcBalanceAutoNote');
+  const selIdx = parseInt(document.getElementById('bcCalcFileSelect').value);
+  if (isNaN(selIdx) || !bcLoadedFiles[selIdx]) { note.className = 'bc-status'; return; }
+
+  const file = bcLoadedFiles[selIdx];
+  if (file.parsedAmount != null) {
+    document.getElementById('bcCurrentBalance').value = file.parsedAmount;
+    note.textContent = 'Auto-filled ' + bcFmt(file.parsedAmount) + ' from filename "' + file.name + '".';
+    note.className = 'bc-status show info';
+  } else {
+    note.textContent = 'Filename doesn\'t include a balance — enter it manually.';
+    note.className = 'bc-status show info';
+  }
+}
+
+function bcRefreshEndingBalancesTable() {
+  const okFiles = bcLoadedFiles.filter(f => f.rows.length > 0);
+  if (okFiles.length === 0) return;
+
+  const startDate = document.getElementById('bcReportStart').value;
+  const endDate   = document.getElementById('bcReportEnd').value;
+
+  const tbody = document.getElementById('bcEndingBalancesBody');
+  // Preserve any already-entered ending balances
+  const existingVals = {};
+  tbody.querySelectorAll('tr[data-idx]').forEach(tr => {
+    const inp = tr.querySelector('input');
+    if (inp && inp.value) existingVals[tr.dataset.idx] = inp.value;
+  });
+
+  tbody.innerHTML = '';
+  okFiles.forEach(f => {
+    const inRange = (startDate && endDate)
+      ? f.rows.filter(r => r.date >= startDate && r.date <= endDate && (BC_CREDIT_CODES.has(r.code) || BC_DEBIT_CODES.has(r.code))).length
+      : f.tracked;
+
+    const prefill = existingVals[f.idx] !== undefined ? existingVals[f.idx]
+                   : (f.parsedAmount != null ? f.parsedAmount : '');
+
+    const label = f.initials
+      ? esc(f.initials) + ' <span style="color:#666">(' + esc(f.name) + ')</span>'
+      : esc(f.name);
+
+    const tr = document.createElement('tr');
+    tr.dataset.idx = f.idx;
+    tr.innerHTML = `
+      <td class="bc-fname">${label}</td>
+      <td><span class="bc-tracked-count">${inRange}</span></td>
+      <td><input type="number" step="0.01" placeholder="e.g. 312.45" data-idx="${f.idx}" class="bc-ending-bal-input" value="${prefill}"></td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  document.getElementById('bcEndingBalancesWrap').classList.remove('bc-hidden');
+  document.getElementById('bcEndingBalancesEmpty').style.display = 'none';
+}
+
+function bcCalculate() {
+  bcHideStatus('bcCalcStatus');
+
+  const selIdx = parseInt(document.getElementById('bcCalcFileSelect').value);
+  if (isNaN(selIdx)) { bcSetStatus('bcCalcStatus', 'Select an account file.', 'err'); return; }
+  const file = bcLoadedFiles[selIdx];
+  if (!file || file.rows.length === 0) { bcSetStatus('bcCalcStatus', 'Selected file has no valid data.', 'err'); return; }
+
+  const balInput = document.getElementById('bcCurrentBalance').value.trim();
+  if (!balInput) { bcSetStatus('bcCalcStatus', 'Enter the current cash balance.', 'err'); return; }
+  const currentBalance = parseFloat(balInput);
+  if (isNaN(currentBalance)) { bcSetStatus('bcCalcStatus', 'Balance must be a number.', 'err'); return; }
+
+  const targetDate = document.getElementById('bcTargetDate').value;
+  if (!targetDate) { bcSetStatus('bcCalcStatus', 'Select a target date.', 'err'); return; }
+
+  const afterRows = file.rows.filter(r =>
+    r.date > targetDate && (BC_CREDIT_CODES.has(r.code) || BC_DEBIT_CODES.has(r.code))
+  );
+
+  let depositsAfter = 0, withdrawalsAfter = 0;
+  afterRows.forEach(r => {
+    if (BC_CREDIT_CODES.has(r.code)) depositsAfter += r.amount;
+    if (BC_DEBIT_CODES.has(r.code))  withdrawalsAfter += r.amount;
+  });
+
+  const estimated = currentBalance - depositsAfter + withdrawalsAfter;
+
+  document.getElementById('bcResultAmount').textContent = bcFmt(estimated);
+  document.getElementById('bcResultDate').textContent   = 'As of ' + bcFmtDate(targetDate) + ' — ' + esc(file.name);
+  document.getElementById('bcSumCurrent').textContent   = bcFmt(currentBalance);
+  document.getElementById('bcSumIn').textContent        = '- ' + bcFmt(depositsAfter);
+  document.getElementById('bcSumOut').textContent       = '+ ' + bcFmt(withdrawalsAfter);
+  document.getElementById('bcSumResult').textContent    = bcFmt(estimated);
+
+  if (afterRows.length === 0) {
+    document.getElementById('bcTxTable').innerHTML = '<p class="bc-no-tx">No tracked transactions found after ' + bcFmtDate(targetDate) + '.</p>';
+  } else {
+    let html = '<table><thead><tr><th>Date</th><th>Code</th><th>Description</th><th>Amount</th><th>Effect</th></tr></thead><tbody>';
+    afterRows.slice().sort((a, b) => b.date.localeCompare(a.date)).forEach(r => {
+      const isCredit = BC_CREDIT_CODES.has(r.code);
+      html += '<tr>' +
+        '<td>' + bcFmtDate(r.date) + '</td>' +
+        '<td><span class="bc-code-badge">' + r.code + '</span></td>' +
+        '<td>' + esc(r.desc) + '</td>' +
+        '<td class="' + (isCredit ? 'bc-red' : 'bc-green') + '">' + bcFmt(r.amount) + '</td>' +
+        '<td class="bc-gray">' + (isCredit ? 'deposit removed' : 'withdrawal added back') + '</td>' +
+        '</tr>';
+    });
+    html += '</tbody></table>';
+    document.getElementById('bcTxTable').innerHTML = html;
+  }
+
+  const rc = document.getElementById('bcResultCard');
+  rc.classList.add('show');
+  rc.scrollIntoView({ behavior: 'smooth' });
+}
+
+function bcCalculateBatch() {
+  bcHideStatus('bcBatchStatus');
+
+  const targetDate = document.getElementById('bcBatchTargetDate').value;
+  if (!targetDate) { bcSetStatus('bcBatchStatus', 'Select a target date.', 'err'); return; }
+
+  const okFiles = bcLoadedFiles.filter(f => f.rows.length > 0);
+  if (okFiles.length === 0) { bcSetStatus('bcBatchStatus', 'Upload files first.', 'err'); return; }
+
+  const tbody = document.getElementById('bcBatchResultBody');
+  tbody.innerHTML = '';
+
+  let calculated = 0, skipped = 0;
+
+  okFiles.forEach(f => {
+    const label = f.initials
+      ? esc(f.initials) + ' <span style="color:#666">(' + esc(f.name) + ')</span>'
+      : esc(f.name);
+
+    const tr = document.createElement('tr');
+
+    if (f.parsedAmount == null) {
+      skipped++;
+      tr.innerHTML = `
+        <td class="bc-fname">${label}</td>
+        <td class="bc-gray">—</td>
+        <td class="bc-gray">no balance in filename</td>
+      `;
+      tbody.appendChild(tr);
+      return;
+    }
+
+    const afterRows = f.rows.filter(r =>
+      r.date > targetDate && (BC_CREDIT_CODES.has(r.code) || BC_DEBIT_CODES.has(r.code))
+    );
+    let depositsAfter = 0, withdrawalsAfter = 0;
+    afterRows.forEach(r => {
+      if (BC_CREDIT_CODES.has(r.code)) depositsAfter += r.amount;
+      if (BC_DEBIT_CODES.has(r.code))  withdrawalsAfter += r.amount;
+    });
+    const estimated = f.parsedAmount - depositsAfter + withdrawalsAfter;
+    calculated++;
+
+    tr.innerHTML = `
+      <td class="bc-fname">${label}</td>
+      <td>${bcFmt(f.parsedAmount)}</td>
+      <td class="bc-green" style="font-weight:700">${bcFmt(estimated)}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  document.getElementById('bcBatchResultWrap').classList.remove('bc-hidden');
+
+  let msg = '✓ Calculated ' + calculated + ' account(s) for ' + bcFmtDate(targetDate);
+  if (skipped > 0) msg += ' · ' + skipped + ' skipped (no balance in filename)';
+  bcSetStatus('bcBatchStatus', msg, calculated > 0 ? 'ok' : 'err');
+}
+
+function bcRound2(n) {
+  return Math.round((n + Number.EPSILON) * 100) / 100;
+}
+
+function bcExportReport() {
+  bcHideStatus('bcExportStatus');
+
+  const startDate = document.getElementById('bcReportStart').value;
+  const endDate   = document.getElementById('bcReportEnd').value;
+  if (!startDate || !endDate) { bcSetStatus('bcExportStatus', 'Select both a start and end date.', 'err'); return; }
+  if (startDate > endDate)    { bcSetStatus('bcExportStatus', 'Start date must be before end date.', 'err'); return; }
+
+  // Collect ending balances from the dynamic inputs
+  const inputs = document.querySelectorAll('.bc-ending-bal-input');
+  if (inputs.length === 0) { bcSetStatus('bcExportStatus', 'Upload files first.', 'err'); return; }
+
+  const entries = [];
+  let missingBalance = false;
+
+  inputs.forEach(inp => {
+    const idx = parseInt(inp.dataset.idx);
+    const file = bcLoadedFiles[idx];
+    const val = inp.value.trim();
+    if (!val) { missingBalance = true; return; }
+    const ending = parseFloat(val);
+    if (isNaN(ending)) { missingBalance = true; return; }
+    entries.push({ file, ending });
+  });
+
+  if (missingBalance) { bcSetStatus('bcExportStatus', 'Enter the ending balance for every account.', 'err'); return; }
+  if (entries.length === 0) { bcSetStatus('bcExportStatus', 'No valid accounts to export.', 'err'); return; }
+
+  const wb = XLSX.utils.book_new();
+
+  entries.forEach(({ file, ending }) => {
+    const rows = file.rows
+      .filter(r => r.date >= startDate && r.date <= endDate && (BC_CREDIT_CODES.has(r.code) || BC_DEBIT_CODES.has(r.code)))
+      // Same-day ties: deposits before withdrawals, so the running balance never
+      // shows a false dip below zero just because of arbitrary code-number order.
+      .sort((a, b) => a.date.localeCompare(b.date) || (BC_CREDIT_CODES.has(a.code)?0:1) - (BC_CREDIT_CODES.has(b.code)?0:1) || a.code - b.code);
+
+    // Calculate opening balance by reversing all transactions from the ending
+    let opening = ending;
+    rows.forEach(r => {
+      if (BC_CREDIT_CODES.has(r.code)) opening -= r.amount;
+      if (BC_DEBIT_CODES.has(r.code))  opening += r.amount;
+    });
+    opening = bcRound2(opening);
+
+    const data = [];
+    data.push(['Acumatica Primary Safe — Running Balance Audit']);
+    data.push(['Account File:', file.name]);
+    data.push(['Date Range:', bcFmtDate(startDate) + '  to  ' + bcFmtDate(endDate)]);
+    data.push(['Opening Balance (calculated):', opening]);
+    data.push(['Ending Balance (known):', ending]);
+    data.push([]);
+    data.push(['Date', 'Tran Code', 'Code Description', 'Transaction Description', 'Type', 'Amount', 'Running Balance']);
+
+    let running = opening;
+    let totalDep = 0, totalWith = 0;
+
+    if (rows.length === 0) {
+      data.push(['No tracked transactions in this date range.']);
+    } else {
+      rows.forEach(r => {
+        const isCredit = BC_CREDIT_CODES.has(r.code);
+        if (isCredit) { running += r.amount; totalDep  += r.amount; }
+        else          { running -= r.amount; totalWith += r.amount; }
+        running = bcRound2(running);
+        data.push([
+          bcFmtDate(r.date),
+          r.code,
+          BC_CODE_DESC[r.code] || '',
+          r.desc,
+          isCredit ? 'DEPOSIT' : 'WITHDRAWAL',
+          isCredit ? r.amount : -r.amount,
+          running,
+        ]);
+      });
+    }
+
+    data.push([]);
+    data.push(['SUMMARY']);
+    data.push(['Opening Balance (calculated)', '', '', '', '', '', opening]);
+    data.push(['Total Deposits',              '', '', '', '', '', bcRound2(totalDep)]);
+    data.push(['Total Withdrawals',           '', '', '', '', '', bcRound2(totalWith)]);
+    data.push(['Closing Balance (verify = known ending)', '', '', '', '', '', running]);
+
+    const ws = XLSX.utils.aoa_to_sheet(data);
+    ws['!cols'] = [
+      { wch: 12 }, { wch: 10 }, { wch: 36 }, { wch: 38 }, { wch: 12 }, { wch: 12 }, { wch: 16 }
+    ];
+
+    // Tab name: initials if filename matched the naming convention, else filename without extension (max 31 chars, Excel limit)
+    let tabName = (file.initials || file.name.replace(/\.[^.]+$/, '')).replace(/[\\/*?:[\]]/g, '-').substring(0, 31);
+    // Avoid duplicate tab names
+    let base = tabName, n = 2;
+    while (wb.SheetNames.includes(tabName)) { tabName = (base.substring(0, 28) + '-' + n++); }
+
+    XLSX.utils.book_append_sheet(wb, ws, tabName);
+  });
+
+  // Download
+  const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+  const buf = new ArrayBuffer(wbout.length);
+  const view = new Uint8Array(buf);
+  for (let i = 0; i < wbout.length; i++) view[i] = wbout.charCodeAt(i) & 0xff;
+  const blob = new Blob([buf], { type: 'application/octet-stream' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'balance_audit_' + startDate + '_to_' + endDate + '.xlsx';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  bcSetStatus('bcExportStatus', '✓ Downloaded ' + entries.length + ' account tab(s) · ' + startDate + ' to ' + endDate, 'ok');
+}
+
+function bcExcelSerialToDateStr(serial) {
+  const ms = (serial - 25569) * 86400 * 1000;
+  const d = new Date(ms);
+  return d.getUTCFullYear() + '-' +
+         String(d.getUTCMonth() + 1).padStart(2, '0') + '-' +
+         String(d.getUTCDate()).padStart(2, '0');
+}
+
+function bcFmt(n) {
+  const neg = n < 0;
+  return (neg ? '-$' : '$') + Math.abs(n).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+function bcFmtDate(d) {
+  const [y, m, day] = d.split('-');
+  return m + '/' + day + '/' + y;
+}
+
+// Parses "INITIALS AMOUNT.xlsx" e.g. "DD 247.31.xls" or "DD_247.31.xls" -> { initials: 'DD', amount: 247.31 }
+function bcParseFilename(name) {
+  const m = name.match(/^(.+?)[\s_]+(\d+(?:\.\d{1,2})?)\.(xlsx?|xls)$/i);
+  if (!m) return null;
+  return { initials: m[1].trim(), amount: parseFloat(m[2]) };
+}
+</script>
+
+<script>
+// ═══════════════════════════════════════
+// EZ MONEY AUDIT
+// ═══════════════════════════════════════
+let ezHouseId = '';
+let ezDateCompleted = '';
+let ezRows = []; // {rid, filename, initials, rawAmount, txRows, parseError, matchedIndivId, balance, receiptNum, receiptVen, over283Note}
+
+function ezPopulateHouseSelect(){
+  const sel = document.getElementById('ezHouseSelect');
+  if(!sel) return;
+  sel.innerHTML = '<option value="">— select house —</option>' +
+    S.houses.map(h=>`<option value="${h.id}">${esc(h.name)}${h.closed?' (Closed)':''}</option>`).join('');
+}
+
+function ezInit(){
+  ezPopulateHouseSelect();
+  const houseSel = document.getElementById('ezHouseSelect');
+  if(houseSel) houseSel.value = ezHouseId;
+  const dateEl = document.getElementById('ezDateCompleted');
+  if(dateEl) dateEl.value = ezDateCompleted;
+  ezUpdateReviewMonthNote();
+  ezUpdateGate();
+  ezRenderReviewList();
+}
+
+function ezReset(){
+  const hasState = !!(ezHouseId || ezDateCompleted || ezRows.length);
+  if(hasState && !confirm('Reset EZ Money Audit? This clears the selected house, date, and all uploaded files.')) return;
+  ezHouseId = '';
+  ezDateCompleted = '';
+  ezRows = [];
+  ezInit();
+  if(hasState) toast('✓ EZ Money Audit reset');
+}
+
+function ezComputeMonths(dateStr){
+  const [y, m] = dateStr.split('-').map(Number);
+  const filingMonthIdx = m - 1;
+  const filingYear = y;
+  let reviewMonthIdx = filingMonthIdx - 1, reviewYear = filingYear;
+  if(reviewMonthIdx < 0){ reviewMonthIdx = 11; reviewYear--; }
+  return {
+    filingMonthIdx, filingYear, reviewMonthIdx, reviewYear,
+    monthKey: filingYear + '-' + String(filingMonthIdx + 1).padStart(2, '0'),
+    reviewMonthKey: reviewYear + '-' + String(reviewMonthIdx + 1).padStart(2, '0'),
+    monthYearLabel: AMP_MONTHS_FULL[reviewMonthIdx] + ' ' + reviewYear,
+  };
+}
+
+function ezUpdateReviewMonthNote(){
+  const note = document.getElementById('ezReviewMonthNote');
+  if(!note) return;
+  if(ezDateCompleted){
+    const info = ezComputeMonths(ezDateCompleted);
+    note.textContent = 'Reviews ' + info.monthYearLabel + ' — filed under ' + AMP_MONTHS_FULL[info.filingMonthIdx] + ' ' + info.filingYear + '.';
+  } else {
+    note.textContent = '';
+  }
+}
+
+function ezUpdateGate(){
+  const ready = !!(ezHouseId && ezDateCompleted);
+  const uploadCard = document.getElementById('ezUploadCard');
+  const gateNote = document.getElementById('ezGateNote');
+  if(uploadCard) uploadCard.style.display = ready ? 'block' : 'none';
+  if(gateNote) gateNote.style.display = ready ? 'none' : 'block';
+}
+
+function ezNameInitials(name){
+  return (name || '').trim().split(/\s+/).map(w => w[0] || '').join('').toUpperCase();
+}
+
+function ezAutoMatch(initials){
+  if(!ezHouseId || !initials) return null;
+  const candidates = S.individuals.filter(i => i.houseId === ezHouseId && ezNameInitials(i.name) === initials.toUpperCase());
+  return candidates.length === 1 ? candidates[0].id : null;
+}
+
+function ezRollbackBalance(txRows, currentAmount, targetDate){
+  if(currentAmount == null || !targetDate) return currentAmount;
+  const afterRows = txRows.filter(r => r.date > targetDate && (BC_CREDIT_CODES.has(r.code) || BC_DEBIT_CODES.has(r.code)));
+  let depositsAfter = 0, withdrawalsAfter = 0;
+  afterRows.forEach(r => {
+    if(BC_CREDIT_CODES.has(r.code)) depositsAfter += r.amount;
+    if(BC_DEBIT_CODES.has(r.code)) withdrawalsAfter += r.amount;
+  });
+  return currentAmount - depositsAfter + withdrawalsAfter;
+}
+
+// Best-effort receipt # + vendor detection: scan this account's WITHDRAWALS
+// (purchases) for the review month only, find the most recent description
+// containing a "#<digits>" receipt reference, and take everything after it
+// as the vendor (left as free text for manual cleanup) -- e.g. "#39 WALMART
+// Phone card ($3.53 gifted)". Real descriptions often put the "#NN" at the
+// END instead, with nothing useful after it but a trailing date, e.g.
+// "Hair Highlights & Trim 5/18/26 # 36" or "Lake George Steam Boat # 38
+// 6/5/26" -- when what follows the number is empty or just a date, fall
+// back to the text BEFORE the number instead. Deposits are excluded from
+// the scan -- e.g. "June Monthly Allowance CK # 19059" is a check number on
+// money coming in, not a purchase receipt, and would otherwise false-match.
+// No match in that month -> the existing "no receipt" convention (0 / None),
+// which ezRenderReviewList() visually flags so it's not mistaken for a real
+// detected receipt.
+function ezExtractReceipt(txRows, reviewMonthKey){
+  const monthRows = (txRows || []).filter(r => r.date && r.date.startsWith(reviewMonthKey) && BC_DEBIT_CODES.has(r.code));
+  const isJustADate = s => /^\d{1,2}\/\d{1,2}(\/\d{2,4})?$/.test(s);
+  let best = null;
+  monthRows.forEach(r => {
+    const m = r.desc.match(/#\s*(\d+)/);
+    if(!m) return;
+    if(!best || r.date >= best.date){
+      const after = r.desc.slice(m.index + m[0].length).trim();
+      const before = r.desc.slice(0, m.index).trim();
+      const vendor = (after && !isJustADate(after)) ? after : before;
+      best = { date: r.date, num: m[1], vendor };
+    }
+  });
+  if(!best) return { receiptNum: '0', receiptVen: 'None' };
+  return { receiptNum: best.num, receiptVen: best.vendor };
+}
+
+function ezReadXlsxFile(file){
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = function(e){
+      try {
+        const wb = XLSX.read(e.target.result, { type: 'binary' });
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        let maxRow = 0;
+        Object.keys(ws).forEach(key => {
+          if(key.startsWith('!')) return;
+          const m = key.match(/(\d+)$/);
+          if(m) maxRow = Math.max(maxRow, parseInt(m[1]));
+        });
+        if(maxRow < 2){ resolve({ rows: [], error: 'No data rows found' }); return; }
+        function cellVal(col, row){ const c = ws[col.toLowerCase() + row] || ws[col.toUpperCase() + row]; return c ? c.v : null; }
+        const colLetters = 'abcdefghijklm'.split('');
+        const headers = {};
+        colLetters.forEach(col => { const v = cellVal(col, 1); if(v != null) headers[String(v).toLowerCase().trim()] = col; });
+        const dateCol = headers['date'] || 'a';
+        const codeCol = headers['code'] || 'b';
+        const tranKey = Object.keys(headers).find(h => h.includes('transaction'));
+        const tranCol = tranKey ? headers[tranKey] : 'c';
+        const amtKey = Object.keys(headers).find(h => h.includes('amount'));
+        const amtCol = amtKey ? headers[amtKey] : 'd';
+        const descKey = Object.keys(headers).find(h => h === 'description');
+        const descCol = descKey ? headers[descKey] : 'e';
+        const rows = [];
+        for(let r = 2; r <= maxRow; r++){
+          const rawDate = cellVal(dateCol, r), rawCode = cellVal(codeCol, r), rawAmt = cellVal(amtCol, r);
+          const rawDesc = cellVal(descCol, r) || cellVal(tranCol, r) || '';
+          if(rawDate == null || rawCode == null || rawAmt == null) continue;
+          const code = parseInt(String(rawCode).trim()), amount = parseFloat(rawAmt);
+          if(isNaN(code) || isNaN(amount) || amount === 0) continue;
+          let dateStr;
+          if(typeof rawDate === 'number'){ dateStr = bcExcelSerialToDateStr(rawDate); }
+          else {
+            const d = new Date(rawDate);
+            if(isNaN(d.getTime())) continue;
+            dateStr = d.getUTCFullYear() + '-' + String(d.getUTCMonth() + 1).padStart(2, '0') + '-' + String(d.getUTCDate()).padStart(2, '0');
+          }
+          rows.push({ date: dateStr, code, amount, desc: String(rawDesc) });
+        }
+        resolve({ rows, error: rows.length === 0 ? 'No valid transactions found' : null });
+      } catch(err){ resolve({ rows: [], error: 'Error: ' + err.message }); }
+    };
+    reader.onerror = () => resolve({ rows: [], error: 'Could not read file' });
+    reader.readAsBinaryString(file);
+  });
+}
+
+document.getElementById('ezFileInput').addEventListener('change', async function(){
+  const files = Array.from(this.files);
+  this.value = '';
+  if(!files.length) return;
+  for(const file of files){
+    const parsed = bcParseFilename(file.name);
+    const row = {
+      rid: uid(), filename: file.name,
+      initials: parsed ? parsed.initials : '',
+      rawAmount: parsed ? parsed.amount : null,
+      txRows: [], parseError: parsed ? null : 'Filename doesn\'t match "INITIALS AMOUNT.xlsx" format',
+      matchedIndivId: null, balance: null,
+      receiptNum: '', receiptVen: '', over283Note: '',
+    };
+    ezRows.push(row);
+    if(parsed){
+      const { rows, error } = await ezReadXlsxFile(file);
+      row.txRows = rows;
+      if(error) row.parseError = error;
+      else {
+        row.balance = ezRollbackBalance(rows, parsed.amount, ezDateCompleted);
+        const rmk = ezDateCompleted ? ezComputeMonths(ezDateCompleted).reviewMonthKey : null;
+        const receipt = rmk ? ezExtractReceipt(rows, rmk) : { receiptNum: '0', receiptVen: 'None' };
+        row.receiptNum = receipt.receiptNum;
+        row.receiptVen = receipt.receiptVen;
+      }
+      row.matchedIndivId = ezAutoMatch(parsed.initials);
+    }
+  }
+  ezRenderReviewList();
+});
+
+function ezHouseChanged(){
+  ezHouseId = document.getElementById('ezHouseSelect').value;
+  ezRows.forEach(row => { if(!row.parseError) row.matchedIndivId = ezAutoMatch(row.initials); });
+  ezRenderReviewList();
+  ezUpdateGate();
+}
+
+function ezDateChanged(){
+  ezDateCompleted = document.getElementById('ezDateCompleted').value;
+  ezUpdateReviewMonthNote();
+  const rmk = ezDateCompleted ? ezComputeMonths(ezDateCompleted).reviewMonthKey : null;
+  ezRows.forEach(row => {
+    if(row.txRows && row.txRows.length){
+      row.balance = ezRollbackBalance(row.txRows, row.rawAmount, ezDateCompleted);
+      const receipt = rmk ? ezExtractReceipt(row.txRows, rmk) : { receiptNum: '0', receiptVen: 'None' };
+      row.receiptNum = receipt.receiptNum;
+      row.receiptVen = receipt.receiptVen;
+    }
+  });
+  ezRenderReviewList();
+  ezUpdateGate();
+}
+
+function ezSetField(rid, field, value){
+  const row = ezRows.find(r => r.rid === rid);
+  if(row) row[field] = value;
+}
+function ezSetOver283Note(rid, value){
+  const row = ezRows.find(r => r.rid === rid);
+  if(row) row.over283Note = value;
+}
+function ezAssignRow(rid, indivId){
+  const row = ezRows.find(r => r.rid === rid);
+  if(!row) return;
+  row.matchedIndivId = indivId || null;
+  ezRenderReviewList();
+}
+function ezRemoveRow(rid){
+  ezRows = ezRows.filter(r => r.rid !== rid);
+  ezRenderReviewList();
+}
+function ezFixDate(rid, indivId, field){
+  const inputId = field === 'pepDate' ? 'ezPepFix_' + rid : 'ezMmaFix_' + rid;
+  const val = document.getElementById(inputId)?.value;
+  if(!val){ toast('Pick a date first'); return; }
+  const ind = S.individuals.find(i => i.id === indivId);
+  if(!ind) return;
+  ind[field] = val;
+  saveS();
+  toast('✓ ' + (field === 'pepDate' ? 'PEP' : 'MMA') + ' date updated');
+  ezRenderReviewList();
+}
+
+function ezRenderReviewList(){
+  const cont = document.getElementById('ezReviewList');
+  const genBtn = document.getElementById('ezGenerateBtn');
+  const zipBtn = document.getElementById('ezGenerateZipBtn');
+  if(!cont) return;
+  if(ezRows.length === 0){
+    cont.innerHTML = '';
+    if(genBtn) genBtn.style.display = 'none';
+    if(zipBtn) zipBtn.style.display = 'none';
+    return;
+  }
+
+  const houseIndivs = S.individuals.filter(i => i.houseId === ezHouseId);
+  const dateLabel = ezDateCompleted ? auditFmtDatePDF(ezDateCompleted) : '—';
+  let html = '';
+
+  ezRows.forEach(row => {
+    html += `<div class="ez-row-card" data-rid="${row.rid}">`;
+    const matchedInd = row.matchedIndivId ? S.individuals.find(i => i.id === row.matchedIndivId) : null;
+    html += `<div class="ez-row-hdr">
+      <div>
+        <div class="ez-row-name">${matchedInd ? esc(matchedInd.name) : '⚠️ Unmatched'}</div>
+        <div class="ez-row-file">${esc(row.filename)}</div>
+      </div>
+      <button class="ez-row-del" onclick="ezRemoveRow('${row.rid}')">✕</button>
+    </div>`;
+
+    if(row.parseError){
+      html += `<div class="ez-flag-banner"><div class="ez-flag-title">⚠️ ${esc(row.parseError)}</div></div></div>`;
+      return;
+    }
+
+    if(!matchedInd){
+      html += `<div class="ez-unmatched">
+        <div class="ez-unmatched-title">⚠️ Couldn't match "${esc(row.initials)}" to anyone in this house</div>
+        <select class="ez-select" style="margin-bottom:0;" onchange="ezAssignRow('${row.rid}',this.value)">
+          <option value="">— select individual —</option>
+          ${houseIndivs.map(i => `<option value="${i.id}">${esc(i.name)}</option>`).join('')}
+        </select>
+      </div></div>`;
+      return;
+    }
+
+    const over283 = row.balance != null && row.balance > 283;
+    html += `<div class="ez-balance-line"><span>Balance as of ${esc(dateLabel)}</span><span class="ez-balance-amt">${bcFmt(row.balance || 0)}</span></div>`;
+
+    if(over283){
+      html += `<div class="ez-flag-banner">
+        <div class="ez-flag-title">⚠️ Over $283 — Item 6 will be marked NO. Corrective action required:</div>
+        <textarea class="ez-flag-ta" placeholder="Describe corrective action taken…" oninput="ezSetOver283Note('${row.rid}',this.value)">${esc(row.over283Note)}</textarea>
+      </div>`;
+    }
+
+    const pepSt = ppeDateStatus(matchedInd.pepDate);
+    const mmaSt = ppeDateStatus(matchedInd.mmaDate);
+    html += `<div class="ez-pep-row">
+      <div class="ez-pep-field">
+        <div class="ez-lbl">PEP Date</div>
+        <div class="ppe-date-status ${pepSt.cls}">${esc(pepSt.label)}</div>
+        ${pepSt.cls === 'expired' ? `<div class="ez-pep-update"><input type="date" id="ezPepFix_${row.rid}"><button onclick="ezFixDate('${row.rid}','${matchedInd.id}','pepDate')">Update</button></div>` : ''}
+      </div>
+      <div class="ez-pep-field">
+        <div class="ez-lbl">MMA Date</div>
+        <div class="ppe-date-status ${mmaSt.cls}">${esc(mmaSt.label)}</div>
+        ${mmaSt.cls === 'expired' ? `<div class="ez-pep-update"><input type="date" id="ezMmaFix_${row.rid}"><button onclick="ezFixDate('${row.rid}','${matchedInd.id}','mmaDate')">Update</button></div>` : ''}
+      </div>
+    </div>`;
+
+    const noReceipt = row.receiptNum === '0' && row.receiptVen === 'None';
+    html += `<div class="ez-receipt-row">
+      <input class="ez-input${noReceipt ? ' ez-input-flag' : ''}" type="text" inputmode="numeric" placeholder="Receipt #" value="${esc(row.receiptNum)}" oninput="ezSetField('${row.rid}','receiptNum',this.value)">
+      <input class="ez-input${noReceipt ? ' ez-input-flag' : ''}" type="text" placeholder="Vendor" value="${esc(row.receiptVen)}" oninput="ezSetField('${row.rid}','receiptVen',this.value)">
+    </div>`;
+    if(noReceipt){
+      html += `<div class="ez-receipt-flag-note">⚠️ No receipt found for this individual in the review month — double-check before generating.</div>`;
+    }
+
+    html += `</div>`;
+  });
+
+  cont.innerHTML = html;
+  const hasValid = ezRows.some(r => !r.parseError && r.matchedIndivId);
+  if(genBtn) genBtn.style.display = hasValid ? 'block' : 'none';
+  if(zipBtn) zipBtn.style.display = hasValid ? 'block' : 'none';
+}
+
+function ezValidateRows(validRows){
+  const errors = [];
+  validRows.forEach(row => {
+    const ind = S.individuals.find(i => i.id === row.matchedIndivId);
+    if(!row.receiptNum.trim()) errors.push(ind.name + ': receipt # missing');
+    if(!row.receiptVen.trim()) errors.push(ind.name + ': vendor missing');
+    if(row.balance != null && row.balance > 283 && !row.over283Note.trim()) errors.push(ind.name + ': corrective note required (over $283)');
+  });
+  return errors;
+}
+
+// Shared by ezGenerateAll() and ezGenerateZip() -- builds one individual's
+// filled PDF bytes + filename and saves their S.auditVisits record, so both
+// generation paths produce identical output instead of maintaining two
+// separate copies of this logic that could drift apart.
+async function ezBuildPdfForRow(row){
+  const ind = S.individuals.find(i => i.id === row.matchedIndivId);
+  const house = S.houses.find(h => h.id === ezHouseId);
+  if(!ind || !house) return null;
+
+  const info = ezComputeMonths(ezDateCompleted);
+  const pepSt = auditDateStatus(ind.pepDate);
+  const mmaSt = auditDateStatus(ind.mmaDate);
+  const anyExpired = pepSt.expired || mmaSt.expired;
+  const weekly = ind.weeklyAllowance != null ? parseFloat(ind.weeklyAllowance) : 0;
+  const over283 = row.balance != null && row.balance > 283;
+  const balStr = (row.balance || 0).toFixed(2);
+
+  const answers = {
+    1: 'YES', 2: anyExpired ? 'NO' : 'YES', 3: 'YES',
+    4: 'YES', 5: 'YES',
+    6: over283 ? 'NO' : 'YES',
+    7: 'YES',
+    8: 'YES', 9: 'YES',
+    10: 'YES', 11: 'YES', 12: 'YES',
+    13: weekly === 0 ? 'NA' : 'YES',
+    14: 'YES', 15: 'NO',
+  };
+
+  const corrective = {};
+  corrective['2'] = 'PEP Date - ' + auditFmtDatePDF(ind.pepDate) + '\nMMA Date - ' + auditFmtDatePDF(ind.mmaDate) + (anyExpired ? '\n*Reported to Money Manager and ResHab' : '');
+  corrective['3'] = ind.name + ' can handle up to $' + weekly.toFixed(2) + ' weekly.';
+  if(over283) corrective['6'] = row.over283Note.trim();
+  if(weekly === 0) corrective['13'] = 'Not Applicable';
+
+  const sigs = S.signatures || [];
+  const sig = sigs.length ? sigs[Math.floor(Math.random() * sigs.length)] : null;
+
+  const record = {
+    indivId: ind.id, indivName: ind.name,
+    houseId: house.id, houseName: house.name,
+    monthKey: info.monthKey, reviewMonthKey: info.reviewMonthKey,
+    visitDate: ezDateCompleted,
+    answers, corrective,
+    onHand: balStr, inAcu: balStr, mismatch: '',
+    receiptNum: row.receiptNum.trim(), receiptVen: row.receiptVen.trim(),
+    sigId: sig ? sig.id : null,
+  };
+
+  const pdfBytes = await buildAuditPDFBytes(record);
+  if(!pdfBytes) return null;
+
+  const houseCode = (house.name || '??').substring(0, 2).toUpperCase();
+  const parts = ind.name.trim().split(' ');
+  const fi = parts[0]?.[0] || '';
+  const ln = parts[parts.length - 1] || '';
+  const mm = String(info.reviewMonthIdx + 1).padStart(2, '0');
+  const yy = String(info.reviewYear).slice(-2);
+  const filename = `${houseCode} ${fi} ${ln} ${mm} ${yy} Acumatica Audit.pdf`;
+
+  let auditRecord = S.auditVisits.find(v => v.indivId === ind.id && v.monthKey === info.monthKey);
+  if(!auditRecord){
+    auditRecord = { id: uid(), indivId: ind.id, indivName: ind.name, houseId: house.id, houseName: house.name, monthKey: info.monthKey, completedAt: null };
+    S.auditVisits.push(auditRecord);
+  }
+  auditRecord.completedAt = today();
+  auditRecord.reviewMonthKey = info.reviewMonthKey;
+  auditRecord.visitDate = ezDateCompleted;
+  auditRecord.answers = { ...answers };
+  auditRecord.corrective = { ...corrective };
+  auditRecord.onHand = balStr;
+  auditRecord.inAcu = balStr;
+  auditRecord.mismatch = '';
+  auditRecord.receiptNum = row.receiptNum.trim();
+  auditRecord.receiptVen = row.receiptVen.trim();
+  if(sig) auditRecord.sigId = sig.id;
+
+  return { ind, house, pdfBytes, filename };
+}
+
+async function ezGenerateAll(){
+  if(!ezHouseId || !ezDateCompleted){ toast('Select a house and date completed first'); return; }
+  const validRows = ezRows.filter(r => !r.parseError && r.matchedIndivId);
+  if(validRows.length === 0){ toast('No individuals ready to generate'); return; }
+
+  const errors = ezValidateRows(validRows);
+  if(errors.length > 0){ toast('⚠ ' + errors[0] + (errors.length > 1 ? ' (+' + (errors.length - 1) + ' more)' : '')); return; }
+
+  const btn = document.getElementById('ezGenerateBtn');
+  btn.disabled = true; btn.textContent = 'Generating…';
+  let count = 0;
+
+  for(const row of validRows){
+    const built = await ezBuildPdfForRow(row);
+    if(!built){
+      const nm = S.individuals.find(i => i.id === row.matchedIndivId)?.name || 'individual';
+      toast('⚠ Could not build PDF for ' + nm);
+      continue;
+    }
+    await downloadFile(built.pdfBytes, built.filename, 'application/pdf');
+    count++;
+    await new Promise(r => setTimeout(r, 350));
+  }
+
+  saveS();
+  toast(`✓ Generated ${count} audit PDF${count !== 1 ? 's' : ''}`);
+  btn.disabled = false; btn.textContent = 'Generate All PDFs';
+}
+
+// Zips every generated PDF into House/Year/Month.Day, e.g.
+// "Valatie/2026/8.26/VA S Witko 07 26 Acumatica Audit.pdf" -- dated by the
+// filing date (ezDateCompleted), not the review month, matching how the
+// paperwork actually gets filed.
+async function ezGenerateZip(){
+  if(!ezHouseId || !ezDateCompleted){ toast('Select a house and date completed first'); return; }
+  const validRows = ezRows.filter(r => !r.parseError && r.matchedIndivId);
+  if(validRows.length === 0){ toast('No individuals ready to generate'); return; }
+
+  const errors = ezValidateRows(validRows);
+  if(errors.length > 0){ toast('⚠ ' + errors[0] + (errors.length > 1 ? ' (+' + (errors.length - 1) + ' more)' : '')); return; }
+
+  const btn = document.getElementById('ezGenerateZipBtn');
+  btn.disabled = true; btn.textContent = 'Zipping…';
+
+  const house = S.houses.find(h => h.id === ezHouseId);
+  const houseName = house?.name || 'House';
+  // Filed by review period (what was audited), not the filing/completed date --
+  // e.g. filed 9/13/26 reviewing August -> "8.26"; filed 6/1/26 reviewing May -> "5.26".
+  const info = ezComputeMonths(ezDateCompleted);
+  const reviewMonthNum = info.reviewMonthIdx + 1;
+  const reviewYearShort = String(info.reviewYear).slice(-2);
+  const monthYear = `${reviewMonthNum}.${reviewYearShort}`;
+
+  await loadJSZip();
+  const zip = new JSZip();
+  let count = 0;
+
+  for(const row of validRows){
+    const built = await ezBuildPdfForRow(row);
+    if(!built){
+      const nm = S.individuals.find(i => i.id === row.matchedIndivId)?.name || 'individual';
+      toast('⚠ Could not build PDF for ' + nm);
+      continue;
+    }
+    zip.file(`${houseName}/${info.reviewYear}/${monthYear}/${built.filename}`, built.pdfBytes);
+    count++;
+  }
+
+  if(count === 0){
+    toast('No PDFs could be built');
+    btn.disabled = false; btn.textContent = 'Generate Zip';
+    return;
+  }
+
+  const zipName = `${houseName} ${AMP_MONTHS_FULL[info.reviewMonthIdx]} ${info.reviewYear} Audits.zip`;
+  const blob = await zip.generateAsync({ type: 'blob' });
+  await downloadFile(await blob.arrayBuffer(), zipName, 'application/zip');
+
+  saveS();
+  toast(`✓ Zipped ${count} audit PDF${count !== 1 ? 's' : ''}`);
+  btn.disabled = false; btn.textContent = 'Generate Zip';
+}
+</script>
 
 <script src="js/features/receiving/receiving-pdf.js"></script>
 <script src="js/features/receiving/receiving-ui.js"></script>
@@ -5587,11 +6325,213 @@ else {
 <script src="js/features/audit/audit-core.js"></script>
 <script src="js/features/da3/da3-core.js"></script>
 <script src="js/features/tasks/tasks-home.js"></script>
+
 <script>
-try{
-  var __v = document.getElementById('appVersionLogin');
-  if(__v) __v.textContent = APP_VERSION;
-}catch(e){}
+// UITest-only fix: buildAuditPDFBytes() (used by EZ Money Audit + History's
+// regenerate-from-record path) was filling PDF form fields without forcing a
+// fixed font size, so pdf-lib/the PDF viewer auto-sized each field to its own
+// content -- short text (e.g. "# 0 None") blew up huge, long text shrank tiny.
+// The manual Audit screen's own export path already avoids this by writing
+// the field's /DA (default appearance) string directly to force 9pt before
+// flattening. This override applies the same fix so every PDF, regardless of
+// where it's generated from, renders with the same uniform font size.
+async function buildAuditPDFBytes(a){
+  try{
+    const ind=S.individuals.find(i=>i.id===a.indivId);
+    const house=S.houses.find(h=>h.id===a.houseId);
+    const individual=a.indivName||ind?.name||'';
+
+    const rmk = a.reviewMonthKey || (() => {
+      const [y,m] = (a.monthKey||mkNow()).split('-').map(Number);
+      const d = new Date(y, m-2, 1);
+      return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+    })();
+    const [ry,rmo] = rmk.split('-');
+    const monthYear = (AMP_MONTHS_FULL[parseInt(rmo)-1]||'') + ' ' + ry;
+
+    const onHand  = parseFloat(a.onHand||0).toFixed(2);
+    const inAcu   = parseFloat(a.inAcu||0).toFixed(2);
+    const mismatch = a.mismatch||'';
+    const cashNote = 'On Hand- $'+onHand+'\nIn Acumatica- $'+inAcu+(mismatch?'\n'+mismatch:'');
+    const rn = a.receiptNum||''; const rv = a.receiptVen||'';
+    const receiptRef = (rn||rv) ? ('# '+rn+' '+rv).trim() : '';
+    const ans = a.answers||{};
+    const items = [
+      {num:1,  yesId:'YESRow1',  noId:'NORow1',  corrId:'Corrective Action Taken1 Cash on hand equals cash in safe total listed in Acumatica', special:'cash'},
+      {num:2,  yesId:'YESRow2',  noId:'NORow2',  corrId:'Corrective Action Taken2 PEP  MMA are current within 1 year and attached to the header section in Acumatica', special:'pepMma'},
+      {num:3,  yesId:'YESRow3',  noId:'NORow3',  corrId:'Corrective Action Taken3 Spending money distributed matches amount allowable per MMA', special:'weekly'},
+      {num:4,  yesId:'YESRow4',  noId:'NORow4',  corrId:'Corrective Action Taken4 Money removed from safe is used within 72 hours'},
+      {num:5,  yesId:'YESRow5',  noId:'NORow5',  corrId:'Corrective Action Taken5 Acumatica has been updated at least weekly'},
+      {num:6,  yesId:'YESRow6',  noId:'NORow6',  corrId:'Corrective Action Taken6 Individuals cash in safe balance has NOT been over the maximum of 269 for longer than 14 days', special:'max283'},
+      {num:7,  yesId:'YESRow7',  noId:'NORow7',  corrId:'Corrective Action Taken7 All checks received by house staff have been entered into Acumatica regardless of if they have been cashed or forwarded to another location'},
+      {num:8,  yesId:'YESRow8',  noId:'NORow8',  corrId:'Corrective Action Taken8 All receipts have two signatures shopper  verifier', special:'receipt8'},
+      {num:9,  yesId:'YESRow9',  noId:'NORow9',  corrId:'Corrective Action Taken9 All receipts are appropriate numbered scanned and electronically attached to the transaction line in Acumatica and original receipts are attached to the receipt sheets', special:'receipt9'},
+      {num:10, yesId:'YESRow10', noId:'NORow10', corrId:'Corrective Action Taken10 Confirm the appropriate payment method has been used cash not employees personal credit card and there is no evidence of pledging See notes below on pledging'},
+      {num:11, yesId:'YESRow11', noId:'NORow11', corrId:'Corrective Action Taken11 Check if any rewardspoints were earned example Kohls Old Navy If yes confirm receipts verifying redemption or unused rewards are present'},
+      {num:12, yesId:'YESRow12', noId:'NORow12', corrId:'Corrective Action Taken12 All funds issued to staff have been signed for on the Withdrawal Ledger'},
+      {num:13, yesId:'YESRow13', noId:'NORow13', corrId:'13 If capable individuals have signed for weekly spending on the Withdrawal Ledger'},
+      {num:14, yesId:'YESRow14', noId:'NORow14', corrId:'14 If required purchases have been added to the Personal Property Record in Acumatica'},
+      {num:15, yesId:'YESRow15', noId:'NORow15', corrId:null},
+    ];
+
+    const fieldMap={};
+    const add=(id,val)=>{ if(id) fieldMap[id]=val; };
+    add('Individual', individual);
+    add('Review Month_Year', monthYear);
+    add('Title', 'DA3');
+    add('Date', a.visitDate||'');
+
+    items.forEach(item=>{
+      if(!item.yesId) return;
+      const av = ans[item.num]||ans[String(item.num)]||'';
+      add(item.yesId, av==='YES'?'X':'');
+      add(item.noId,  av==='NO'?'X':'');
+      if(!item.corrId) return;
+      let ct = '';
+      if(item.special==='cash')         ct = cashNote;
+      else if(item.special==='pepMma')  ct = a.corrective?.['2']||'';
+      else if(item.special==='weekly')  ct = a.corrective?.['3']||'';
+      else if(item.special==='max283'){
+        ct = '*Maximum $283.00';
+        if(av==='NO') ct += '\n'+(a.corrective?.['6']||'');
+      }
+      else if(item.special==='receipt8'||item.special==='receipt9') ct = receiptRef;
+      else ct = a.corrective?.[item.num]||'';
+      add(item.corrId, ct);
+    });
+    // Item 15's outside-bank-account sub-questions (a-e)
+    ['A','B','C','D','E'].forEach(k=>add(k, (a.subAnswers && a.subAnswers[k]) || ''));
+
+    // UITest-only: row 2's box is taller in this template so a 3-line
+    // corrective note (e.g. an expired PEP/MMA auto-note) doesn't visually
+    // overlap the row2/row3 divider. See BlankACU_fixed_v2.pdf.
+    const pdfBytes = await fetch('BlankACU_fixed_v2.pdf').then(r=>{ if(!r.ok) throw new Error('BlankACU_fixed_v2.pdf not found'); return r.arrayBuffer(); });
+    const pdfDoc = await PDFLib.PDFDocument.load(pdfBytes);
+    const form = pdfDoc.getForm();
+    function forceFontSize9(field){
+      try{
+        const daName = PDFLib.PDFName.of('DA');
+        const existing = field.acroField.dict.get(daName);
+        let daStr = existing ? existing.decodeText() : '/Helv 9 Tf 0 g';
+        daStr = daStr.replace(/(\/[A-Za-z]+\s+)[\d.]+(\s+Tf)/, '$19$2');
+        field.acroField.dict.set(daName, PDFLib.PDFString.of(daStr));
+      }catch(e){}
+    }
+    for(const [fid,val] of Object.entries(fieldMap)){
+      try{ const tf=form.getTextField(fid); tf.setText(val||''); forceFontSize9(tf); }catch(e){}
+    }
+    form.flatten();
+    await stampSignatureOnPDFById(pdfDoc, 1, [129.325,249.267,398.756,281.267], a.sigId);
+    return await pdfDoc.save();
+  }catch(e){ console.error('buildAuditPDFBytes:', e); return null; }
+}
+
+// UITest-only fix: the manual Audit screen's own "Export PDF" button
+// (auditExportPDF, defined in audit-core.js) had its own separate,
+// duplicated copy of the field-filling logic above -- which is exactly how
+// it and buildAuditPDFBytes() drifted out of sync (X marks vs "YES"/"NO"
+// text, item 6's corrective note present vs blank, inconsistent font
+// sizes). Overridden here so the manual export builds the same
+// auditRecord shape History/EZ Money Audit save, then hands off to
+// buildAuditPDFBytes() for the actual PDF bytes -- so every export path,
+// regardless of screen, produces byte-identical PDFs.
+async function auditExportPDF(){
+  const errs=auditValidate();
+  if(errs.length>0){
+    const first=errs[0];
+    toast('⚠ '+first.msg);
+    const el=document.getElementById(first.elId);
+    if(el){
+      el.classList.add('aerror');
+      el.scrollIntoView({behavior:'smooth',block:'center'});
+      setTimeout(()=>el.classList.remove('aerror'),2500);
+    }
+    return;
+  }
+
+  auditSaveProfileData();
+
+  const btn=document.getElementById('auditExpBtnMain');
+  btn.disabled=true;
+  document.getElementById('auditExpBtnText').innerHTML='<span class="aspinner"></span> Building…';
+
+  try {
+    const ind=S.individuals.find(i=>i.id===currentAuditIndivId);
+    const house=S.houses.find(h=>h.id===ind?.houseId);
+    const individual=ind?.name||'';
+    const houseCode=(house?.name||'??').substring(0,2).toUpperCase();
+
+    // Selected month IS the filing month; review month = selected - 1
+    const _rm = auditSelectedMonth;
+    const _rmDate = _rm ? new Date(_rm.year, _rm.month, 1) : new Date();
+    const auditMk = _rmDate.getFullYear()+'-'+String(_rmDate.getMonth()+1).padStart(2,'0');
+    let auditRecord = S.auditVisits.find(v=>v.indivId===currentAuditIndivId && v.monthKey===auditMk);
+    if(!auditRecord){
+      auditRecord = {id:uid(), indivId:currentAuditIndivId, indivName:ind?.name||'', houseId:ind?.houseId||'', houseName:house?.name||'', monthKey:auditMk, completedAt:null};
+      S.auditVisits.push(auditRecord);
+    }
+    auditRecord.completedAt = today();
+    auditRecord.answers = {...(window._auditAnswers||{})};
+    auditRecord.visitDate = document.getElementById('aFieldDate')?.value||'';
+    if(auditSelectedMonth){
+      let rm = auditSelectedMonth.month - 1, ry = auditSelectedMonth.year;
+      if(rm < 0){ rm = 11; ry--; }
+      auditRecord.reviewMonthKey = `${ry}-${String(rm+1).padStart(2,'0')}`;
+    }
+    auditRecord.corrective = {};
+    document.querySelectorAll('#auditContainer [id^="aCorrText"]').forEach(el=>{
+      const num = el.id.replace('aCorrText','');
+      auditRecord.corrective[num] = el.value||'';
+    });
+    auditRecord.onHand = document.getElementById('aOnHand')?.value||'';
+    auditRecord.inAcu  = document.getElementById('aInAcu')?.value||'';
+    auditRecord.mismatch = document.getElementById('aMismatchReason')?.value||'';
+    auditRecord.receiptNum = document.getElementById('aReceiptNum')?.value||'';
+    auditRecord.receiptVen = document.getElementById('aReceiptVen')?.value||'';
+    // Item 15's outside-bank-account sub-questions (a-e) -- previously built
+    // into the PDF here but never actually saved, so History/EZ Money Audit
+    // re-exports could never include them. Persisted now too.
+    auditRecord.subAnswers = {};
+    ['A','B','C','D','E'].forEach(k=>{
+      auditRecord.subAnswers[k] = document.getElementById('aSub_'+k)?.value||'';
+    });
+    // Pick (and persist) a signature now so buildAuditPDFBytes stamps the
+    // same one future re-exports will use, instead of a fresh random pick
+    // each time -- matching the original behavior.
+    const _sigs = S.signatures||[];
+    if(_sigs.length) auditRecord.sigId = _sigs[Math.floor(Math.random()*_sigs.length)].id;
+
+    const filled = await buildAuditPDFBytes(auditRecord);
+    if(!filled) throw new Error('Could not build PDF');
+
+    const parts=individual.trim().split(' ');
+    const fi=parts[0]?.[0]||'';
+    const ln=parts[parts.length-1]||'';
+    let _rnm = auditSelectedMonth.month - 1, _rny = auditSelectedMonth.year;
+    if(_rnm < 0){ _rnm = 11; _rny--; }
+    const mm=String(_rnm+1).padStart(2,'0');
+    const yy=String(_rny).slice(-2);
+    const filename=`${houseCode} ${fi} ${ln} ${mm} ${yy} Acumatica Audit.pdf`;
+
+    await downloadFile(filled, filename, 'application/pdf');
+
+    document.getElementById('auditExpBtnText').textContent='✓ Downloaded!';
+    toast(/iPhone|iPad|iPod/i.test(navigator.userAgent)
+      ? '✓ PDF opened — tap Share ⬆ to save'
+      : '✓ PDF saved: '+filename);
+
+    saveS();
+    document.getElementById('auditHeaderSub').textContent = '✓ Completed';
+
+    setTimeout(()=>{btn.disabled=false;document.getElementById('auditExpBtnText').textContent='Export Filled PDF';},2500);
+
+  } catch(e){
+    console.error(e);
+    toast('Export error: '+e.message);
+    btn.disabled=false;
+    document.getElementById('auditExpBtnText').textContent='Export Filled PDF';
+  }
+}
 </script>
 </body>
 </html>
